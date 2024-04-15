@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="472e0940-83f2-4a77-b3b7-114d608e0741" ChangeDateTime="04/15/2024 10:21:37">
+    <Property Name="ElementName" Value="[dbo].[Inventory].[Section]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Inventory]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SectionName" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="29a797f6-615d-4b30-a5b0-f2dcd23b1997" ChangeDateTime="04/15/2024 12:02:51">
+    <Property Name="ElementName" Value="[dbo].[Component].[UserID]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Component]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="UserId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5c71582d-4468-4ad5-8c4c-84bf411c28b5" ChangeDateTime="04/15/2024 12:11:10">
+    <Property Name="ElementName" Value="[dbo].[Cabin].[int]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Cabin]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CoordinateX" />
+  </Operation>
+</Operations>
