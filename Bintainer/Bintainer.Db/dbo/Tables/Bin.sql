@@ -1,17 +1,17 @@
-﻿CREATE TABLE [dbo].[Cabin]
+﻿CREATE TABLE [dbo].[Bin]
 (
 	[Id] INT NOT NULL PRIMARY KEY,    
     [SectionId] INT NULL,    
     [CoordinateX] INT NOT NULL, 
     [CoordinateY] INT NOT NULL,
-    [Capacity] INT  NULL,
-    CONSTRAINT [FK_Cabin_InventorySection] FOREIGN KEY ([SectionId]) REFERENCES [InventorySection]([Id])
+    [IsFilled] BIT NULL, 
+    CONSTRAINT [FK_Bin_InventorySection] FOREIGN KEY ([SectionId]) REFERENCES [InventorySection]([Id])
 )
 
 GO
 
-CREATE TRIGGER [dbo].[CheckCabinCoordinates]
-ON [dbo].[Cabin]
+CREATE TRIGGER [dbo].[CheckBinCoordinates]
+ON [dbo].[Bin]
 AFTER INSERT, UPDATE
 AS
 BEGIN
@@ -23,7 +23,7 @@ BEGIN
               i.CoordinateY < 0 OR i.CoordinateY > inv.Height
     )
     BEGIN
-        RAISERROR ('Cabin coordinates must be within the bounds of the corresponding inventory section.', 16, 1);
+        RAISERROR ('Bin coordinates must be within the bounds of the corresponding inventory section.', 16, 1);
         ROLLBACK TRANSACTION;
         RETURN;
     END

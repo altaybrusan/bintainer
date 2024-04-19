@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PartsBinStockTool.WebApp.Models;
+namespace Bintainer.WebApp.Models;
 
 public partial class AspNetUserClaim
 {

@@ -21,4 +21,53 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="CoordinateX" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="e21bcc46-5242-45b1-b4e1-c59d715f3ef2" ChangeDateTime="04/19/2024 11:16:37">
+    <Property Name="ElementName" Value="[dbo].[PartCategory].[PartentCategory]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PartCategory]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PartentCategoryId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="65d06bd3-c3c5-4cee-8ff9-998665ebbe01" ChangeDateTime="04/19/2024 11:17:21">
+    <Property Name="ElementName" Value="[dbo].[Component].[Category]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Component]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CategoryId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="837872b6-8884-4342-80d0-cae360de90c3" ChangeDateTime="04/19/2024 11:17:34">
+    <Property Name="ElementName" Value="[dbo].[Part].[Cate[CategoryId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Part]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CategoryId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8cda7bda-9353-4c54-8e11-911137524137" ChangeDateTime="04/19/2024 11:33:20">
+    <Property Name="ElementName" Value="[dbo].[PartGroup].[ParId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PartGroup]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PartId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="40f8b223-3272-4252-8cec-e3da492bb84a" ChangeDateTime="04/19/2024 11:38:26">
+    <Property Name="ElementName" Value="[dbo].[PartCategory].[PartentCategoryId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PartCategory]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ParentCategoryId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ca1821e6-412e-400e-83b5-9b63693a3bb6" ChangeDateTime="04/19/2024 11:51:15">
+    <Property Name="ElementName" Value="[dbo].[Part].[FootPrintIdId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Part]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FootPrintId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2b313d16-01b8-49aa-9a67-8b9bccf7d382" ChangeDateTime="04/19/2024 11:57:41">
+    <Property Name="ElementName" Value="[dbo].[PartNumber].[PartId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PartNumber]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Supplier" />
+  </Operation>
 </Operations>

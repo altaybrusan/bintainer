@@ -131,13 +131,20 @@
     <Build Include="dbo\Tables\AspNetUserRoles.sql" />
     <Build Include="dbo\Tables\AspNetUsers.sql" />
     <Build Include="dbo\Tables\AspNetUserTokens.sql" />
-    <Build Include="dbo\Tables\Component.sql" />
+    <Build Include="dbo\Tables\Part.sql" />
     <Build Include="dbo\Tables\InventorySection.sql" />
     <Build Include="dbo\Tables\Inventory.sql" />
-    <Build Include="dbo\Tables\Cabin.sql" />
-    <Build Include="dbo\Tables\ComponentAttribute.sql" />
-    <Build Include="dbo\Tables\CabinLabel.sql" />
-    <Build Include="dbo\Tables\ComponentCabin.sql" />
+    <Build Include="dbo\Tables\Bin.sql" />
+    <Build Include="dbo\Tables\PartAttribute.sql" />
+    <Build Include="dbo\Tables\PartBin.sql" />
+    <Build Include="dbo\Tables\BinSubspace.sql" />
+    <Build Include="dbo\Tables\PartCategory.sql" />
+    <Build Include="dbo\Tables\PartGroup.sql" />
+    <Build Include="dbo\Tables\PartFootprint.sql" />
+    <Build Include="dbo\Tables\PartPackage.sql" />
+    <Build Include="dbo\Tables\PartNumber.sql" />
+    <Build Include="dbo\Tables\PartLabel.sql" />
+    <Build Include="dbo\Tables\Order.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="PartsBinStockTool.Db.refactorlog" />
