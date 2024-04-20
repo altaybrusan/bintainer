@@ -4,11 +4,11 @@
     [Name] NCHAR(60) NOT NULL, 
     [Description] NCHAR(150) NULL, 
     [CategoryId]INT NULL,
-    [ImageUri]NCHAR(100) NULL,
-    [DatasheetUri]NCHAR(100) NULL, 
-    [FootPrint] INT NULL, 
+    [FootPrint] INT NOT NULL, 
     [Package] INT NULL,
-    CONSTRAINT [FK_Part_PartFootprint] FOREIGN KEY ([FootPrint]) REFERENCES [PartFootprint]([Id]),
-    CONSTRAINT [FK_Part_PartPackage] FOREIGN KEY ([Package]) REFERENCES [PartPackage]([Id]),
-
+    CONSTRAINT [FK_Part_PartCategory] FOREIGN KEY ([CategoryId]) REFERENCES [PartCategory]([Id]),
+    CONSTRAINT [FK_Part_PartFootprint] FOREIGN KEY ([FootPrint]) REFERENCES [PartFootprint]([Id])
 )
+GO
+
+CREATE UNIQUE INDEX [IX_Part_FootPrintId] ON [dbo].[Part]([FootPrint])

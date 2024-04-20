@@ -31,14 +31,6 @@ public partial class BintainerContext : DbContext
 
     public virtual DbSet<BinSubspace> BinSubspaces { get; set; }
 
-    public virtual DbSet<Cabin> Cabins { get; set; }
-
-    public virtual DbSet<CabinLabel> CabinLabels { get; set; }
-
-    public virtual DbSet<Component> Components { get; set; }
-
-    public virtual DbSet<ComponentAttribute> ComponentAttributes { get; set; }
-
     public virtual DbSet<Inventory> Inventories { get; set; }
 
     public virtual DbSet<InventorySection> InventorySections { get; set; }
@@ -57,9 +49,9 @@ public partial class BintainerContext : DbContext
 
     public virtual DbSet<PartLabel> PartLabels { get; set; }
 
-    public virtual DbSet<PartNumber> PartNumbers { get; set; }
-
     public virtual DbSet<PartPackage> PartPackages { get; set; }
+
+    public virtual DbSet<PartTemplate> PartTemplates { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
@@ -129,7 +121,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<Bin>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Bin__3214EC075A327EE3");
+            entity.HasKey(e => e.Id).HasName("PK__Bin__3214EC0763D90069");
 
             entity.ToTable("Bin", tb => tb.HasTrigger("CheckBinCoordinates"));
 
@@ -142,7 +134,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<BinSubspace>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__BinSubsp__3214EC0771DE7263");
+            entity.HasKey(e => e.Id).HasName("PK__BinSubsp__3214EC07A7383C25");
 
             entity.ToTable("BinSubspace");
 
@@ -157,98 +149,9 @@ public partial class BintainerContext : DbContext
                 .HasConstraintName("FK_BinSubspace_Bin");
         });
 
-        modelBuilder.Entity<Cabin>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Cabin__3214EC078D91E193");
-
-            entity.ToTable("Cabin", tb => tb.HasTrigger("CheckCabinCoordinates"));
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
-
-            entity.HasOne(d => d.Section).WithMany(p => p.Cabins)
-                .HasForeignKey(d => d.SectionId)
-                .HasConstraintName("FK_Cabin_InventorySection");
-        });
-
-        modelBuilder.Entity<CabinLabel>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__CabinLab__3214EC07E852C530");
-
-            entity.ToTable("CabinLabel");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.Value)
-                .HasMaxLength(50)
-                .IsFixedLength();
-
-            entity.HasOne(d => d.IdNavigation).WithOne(p => p.CabinLabel)
-                .HasForeignKey<CabinLabel>(d => d.Id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CabinLabel_Cabin");
-        });
-
-        modelBuilder.Entity<Component>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Componen__3214EC07322F7F61");
-
-            entity.ToTable("Component");
-
-            entity.Property(e => e.CategoryId)
-                .HasMaxLength(100)
-                .IsFixedLength();
-            entity.Property(e => e.Description)
-                .HasMaxLength(150)
-                .IsFixedLength();
-            entity.Property(e => e.Name)
-                .HasMaxLength(60)
-                .IsFixedLength();
-
-            entity.HasOne(d => d.Inventory).WithMany(p => p.Components)
-                .HasForeignKey(d => d.InventoryId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Component_Inventory");
-
-            entity.HasMany(d => d.Cabins).WithMany(p => p.Components)
-                .UsingEntity<Dictionary<string, object>>(
-                    "ComponentCabin",
-                    r => r.HasOne<Cabin>().WithMany()
-                        .HasForeignKey("CabinId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_ComponentCabin_Cabin"),
-                    l => l.HasOne<Component>().WithMany()
-                        .HasForeignKey("ComponentId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_ComponentCabin_Component"),
-                    j =>
-                    {
-                        j.HasKey("ComponentId", "CabinId");
-                        j.ToTable("ComponentCabin");
-                    });
-        });
-
-        modelBuilder.Entity<ComponentAttribute>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Componen__3214EC0736CA1A04");
-
-            entity.ToTable("ComponentAttribute");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.Name)
-                .HasMaxLength(50)
-                .IsFixedLength();
-            entity.Property(e => e.Value)
-                .HasMaxLength(150)
-                .IsFixedLength();
-
-            entity.HasOne(d => d.Component).WithMany(p => p.ComponentAttributes)
-                .HasForeignKey(d => d.ComponentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ComponentAttribute_Component");
-        });
-
         modelBuilder.Entity<Inventory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Inventor__3214EC0767ED7499");
+            entity.HasKey(e => e.Id).HasName("PK__Inventor__3214EC0700531183");
 
             entity.ToTable("Inventory");
 
@@ -260,7 +163,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<InventorySection>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Inventor__3214EC073113E3F7");
+            entity.HasKey(e => e.Id).HasName("PK__Inventor__3214EC07991C0D19");
 
             entity.ToTable("InventorySection");
 
@@ -277,7 +180,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC07374CB885");
+            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC07BF32A8F4");
 
             entity.ToTable("Order");
 
@@ -291,30 +194,27 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<Part>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC07D8FA538C");
+            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC07BDC71C85");
 
             entity.ToTable("Part");
 
-            entity.Property(e => e.DatasheetUri)
-                .HasMaxLength(100)
-                .IsFixedLength();
+            entity.HasIndex(e => e.FootPrint, "IX_Part_FootPrintId").IsUnique();
+
             entity.Property(e => e.Description)
                 .HasMaxLength(150)
-                .IsFixedLength();
-            entity.Property(e => e.ImageUri)
-                .HasMaxLength(100)
                 .IsFixedLength();
             entity.Property(e => e.Name)
                 .HasMaxLength(60)
                 .IsFixedLength();
 
-            entity.HasOne(d => d.FootPrintNavigation).WithMany(p => p.Parts)
-                .HasForeignKey(d => d.FootPrint)
-                .HasConstraintName("FK_Part_PartFootprint");
+            entity.HasOne(d => d.Category).WithMany(p => p.Parts)
+                .HasForeignKey(d => d.CategoryId)
+                .HasConstraintName("FK_Part_PartCategory");
 
-            entity.HasOne(d => d.PackageNavigation).WithMany(p => p.Parts)
-                .HasForeignKey(d => d.Package)
-                .HasConstraintName("FK_Part_PartPackage");
+            entity.HasOne(d => d.FootPrintNavigation).WithOne(p => p.Part)
+                .HasForeignKey<Part>(d => d.FootPrint)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Part_PartFootprint");
 
             entity.HasMany(d => d.Bins).WithMany(p => p.Parts)
                 .UsingEntity<Dictionary<string, object>>(
@@ -332,11 +232,28 @@ public partial class BintainerContext : DbContext
                         j.HasKey("PartId", "BinId");
                         j.ToTable("PartBin");
                     });
+
+            entity.HasMany(d => d.Templates).WithMany(p => p.Parts)
+                .UsingEntity<Dictionary<string, object>>(
+                    "PartTemplateAssignment",
+                    r => r.HasOne<PartTemplate>().WithMany()
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__PartTempl__Templ__75A278F5"),
+                    l => l.HasOne<Part>().WithMany()
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__PartTempl__PartI__74AE54BC"),
+                    j =>
+                    {
+                        j.HasKey("PartId", "TemplateId").HasName("PK__PartTemp__13B8A082DE26B624");
+                        j.ToTable("PartTemplateAssignment");
+                    });
         });
 
         modelBuilder.Entity<PartAttribute>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartAttr__3214EC074C5195A5");
+            entity.HasKey(e => e.Id).HasName("PK__PartAttr__3214EC075D4E408A");
 
             entity.ToTable("PartAttribute");
 
@@ -347,16 +264,11 @@ public partial class BintainerContext : DbContext
             entity.Property(e => e.Value)
                 .HasMaxLength(150)
                 .IsFixedLength();
-
-            entity.HasOne(d => d.Part).WithMany(p => p.PartAttributes)
-                .HasForeignKey(d => d.PartId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PartAttribute_Part");
         });
 
         modelBuilder.Entity<PartCategory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartCate__3214EC07CA329B2B");
+            entity.HasKey(e => e.Id).HasName("PK__PartCate__3214EC0762D9AC5E");
 
             entity.ToTable("PartCategory");
 
@@ -364,11 +276,15 @@ public partial class BintainerContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(75)
                 .IsFixedLength();
+
+            entity.HasOne(d => d.ParentCategory).WithMany(p => p.InverseParentCategory)
+                .HasForeignKey(d => d.ParentCategoryId)
+                .HasConstraintName("FK_PartCategory_ParentCategory");
         });
 
         modelBuilder.Entity<PartFootprint>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartFoot__3214EC0762A00FE3");
+            entity.HasKey(e => e.Id).HasName("PK__PartFoot__3214EC07C34C7601");
 
             entity.ToTable("PartFootprint");
 
@@ -380,7 +296,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<PartGroup>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartGrou__3214EC07E4E273CD");
+            entity.HasKey(e => e.Id).HasName("PK__PartGrou__3214EC07BDF8EA6E");
 
             entity.ToTable("PartGroup");
 
@@ -397,7 +313,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<PartLabel>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC074BE25CCC");
+            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC07A760D01C");
 
             entity.ToTable("PartLabel");
 
@@ -412,29 +328,9 @@ public partial class BintainerContext : DbContext
                 .HasConstraintName("FK_PartLabel_Part");
         });
 
-        modelBuilder.Entity<PartNumber>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__PartNumb__3214EC07C0AAF8BD");
-
-            entity.ToTable("PartNumber");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.Number)
-                .HasMaxLength(100)
-                .IsFixedLength();
-            entity.Property(e => e.Supplier)
-                .HasMaxLength(100)
-                .IsFixedLength();
-
-            entity.HasOne(d => d.Part).WithMany(p => p.PartNumbers)
-                .HasForeignKey(d => d.PartId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PartNumber_Part");
-        });
-
         modelBuilder.Entity<PartPackage>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartPack__3214EC07420202FB");
+            entity.HasKey(e => e.Id).HasName("PK__PartPack__3214EC07D3ECFBA7");
 
             entity.ToTable("PartPackage");
 
@@ -442,6 +338,43 @@ public partial class BintainerContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .IsFixedLength();
+        });
+
+        modelBuilder.Entity<PartTemplate>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__PartTemp__3214EC077DB515A0");
+
+            entity.ToTable("PartTemplate");
+
+            entity.Property(e => e.DatasheetUri)
+                .HasMaxLength(100)
+                .IsFixedLength();
+            entity.Property(e => e.ImageUri)
+                .HasMaxLength(100)
+                .IsFixedLength();
+            entity.Property(e => e.PartNumber)
+                .HasMaxLength(150)
+                .IsFixedLength();
+            entity.Property(e => e.Supplier)
+                .HasMaxLength(100)
+                .IsFixedLength();
+
+            entity.HasMany(d => d.Attributes).WithMany(p => p.Templates)
+                .UsingEntity<Dictionary<string, object>>(
+                    "PartTemplateAttributeAssociation",
+                    r => r.HasOne<PartAttribute>().WithMany()
+                        .HasForeignKey("AttributeId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__PartTempl__Attri__778AC167"),
+                    l => l.HasOne<PartTemplate>().WithMany()
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__PartTempl__Templ__76969D2E"),
+                    j =>
+                    {
+                        j.HasKey("TemplateId", "AttributeId").HasName("PK__PartTemp__44624FB928FB7214");
+                        j.ToTable("PartTemplateAttributeAssociation");
+                    });
         });
 
         OnModelCreatingPartial(modelBuilder);

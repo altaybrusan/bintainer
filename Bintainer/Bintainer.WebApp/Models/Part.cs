@@ -13,25 +13,19 @@ public partial class Part
 
     public int? CategoryId { get; set; }
 
-    public string? ImageUri { get; set; }
-
-    public string? DatasheetUri { get; set; }
-
-    public int? FootPrint { get; set; }
+    public int FootPrint { get; set; }
 
     public int? Package { get; set; }
 
-    public virtual PartFootprint? FootPrintNavigation { get; set; }
+    public virtual PartCategory? Category { get; set; }
 
-    public virtual PartPackage? PackageNavigation { get; set; }
-
-    public virtual ICollection<PartAttribute> PartAttributes { get; set; } = new List<PartAttribute>();
+    public virtual PartFootprint FootPrintNavigation { get; set; } = null!;
 
     public virtual ICollection<PartGroup> PartGroups { get; set; } = new List<PartGroup>();
 
     public virtual ICollection<PartLabel> PartLabels { get; set; } = new List<PartLabel>();
 
-    public virtual ICollection<PartNumber> PartNumbers { get; set; } = new List<PartNumber>();
-
     public virtual ICollection<Bin> Bins { get; set; } = new List<Bin>();
+
+    public virtual ICollection<PartTemplate> Templates { get; set; } = new List<PartTemplate>();
 }

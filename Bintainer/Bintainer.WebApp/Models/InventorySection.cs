@@ -17,7 +17,5 @@ public partial class InventorySection
 
     public virtual ICollection<Bin> Bins { get; set; } = new List<Bin>();
 
-    public virtual ICollection<Cabin> Cabins { get; set; } = new List<Cabin>();
-
     public virtual Inventory Inventory { get; set; } = null!;
 }

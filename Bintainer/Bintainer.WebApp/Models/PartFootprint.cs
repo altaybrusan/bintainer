@@ -9,5 +9,5 @@ public partial class PartFootprint
 
     public string? Name { get; set; }
 
-    public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
+    public virtual Part? Part { get; set; }
 }

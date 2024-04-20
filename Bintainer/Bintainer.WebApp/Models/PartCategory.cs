@@ -10,4 +10,10 @@ public partial class PartCategory
     public string? Name { get; set; }
 
     public int? ParentCategoryId { get; set; }
+
+    public virtual ICollection<PartCategory> InverseParentCategory { get; set; } = new List<PartCategory>();
+
+    public virtual PartCategory? ParentCategory { get; set; }
+
+    public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
 }

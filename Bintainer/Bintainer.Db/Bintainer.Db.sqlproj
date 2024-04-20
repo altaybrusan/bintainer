@@ -142,9 +142,11 @@
     <Build Include="dbo\Tables\PartGroup.sql" />
     <Build Include="dbo\Tables\PartFootprint.sql" />
     <Build Include="dbo\Tables\PartPackage.sql" />
-    <Build Include="dbo\Tables\PartNumber.sql" />
     <Build Include="dbo\Tables\PartLabel.sql" />
     <Build Include="dbo\Tables\Order.sql" />
+    <Build Include="dbo\Tables\PartTemplate.sql" />
+    <Build Include="dbo\Tables\PartTemplateAssignment.sql" />
+    <Build Include="dbo\Tables\PartTemplateAttributeAssociation.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="PartsBinStockTool.Db.refactorlog" />
