@@ -1,0 +1,174 @@
+﻿@page
+@model Bintainer.WebApp.Pages.PartModel
+@{
+}
+<div class="container">
+    <div class="row">
+@*         <div class="col-md-9">
+            <form class="well form-horizontal">
+                <fieldset>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">Part Name</label>
+                        <div class="col-md-4 inputGroupContainer">
+                            <div class="input-group"><span class="input-group-addon"><input id="partName" name="fullName" placeholder="Part Name" class="form-control" required="true" value="" type="text"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">Address Line 1</label>
+                        <div class="col-md-8 inputGroupContainer">
+                            <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span><input id="addressLine1" name="addressLine1" placeholder="Address Line 1" class="form-control" required="true" value="" type="text"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">Address Line 2</label>
+                        <div class="col-md-8 inputGroupContainer">
+                            <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span><input id="addressLine2" name="addressLine2" placeholder="Address Line 2" class="form-control" required="true" value="" type="text"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">City</label>
+                        <div class="col-md-8 inputGroupContainer">
+                            <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span><input id="city" name="city" placeholder="City" class="form-control" required="true" value="" type="text"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">State/Province/Region</label>
+                        <div class="col-md-8 inputGroupContainer">
+                            <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span><input id="state" name="state" placeholder="State/Province/Region" class="form-control" required="true" value="" type="text"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">Postal Code/ZIP</label>
+                        <div class="col-md-8 inputGroupContainer">
+                            <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span><input id="postcode" name="postcode" placeholder="Postal Code/ZIP" class="form-control" required="true" value="" type="text"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">Country</label>
+                        <div class="col-md-8 inputGroupContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
+                                <select class="selectpicker form-control">
+                                    <option>A really long option to push the menu over the edget</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">Email</label>
+                        <div class="col-md-8 inputGroupContainer">
+                            <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span><input id="email" name="email" placeholder="Email" class="form-control" required="true" value="" type="text"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">Phone Number</label>
+                        <div class="col-md-8 inputGroupContainer">
+                            <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></span><input id="phoneNumber" name="phoneNumber" placeholder="Phone Number" class="form-control" required="true" value="" type="text"></div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div> *@
+         <div class="col-md-9">
+             <fieldset>
+                <legend>Part</legend>
+                <form class="well" method="post">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label align-items-start">Part Name</label>
+                        <div class="col-md-4">
+                            <div class=" inputGroupContainer">
+                                <div class="input-group"><input id="partName" name="partName" placeholder="Part Name" class="form-control" required="true" value="" type="text"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label align-items-start">Description</label>
+                        <div class="col-md-4">
+                            <div class=" inputGroupContainer">
+                                <div class="input-group"><input id="description" name="description" placeholder="Description" class="form-control" required="true" value="" type="text"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label align-items-start">Package</label>
+                        <div class="col-md-4">
+                            <div class=" inputGroupContainer">
+                                <div class="input-group"><input id="package" name="package" placeholder="Package" class="form-control" value="" type="text"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label align-items-start">Label</label>
+                        <div class="col-md-4">
+                            <div class=" inputGroupContainer">
+                                <div class="input-group"><input id="label" name="label" placeholder="Label" class="form-control" value="" type="text"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label align-items-start">Package</label>
+                        <div class="col-md-4">
+                            <select class="form-control" id="part-type">
+                                <option class="hidden" selected disabled>Package</option>
+                                <option>What is your Birthdate?</option>
+                                <option>What is Your old Phone Number</option>
+                                <option>What is your Pet Name?</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label align-items-start">Category</label>
+                        <div class="col-md-4">
+                            <select class="form-control" id="part-type">
+                                <option class="hidden" selected disabled>Category</option>
+                                <option>What is your Birthdate?</option>
+                                <option>What is Your old Phone Number</option>
+                                <option>What is your Pet Name?</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label align-items-start">Group</label>
+                        <div class="col-md-4">
+                            <select class="form-control" id="part-type">
+                                <option class="hidden" selected disabled>Group</option>
+                                <option>USB</option>
+                                <option>Ethernet</option>
+                                <option>CAN-Bus</option>
+                            </select>
+                        </div>
+                    </div>              
+
+                    <div>
+                        <label>Spec:</label>
+                        <input type="text" />
+                    </div>
+
+                    <div>
+                        <label>Part Number:</label>
+                        <input type="text" />
+                    </div>
+
+                    <div>
+                        <button>Save</button>
+                        <button>Cancel</button>
+                    </div>
+                </form>
+             </fieldset>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <img src="./image/microchip.png" class="card-img-top">
+            </div>
+            <div class="card">
+                <img src="./image/pinout.png" class="img-fluid" alt=" footpring" />
+            </div>            
+        </div>
+    </div>
+</div>
+<div>
+       
+    
+</div>
