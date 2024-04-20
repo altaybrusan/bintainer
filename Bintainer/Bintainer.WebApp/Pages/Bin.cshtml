@@ -2,3 +2,100 @@
 @model Bintainer.WebApp.Pages.BinModel
 @{
 }
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<!-- Hierarchy Select CSS -->
+<link rel="stylesheet" href="./css/hierarchy-select.min.css">
+
+
+<button class="btn btn-primary" id="addRow">Add Row</button>
+<button class="btn btn-primary" id="loadTemplate">Load</button>
+
+    <table class="table" style="width: 500px">
+    <thead>
+        <tr>
+            <th>Product Attribute</th>
+            <th>Attribute Value</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="productSpecTable"></tbody>
+</table>
+
+
+
+    <script type="text/template" id="tr_tmpl">
+    <td class="productAttribute">1</td>
+    <td class="attributeValue">Jill</td>
+    <td><a data-mode='edit' class="action" href="javascript:void(0)">edit</a></td>
+    <td><a class="delete" href="javascript:void(0)">delete</a></td>   
+</script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $('#addRow').on('click', function () {
+            var trHtml = $('#tr_tmpl').html();
+            var tr = $('<tr>' + trHtml + '</tr>');
+            $('#productSpecTable').append(tr);
+
+            tr.find('a.delete').on('click', function () {
+                tr.remove();
+                reIndex();
+            });
+
+            reIndex();
+
+            function reIndex() {
+                var rows = $('tbody tr');
+                rows.each(function (i, row) {
+                    $(row).find('.userId').html(i + 1);
+                });
+            }
+
+            var action = $(tr).find('.action');
+
+            action.on('click', function () {
+                onActionHandler();
+            })
+
+            function onActionHandler() {
+                var productAttribute = $(tr).find('.productAttribute');
+                var attributeValue = $(tr).find('.attributeValue');
+                var mode = action.attr('data-mode');
+                if (mode == 'update') {
+                    action.attr('data-mode', 'edit');
+                    action.text('edit');
+
+                    // update product attribute
+                    productAttribute.text($(tr).find('.productAttribute input').val());
+
+                    // update attribute value
+                    attributeValue.text($(tr).find('.attributeValue input').val());
+
+                    // update state
+                    //state.text($('select option:selected').text());
+                }
+                else {
+                    action.attr('data-mode', 'update');
+                    action.text('update');
+
+                    //edit productAttribute
+                    var productAttribute_val = productAttribute.text();
+                    var productAttribute_input = productAttribute.html('<input type="text" value="' + productAttribute_val + '" />');
+
+                    //edit attributeValue
+                    var attributeValue_val = attributeValue.text();
+                    var attributeValue_input = attributeValue.html('<input type="text" value="' + attributeValue_val + '" />');
+
+                    $('select option:contains("' + state_val + '")').prop('selected', true);
+
+                }
+            }
+        });
+
+    });
+</script>
+
+
+    
+
+
