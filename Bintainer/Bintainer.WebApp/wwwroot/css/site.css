@@ -71,3 +71,8 @@ h1 {
     margin: 0 1em 1em 0;
     height: 50px;
 }
+.button-row {
+    display: flex; /* Enables flexbox */
+    align-items: center; /* Vertically align items in the middle */
+    justify-content: start; /* Align items at the start of the container */
+}

@@ -2,16 +2,27 @@
 @model Bintainer.WebApp.Pages.BinModel
 @{
 }
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-
-<!-- Hierarchy Select CSS -->
 <link rel="stylesheet" href="./css/hierarchy-select.min.css">
 
-
 <button class="btn btn-primary" id="addRow">Add Row</button>
-<button class="btn btn-primary" id="loadTemplate">Load</button>
+<div class="dropdown">
+    <button class="btn btn-secondary
+            dropdown-toggle" type="button"
+            id="dropdownMenuButton1"
+            data-bs-toggle="dropdown"
+            aria-expanded="false">
+        Dropdown button
+    </button>
+    <ul class="dropdown-menu pt-0"
+        aria-labelledby="dropdownMenuButton1">
+        <input type="text"
+               class="form-control border-0 border-bottom
+            shadow-none mb-2" placeholder="Search..."
+               oninput="handleInput()">
+    </ul>
+</div>
 
-    <table class="table" style="width: 500px">
+<table class="table" style="width: 500px">
     <thead>
         <tr>
             <th>Product Attribute</th>
@@ -22,15 +33,15 @@
     <tbody id="productSpecTable"></tbody>
 </table>
 
-
-
-    <script type="text/template" id="tr_tmpl">
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="./js/searchabledropdown.js"></script>
+<script type="text/template" id="tr_tmpl">
     <td class="productAttribute">1</td>
     <td class="attributeValue">Jill</td>
     <td><a data-mode='edit' class="action" href="javascript:void(0)">edit</a></td>
-    <td><a class="delete" href="javascript:void(0)">delete</a></td>   
+    <td><a class="delete" href="javascript:void(0)">delete</a></td>
 </script>
-    <script type="text/javascript">
+<script type="text/javascript">
     $(document).ready(function () {
         $('#addRow').on('click', function () {
             var trHtml = $('#tr_tmpl').html();
@@ -96,6 +107,6 @@
 </script>
 
 
-    
+
 
 
