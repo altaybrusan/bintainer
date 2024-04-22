@@ -2,111 +2,84 @@
 @model Bintainer.WebApp.Pages.BinModel
 @{
 }
-<link rel="stylesheet" href="./css/hierarchy-select.min.css">
 
-<button class="btn btn-primary" id="addRow">Add Row</button>
-<div class="dropdown">
-    <button class="btn btn-secondary
-            dropdown-toggle" type="button"
-            id="dropdownMenuButton1"
-            data-bs-toggle="dropdown"
-            aria-expanded="false">
-        Dropdown button
-    </button>
-    <ul class="dropdown-menu pt-0"
-        aria-labelledby="dropdownMenuButton1">
-        <input type="text"
-               class="form-control border-0 border-bottom
-            shadow-none mb-2" placeholder="Search..."
-               oninput="handleInput()">
-    </ul>
-</div>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    * {
+        box-sizing: border-box;
+    }
 
-<table class="table" style="width: 500px">
-    <thead>
-        <tr>
-            <th>Product Attribute</th>
-            <th>Attribute Value</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody id="productSpecTable"></tbody>
-</table>
+    body {
+        font: 16px Arial;
+    }
 
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="./js/searchabledropdown.js"></script>
-<script type="text/template" id="tr_tmpl">
-    <td class="productAttribute">1</td>
-    <td class="attributeValue">Jill</td>
-    <td><a data-mode='edit' class="action" href="javascript:void(0)">edit</a></td>
-    <td><a class="delete" href="javascript:void(0)">delete</a></td>
-</script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#addRow').on('click', function () {
-            var trHtml = $('#tr_tmpl').html();
-            var tr = $('<tr>' + trHtml + '</tr>');
-            $('#productSpecTable').append(tr);
+    /*the container must be positioned relative:*/
+    .autocomplete {
+        position: relative;
+        display: inline-block;
+    }
 
-            tr.find('a.delete').on('click', function () {
-                tr.remove();
-                reIndex();
-            });
+    input {
+        border: 1px solid transparent;
+        background-color: #f1f1f1;
+        padding: 10px;
+        font-size: 16px;
+    }
 
-            reIndex();
+        input[type=text] {
+            background-color: #f1f1f1;
+            width: 100%;
+        }
 
-            function reIndex() {
-                var rows = $('tbody tr');
-                rows.each(function (i, row) {
-                    $(row).find('.userId').html(i + 1);
-                });
+        input[type=submit] {
+            background-color: DodgerBlue;
+            color: #fff;
+            cursor: pointer;
+        }
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /*position the autocomplete items to be the same width as the container:*/
+        top: 100%;
+        left: 0;
+        right: 0;
+    }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+
+            /*when hovering an item:*/
+            .autocomplete-items div:hover {
+                background-color: #e9e9e9;
             }
 
-            var action = $(tr).find('.action');
+    /*when navigating through the items using the arrow keys:*/
+    .autocomplete-active {
+        background-color: DodgerBlue !important;
+        color: #ffffff;
+    }
+</style>
 
-            action.on('click', function () {
-                onActionHandler();
-            })
+h2>Autocomplete</h2>
 
-            function onActionHandler() {
-                var productAttribute = $(tr).find('.productAttribute');
-                var attributeValue = $(tr).find('.attributeValue');
-                var mode = action.attr('data-mode');
-                if (mode == 'update') {
-                    action.attr('data-mode', 'edit');
-                    action.text('edit');
+<p>Start typing:</p>
 
-                    // update product attribute
-                    productAttribute.text($(tr).find('.productAttribute input').val());
+<!--Make sure the form has the autocomplete function switched off:-->
+<form autocomplete="off" action="/action_page.php">
+    <div class="autocomplete" style="width:300px;">
+        <input id="myInput" type="text" name="myCountry" placeholder="Country">
+    </div>
+    <input type="submit">
+</form>
 
-                    // update attribute value
-                    attributeValue.text($(tr).find('.attributeValue input').val());
-
-                    // update state
-                    //state.text($('select option:selected').text());
-                }
-                else {
-                    action.attr('data-mode', 'update');
-                    action.text('update');
-
-                    //edit productAttribute
-                    var productAttribute_val = productAttribute.text();
-                    var productAttribute_input = productAttribute.html('<input type="text" value="' + productAttribute_val + '" />');
-
-                    //edit attributeValue
-                    var attributeValue_val = attributeValue.text();
-                    var attributeValue_input = attributeValue.html('<input type="text" value="' + attributeValue_val + '" />');
-
-                    $('select option:contains("' + state_val + '")').prop('selected', true);
-
-                }
-            }
-        });
-
-    });
+<script src="./js/autocomplete.js">
 </script>
-
-
-
-
 

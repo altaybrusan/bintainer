@@ -3,6 +3,8 @@
 @{
 }
 <link rel="stylesheet" href="./css/hierarchy-select.min.css">
+<link rel="stylesheet" href="./css/AutoComplete.css">
+
 
 <div class="container">
     <div class="row">
@@ -48,31 +50,30 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label align-items-start">Category</label>
                         <div class="col-md-4">
-                            <select class="form-control" id="category">
-                                <option class="hidden" selected disabled>Category</option>
-                                <option>What is your Birthdate?</option>
-                                <option>What is Your old Phone Number</option>
-                                <option>What is your Pet Name?</option>
-                            </select>
+                            <div class="inputGroupContainer">
+                                <div class="input-group">
+                                    <input class="form-control autocomplete-input" data-source='["Resistor","Capacitor"]' type="text" name="category" placeholder="Category">
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    
                     <div class="form-group">
                         <label class="col-md-2 control-label align-items-start">Group</label>
                         <div class="col-md-4">
-                            <select class="form-control" id="group">
-                                <option class="hidden" selected disabled>Group</option>
-                                <option>USB</option>
-                                <option>Ethernet</option>
-                                <option>CAN-Bus</option>
-                            </select>
+                            <div class="inputGroupContainer">
+                                <div class="input-group">
+                                    <input class="form-control autocomplete-input" data-source='["Usb","Ethernet","Can-bus"]' type="text" name="Group" placeholder="Group">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </fieldset>
                 <fieldset>
-                    <legend><h2>Attributes</h2></legend>
-                    
+                    <legend><h2>Attributes</h2></legend>                    
                     <div class="button-row">
-                        <button class="btn btn-primary me-2 ms-2" id="addRow">Add Row</button>
+                        <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable">Add Row</button>
                         <div class="dropdown me-2 ms-2">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                 Load template
@@ -81,10 +82,8 @@
                                 <input type="text" class="form-control border-0 border-bottom shadow-none mb-2" placeholder="Search..." oninput="handleInput()">
                             </ul>
                         </div>
-                    </div>
-
-                    
-                    <table class="table" style="width: 500px">
+                    </div>                    
+                    <table class="table" id="attributeTable">
                         <thead>
                             <tr>
                                 <th>Product Attribute</th>
@@ -93,6 +92,22 @@
                             </tr>
                         </thead>
                         <tbody id="productSpecTable"></tbody>
+                    </table>
+                </fieldset>
+                <fieldset>
+                    <legend><h2>Supplier</h2></legend>
+                    <div class="button-row">
+                        <button class="btn btn-primary me-2 ms-2" id="addSupplier">Add Row</button>
+                    </div>
+                    <table class="table" style="width: 500px">
+                        <thead>
+                            <tr>
+                                <th>Supplier</th>
+                                <th>Part Number</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="supplierPartNumberTable"></tbody>
                     </table>
                 </fieldset>
             
@@ -110,75 +125,32 @@
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="./js/searchabledropdown.js"></script>
-<script type="text/template" id="tr_tmpl">
-    <td class="productAttribute">1</td>
-    <td class="attributeValue">Jill</td>
+
+<script type="text/template" id="tr_template">
+    <td class="dtable-col1"></td>
+    <td class="dtable-col2"></td>
     <td><a data-mode='edit' class="action" href="javascript:void(0)">edit</a></td>
     <td><a class="delete" href="javascript:void(0)">delete</a></td>
-</script>
+</script> 
+
+ <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+@*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
+<script src="./js/searchabledropdown.js"></script>
+
+<script src="./js/dynamictable.js"></script>
+<script src="./js/autocomplete.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#addRow').on('click', function () {
-            var trHtml = $('#tr_tmpl').html();
-            var tr = $('<tr>' + trHtml + '</tr>');
-            $('#productSpecTable').append(tr);
-
-            tr.find('a.delete').on('click', function () {
-                tr.remove();
-                reIndex();
-            });
-
-            reIndex();
-
-            function reIndex() {
-                var rows = $('tbody tr');
-                rows.each(function (i, row) {
-                    $(row).find('.userId').html(i + 1);
-                });
-            }
-
-            var action = $(tr).find('.action');
-
-            action.on('click', function () {
-                onActionHandler();
-            })
-
-            function onActionHandler() {
-                var productAttribute = $(tr).find('.productAttribute');
-                var attributeValue = $(tr).find('.attributeValue');
-                var mode = action.attr('data-mode');
-                if (mode == 'update') {
-                    action.attr('data-mode', 'edit');
-                    action.text('edit');
-
-                    // update product attribute
-                    productAttribute.text($(tr).find('.productAttribute input').val());
-
-                    // update attribute value
-                    attributeValue.text($(tr).find('.attributeValue input').val());
-
-                    // update state
-                    //state.text($('select option:selected').text());
-                }
-                else {
-                    action.attr('data-mode', 'update');
-                    action.text('update');
-
-                    //edit productAttribute
-                    var productAttribute_val = productAttribute.text();
-                    var productAttribute_input = productAttribute.html('<input type="text" value="' + productAttribute_val + '" />');
-
-                    //edit attributeValue
-                    var attributeValue_val = attributeValue.text();
-                    var attributeValue_input = attributeValue.html('<input type="text" value="' + attributeValue_val + '" />');
-
-                    $('select option:contains("' + state_val + '")').prop('selected', true);
-
-                }
+        $('#addAttribute').on('click', function () {
+            var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
+            var table = $('#' + targetTableId); // Select the table using the ID
+            if (table.length) { // Check if the table exists
+                appendRowToTable(table); // Call the function with the table jQuery object
+            } else {
+                console.error('Table with ID "' + targetTableId + '" not found.');
             }
         });
-
+        // $('#myTable').productSpecTable();
     });
 </script>
+
