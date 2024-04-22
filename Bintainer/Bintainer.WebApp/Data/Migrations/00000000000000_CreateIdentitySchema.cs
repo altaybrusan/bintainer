@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 
-namespace PartsBinStockTool.WebApp.Data.Migrations
+namespace Bintainer.WebApp.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

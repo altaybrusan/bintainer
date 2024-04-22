@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PartsBinStockTool.WebApp.Data;
+using Bintainer.WebApp.Data;
 
 #nullable disable
 
-namespace PartsBinStockTool.WebApp.Data.Migrations
+namespace Bintainer.WebApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot

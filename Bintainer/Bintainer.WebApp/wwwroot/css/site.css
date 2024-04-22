@@ -76,3 +76,21 @@ h1 {
     align-items: center; /* Vertically align items in the middle */
     justify-content: start; /* Align items at the start of the container */
 }
+
+.card-custom {
+    display: flex;
+    flex-direction: column;
+    /*height: 100%;*/ /* Set cards to take full height */
+}
+
+.card-custom button {
+        flex: 0 0 auto; /* Allow button to grow horizontally but not vertically */
+        width: 100%; /* Make button take up complete width */
+        margin: 0 10px 0 0; /* Add margin top and bottom, adjust as needed */
+}
+
+.card-custom img {
+        max-width: 100%; /* Set maximum width to 100% of parent container */
+        max-height: 100%; /* Set maximum height to 100% of parent container */
+        object-fit: contain; /* Maintain aspect ratio of image */
+}

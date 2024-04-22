@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace PartsBinStockTool.WebApp.Data
+namespace Bintainer.WebApp.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {

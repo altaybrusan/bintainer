@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PartsBinStockTool.WebApp
+namespace Bintainer.WebApp
 {
     public class SESEmailSender : IEmailSender
     {

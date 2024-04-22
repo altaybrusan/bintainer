@@ -3,7 +3,7 @@
 @{
 }
 <link rel="stylesheet" href="./css/hierarchy-select.min.css">
-<link rel="stylesheet" href="./css/AutoComplete.css">
+<link rel="stylesheet" href="./css/autocomplete.css">
 
 
 <div class="container">
@@ -11,7 +11,7 @@
         <div class="col-md-9">
             <form class="well form-horizontal" method="post">
                 <fieldset>
-                    <legend><h2>Part</h2></legend>
+                    <legend><h2>Part</h2></legend>                    
                     <div class="form-group">
                         <label class="col-md-2 control-label align-items-start">Part Name</label>
                         <div class="col-md-4">
@@ -39,17 +39,6 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label align-items-start">Package</label>
                         <div class="col-md-4">
-                            <select class="form-control" id="package">
-                                <option class="hidden" selected disabled>Package</option>
-                                <option>What is your Birthdate?</option>
-                                <option>What is Your old Phone Number</option>
-                                <option>What is your Pet Name?</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-2 control-label align-items-start">Category</label>
-                        <div class="col-md-4">
                             <div class="inputGroupContainer">
                                 <div class="input-group">
                                     <input class="form-control autocomplete-input" data-source='["Resistor","Capacitor"]' type="text" name="category" placeholder="Category">
@@ -57,8 +46,16 @@
                             </div>
                         </div>
                     </div>
-
-                    
+                    <div class="form-group">
+                        <label class="col-md-2 control-label align-items-start">Category</label>
+                        <div class="col-md-4">
+                            <div class="inputGroupContainer">
+                                <div class="input-group">
+                                    <input class="form-control autocomplete-input" data-source='["Resistor","Capacitor"]' type="text" name="category" placeholder="Category" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
                     <div class="form-group">
                         <label class="col-md-2 control-label align-items-start">Group</label>
                         <div class="col-md-4">
@@ -66,6 +63,14 @@
                                 <div class="input-group">
                                     <input class="form-control autocomplete-input" data-source='["Usb","Ethernet","Can-bus"]' type="text" name="Group" placeholder="Group">
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label align-items-start">Keywords</label>
+                        <div class="col-md-4">
+                            <div class=" inputGroupContainer">
+                                <div class="input-group"><input id="keyWords" name="keyWords" placeholder="Keywords" class="form-control" value="" type="text"></div>
                             </div>
                         </div>
                     </div>
@@ -95,11 +100,11 @@
                     </table>
                 </fieldset>
                 <fieldset>
-                    <legend><h2>Supplier</h2></legend>
+                    <legend><h2>Suppliers</h2></legend>
                     <div class="button-row">
-                        <button class="btn btn-primary me-2 ms-2" id="addSupplier">Add Row</button>
+                        <button class="btn btn-primary me-2 ms-2" id="addSupplier" target-table="supplierTable">Add Row</button>
                     </div>
-                    <table class="table" style="width: 500px">
+                    <table class="table" id="supplierTable">
                         <thead>
                             <tr>
                                 <th>Supplier</th>
@@ -109,18 +114,27 @@
                         </thead>
                         <tbody id="supplierPartNumberTable"></tbody>
                     </table>
-                </fieldset>
-            
+                </fieldset>  
+
+                <div class="text-right">
+                    <button type="button" class="btn btn-danger">Cancel</button>
+                    <button type="button" class="btn btn-success">Create</button>
+                </div>
+                
+
+                
             </form>                      
         </div>
 
 
         <div class="col-md-3">
-            <div class="card">
-                <img src="./image/microchip.png" class="card-img-top">
+            <div class="card card-custom">
+                <button type="button" class="btn btn-secondary">Part</button>
+                <img src="./image/microchip.png" class="img-fluid" alt="part image"/>
             </div>
-            <div class="card">
-                <img src="./image/pinout.png" class="img-fluid" alt=" footpring" />
+            <div class="card card-custom">
+                <button type="button" class="btn btn-secondary">Footprint</button>
+                <img src="./image/pinout.png" class="img-fluid" alt="footpring" />
             </div>            
         </div>
     </div>
@@ -150,7 +164,16 @@
                 console.error('Table with ID "' + targetTableId + '" not found.');
             }
         });
-        // $('#myTable').productSpecTable();
+        $('#addSupplier').on('click', function () {
+            var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
+            var table = $('#' + targetTableId); // Select the table using the ID
+            if (table.length) { // Check if the table exists
+                appendRowToTable(table); // Call the function with the table jQuery object
+            } else {
+                console.error('Table with ID "' + targetTableId + '" not found.');
+            }
+        });
+
     });
 </script>
 

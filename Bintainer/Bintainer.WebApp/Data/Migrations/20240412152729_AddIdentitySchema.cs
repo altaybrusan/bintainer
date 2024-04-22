@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace PartsBinStockTool.WebApp.Data.Migrations
+namespace Bintainer.WebApp.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AddIdentitySchema : Migration
