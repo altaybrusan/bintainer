@@ -79,12 +79,15 @@
                     <legend><h2>Attributes</h2></legend>                    
                     <div class="button-row">
                         <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable">Add Row</button>
-                        <div class="dropdown me-2 ms-2">
+                        <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                 Load template
                             </button>
-                            <ul class="dropdown-menu pt-0" aria-labelledby="dropdownMenuButton1">
-                                <input type="text" class="form-control border-0 border-bottom shadow-none mb-2" placeholder="Search..." oninput="handleInput()">
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                @foreach (var item in Model.DropdownModel.Items)
+                                {
+                                    <li><a class="dropdown-item" href="#">@item</a></li>
+                                }
                             </ul>
                         </div>
                     </div>                    
@@ -161,6 +164,17 @@
             } else {
                 console.error('Table with ID "' + targetTableId + '" not found.');
             }
+        });
+
+        var dropdownItems = document.querySelectorAll('.dropdown-item');
+        var dropdownButton = document.getElementById('dropdownMenuButton1');
+
+        dropdownItems.forEach(function (item) {
+            item.addEventListener('click', function (e) {
+                e.preventDefault();
+                dropdownButton.textContent = this.textContent;
+                dropdownButton.focus();
+            });
         });
 
     });

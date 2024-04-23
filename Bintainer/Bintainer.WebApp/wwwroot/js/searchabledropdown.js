@@ -1,8 +1,10 @@
-﻿const dropdownButton = document.getElementById("dropdownMenuButton1");
+﻿const searchInput = document.getElementById('searchInput');
+const dropdownButton = document.getElementById("dropdownMenuButton1");
 
 const handleInput = () => {
-    const inputValue = document.querySelector('.form-control').value;
-    const results = ["apple", "banana", "cherry", "date", "elderberry"];
+    const inputValue = searchInput.value;
+    const dataAttribute = searchInput.getAttribute('data-source');
+    const results = JSON.parse(dataAttribute);
     const parentElement = document.querySelector(".dropdown-menu");
     const elementsToRemove = document.querySelectorAll("li");
     elementsToRemove.forEach(element => {
@@ -26,6 +28,8 @@ const populateList = (words, parentElement, highlightText = '') => {
         link.addEventListener("click", function () {
             dropdownButton.textContent = word;
             dropdownButton.focus();
+            // If you have a bootstrap dropdown, you might want to update this to change how the display behaves
+            //dropdownButton.dataset.bsOriginalTitle = word; // update this if using Bootstrap tooltips or similar
         });
         listItem.appendChild(link);
         parentElement.appendChild(listItem);
