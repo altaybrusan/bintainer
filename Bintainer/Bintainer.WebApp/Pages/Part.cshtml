@@ -79,17 +79,14 @@
                     <legend><h2>Attributes</h2></legend>                    
                     <div class="button-row">
                         <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable">Add Row</button>
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="dropdown search-dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Load template
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                @foreach (var item in Model.DropdownModel.Items)
-                                {
-                                    <li><a class="dropdown-item" href="#">@item</a></li>
-                                }
+                            <ul class="dropdown-menu pt-0">
+                                <input type="text" class="form-control border-0 border-bottom shadow-none mb-2 search-input" data-source='["Resistor","Capacitor","Transistor"]' placeholder="Search...">
                             </ul>
-                        </div>
+                        </div>                        
                     </div>                    
                     <table class="table" id="attributeTable">
                         <thead>
@@ -165,15 +162,19 @@
                 console.error('Table with ID "' + targetTableId + '" not found.');
             }
         });
+        $('.search-dropdown').each(function () {
+            var $dropdown = $(this);
+            var $input = $dropdown.find('.search-input');
+            var $menu = $dropdown.find('.dropdown-menu');
 
-        var dropdownItems = document.querySelectorAll('.dropdown-item');
-        var dropdownButton = document.getElementById('dropdownMenuButton1');
+            $input.on('input', function () {
+                var inputValue = $input.val();
+                var dataAttribute = $input.attr('data-source');
+                var results = JSON.parse(dataAttribute);
+                var matchingWords = inputValue ? results.filter(word => word.toLowerCase().includes(inputValue.toLowerCase())) : results;
 
-        dropdownItems.forEach(function (item) {
-            item.addEventListener('click', function (e) {
-                e.preventDefault();
-                dropdownButton.textContent = this.textContent;
-                dropdownButton.focus();
+                $menu.find('li').remove(); // Remove existing list items
+                populateList(matchingWords, $menu, $dropdown.find('.dropdown-toggle'));
             });
         });
 
