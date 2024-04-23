@@ -94,3 +94,12 @@ h1 {
         max-height: 100%; /* Set maximum height to 100% of parent container */
         object-fit: contain; /* Maintain aspect ratio of image */
 }
+
+div.vertical-line {
+    width: 1px; /* Line width */
+    background-color: black; /* Line color */
+    height: 100%; /* Override in-line if you want specific height. */
+    float: left; 
+    display: inline-block;
+    margin:auto
+}
