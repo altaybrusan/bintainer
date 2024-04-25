@@ -1,0 +1,90 @@
+﻿@page
+@model Bintainer.WebApp.Pages.AboutModel
+@{
+}
+
+<div class="row">
+    <div class="col-xs-12 col-sm-5">
+        <img class="img-responsive" src="./image/inventory-mid-size-marked.png" width="200%">
+    </div>
+    <div class="col-xs-12 col-sm-7">
+        <div class="row">
+            <div class="col-sm-6">
+                <h2>Inventory organization</h2>
+            </div>
+            <div class="col-sm-6">
+                <h3 class="pull-right">
+                    Inventory Section
+                </h3>
+            </div>
+        </div>
+        <p>
+            In laboratories, components are usually arranged according to their physical specifications or material applications. For instance, in an electronics laboratory, resistors are often stored in boxes that are physically placed near each other. These clusters of boxes, which are physically related to each other, are referred to as inventory sections.
+
+            In the accompanying image, there are four sections labeled as "resistors," "transistors," "regulators," and "transistors". 
+            Each section contains at least one bin. The width of the section represents the maximum number of bins that can be placed 
+            horizontally within the section, and the height represents the maximum number of boxes inside the section. However, in reality,
+            this doesn't mean that every section is filled with bins, and there may be some missing bins within each section. For example, 
+            in the side image, the width is six and the height is 18. As shown in the picture, there are four missing boxes in the section.
+        </p>
+    </div>
+    <div class="col-xs-12">
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 col-sm-5">
+        <img class="img-responsive" src="./image/bin-subspace-marked.png" width="100%">
+    </div>
+    <div class="col-xs-12 col-sm-7">
+        <div class="row">
+            <div class="col-sm-6">
+                <h2>Bin organization</h2>
+            </div>
+            <div class="col-sm-6">
+                <h3 class="pull-right">
+                    Bin Subspace
+                </h3>
+            </div>
+        </div>
+        <p>
+            Bins are containers where components are stored. Typically, each bin can be divided into 
+            sub-spaces, with each sub-space capable of holding a separate part. 
+            In the attached image, the bin is divided into two sub-spaces.
+        </p>
+    </div>
+    <div class="col-xs-12">
+        <hr />
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12 col-sm-5">
+        <img class="img-responsive" src="./image/group-marked.png" width="100%">
+    </div>
+    <div class="col-xs-12 col-sm-7">
+        <div class="row">
+            <div class="col-sm-6">
+                <h2>Group organization</h2>
+            </div>
+            <div class="col-sm-6">
+                <h3 class="pull-right">
+                    Group
+                </h3>
+            </div>
+        </div>
+        <p>
+            Parts that are logically related to each other are referred to as groups.
+            These groups may consist of components that are dispersed across different sections.
+            In electronics, components associated with a particular subsystem form a group.
+            For instance, components related to a USB circuit, such as voltage regulators, 
+            capacitors, and resistors, constitute a USB group.
+            Groups facilitate locating the position of bins within the inventory based on their application. 
+            Additionally, tracking groups can simplify checking the availability of components according to 
+            their application.
+        </p>
+    </div>
+    <div class="col-xs-12">
+        <hr />
+    </div>
+</div>
