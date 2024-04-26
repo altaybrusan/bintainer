@@ -6,7 +6,15 @@
 <link rel="stylesheet" href="./css/autocomplete.css">
 
 
-<form id="form1" runat="server">
+<form class="row g-3">
+    <div class="col-md-6">
+        <label for="orderNumber" class="form-label">Order number</label>
+        <input type="text" class="form-control" id="orderNumber">
+        <button class="btn btn-primary me-2 ms-2" id="search" target-table="supplierTable">Search</button>
+    </div>    
+</form>
+
+@* <form id="form1" runat="server">
     <div class="container">
         <h2>Order</h2>
         <table class="table" id="maintable">
@@ -108,6 +116,6 @@
             $dropdownToggle.dropdown('show');
         }
     });
-
+ *@
 </script>
 
