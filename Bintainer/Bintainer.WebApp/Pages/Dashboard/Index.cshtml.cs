@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Bintainer.WebApp.Pages.Dashboard
 {
-    public class DashboardModel : PageModel
+    public class Index : PageModel
     {
         public void OnGet()
         {
