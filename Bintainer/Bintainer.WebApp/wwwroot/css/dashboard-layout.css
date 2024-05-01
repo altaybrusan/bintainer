@@ -1,4 +1,4 @@
-html {
+/*html {
   font-size: 14px;
 }
 
@@ -72,34 +72,162 @@ h1 {
     height: 50px;
 }
 .button-row {
-    display: flex; /* Enables flexbox */
-    align-items: center; /* Vertically align items in the middle */
-    justify-content: start; /* Align items at the start of the container */
-}
+    display: flex;*/ /* Enables flexbox */
+/*align-items: center;*/ /* Vertically align items in the middle */
+/*justify-content: start;*/ /* Align items at the start of the container */
+/*}
 
 .card-custom {
     display: flex;
-    flex-direction: column;
-    /*height: 100%;*/ /* Set cards to take full height */
-}
+    flex-direction: column;*/
+/*height: 100%;*/ /* Set cards to take full height */
+/*}
 
 .card-custom button {
-        flex: 0 0 auto; /* Allow button to grow horizontally but not vertically */
-        width: 100%; /* Make button take up complete width */
-        margin: 0 10px 0 0; /* Add margin top and bottom, adjust as needed */
-}
+        flex: 0 0 auto;*/ /* Allow button to grow horizontally but not vertically */
+/*width: 100%;*/ /* Make button take up complete width */
+/*margin: 0 10px 0 0;*/ /* Add margin top and bottom, adjust as needed */
+/*}
 
 .card-custom img {
-        max-width: 100%; /* Set maximum width to 100% of parent container */
-        max-height: 100%; /* Set maximum height to 100% of parent container */
-        object-fit: contain; /* Maintain aspect ratio of image */
-}
+        max-width: 100%;*/ /* Set maximum width to 100% of parent container */
+/*max-height: 100%;*/ /* Set maximum height to 100% of parent container */
+/*object-fit: contain;*/ /* Maintain aspect ratio of image */
+/*}
 
 div.vertical-line {
-    width: 1px; /* Line width */
-    background-color: black; /* Line color */
-    height: 100%; /* Override in-line if you want specific height. */
-    float: left; 
+    width: 1px;*/ /* Line width */
+/*background-color: black;*/ /* Line color */
+/*height: 100%;*/ /* Override in-line if you want specific height. */
+/*float: left; 
     display: inline-block;
     margin:auto
+}*/
+
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    background-color: #fff;
+    margin: 0;
+    font-family: "Lato", sans-serif;
+}
+
+@media (min-width: 991.98px) {
+    main {
+        padding-left: 240px;
+    }
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    padding: 58px 0 0; /* Height of navbar */
+    box-shadow: 0 2px 5px 0 rgb(0 0 0 / 5%), 0 2px 10px 0 rgb(0 0 0 / 5%);
+    width: 240px;
+    z-index: 600;
+}
+
+@media (max-width: 991.98px) {
+    .sidebar {
+        width: 100%;
+    }
+}
+
+.sidebar .active {
+    border-radius: 5px;
+    box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
+}
+
+.sidebar-sticky {
+    position: relative;
+    top: 0;
+    height: calc(100vh - 48px);
+    padding-top: 0.5rem;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+}
+
+
+.sidebar {
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    background-color: #f1f1f1;
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+}
+
+.sidebar a {
+        display: block;
+        color: black;
+        padding: 16px;
+        text-decoration: none;
+    }
+
+.sidebar a.active {
+            background-color: #04AA6D;
+            color: white;
+        }
+
+.sidebar a.active:hover {
+                background-color: #04AA6D; /* Keep the same color when hovered */
+            }
+
+.sidebar a.active:active {
+                background-color: green; /* Change color when clicked */
+            }
+
+.sidebar a:hover:not(.active) {
+            background-color: #555;
+            color: white;
+        }
+
+div.content {
+    margin-left: 200px;
+    padding: 1px 16px;
+    height: 1000px;
+}
+
+@media screen and (max-width: 700px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+        .sidebar a {
+            float: left;
+        }
+
+    div.content {
+        margin-left: 0;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .sidebar a {
+        text-align: center;
+        float: none;
+    }
 }
