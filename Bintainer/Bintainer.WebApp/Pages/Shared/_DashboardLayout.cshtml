@@ -26,11 +26,12 @@
     
     <div class="sidebar">
         <a class="@(Context.Request.Path == "/Index" ? "active" : "")" href="/Index"><i class="fa fa-home"></i>&nbsp;Home</a>
-        <a class="@(Context.Request.Path == "/dashboard/dashboard" ? "active" : "")" href="/dashboard/dashboard">Part</a>
-        <a class="@(Context.Request.Path == "/contact" ? "active" : "")" href="/contact">Inventory</a>
-        <a class="@(Context.Request.Path == "/about" ? "active" : "")" href="/about">Order</a>
+       
         @if (SignInManager.IsSignedIn(User))
         {
+            <a class="@(Context.Request.Path == "/dashboard/dashboard" ? "active" : "")" href="/dashboard/dashboard">Part</a>
+            <a class="@(Context.Request.Path == "/contact" ? "active" : "")" href="/contact">Inventory</a>
+            <a class="@(Context.Request.Path == "/about" ? "active" : "")" href="/about">Order</a>
             <a class="@(Context.Request.Path == "/contact" ? "active" : "")" href="/contact">Inventory</a>
             <a class="@(Context.Request.Path == "/about" ? "active" : "")" href="/about">Order</a>
         }
@@ -47,14 +48,7 @@
         </div>
     </div>
    
-@*     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - Bintainer - <a asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
-    </footer> *@
-
-
-     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="~/js/searchabledropdown.js"></script>
