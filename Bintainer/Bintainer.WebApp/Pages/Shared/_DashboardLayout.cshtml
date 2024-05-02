@@ -15,32 +15,35 @@
     <meta name="viewport" content="width=device-width" />
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link href="./css/dashboard-layout.css" rel="stylesheet " asp-append-version="true">
-    <link rel="stylesheet" href="~/Bintainer.WebApp.styles.css" asp-append-version="true" />
+    <link href="~/css/dashboard-layout.css" rel="stylesheet " asp-append-version="true">
+@*     <link rel="stylesheet" href="~/Bintainer.WebApp.styles.css" asp-append-version="true" /> *@
     
-    <link href="./lib/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <link href="./lib/animate/animate.min.css" rel="stylesheet">
+    <link href="~/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="~/lib/animate/animate.min.css" rel="stylesheet">
     
 </head>
 <body>
     
     <div class="sidebar">
-        <a class="active" href="./Index"><i class="fa fa-home"></i> Home</a>
+        <a class="@(Context.Request.Path == "/Index" ? "active" : "")" href="/Index"><i class="fa fa-home"></i>&nbsp;Home</a>
+        <a class="@(Context.Request.Path == "/dashboard/dashboard" ? "active" : "")" href="/dashboard/dashboard">Part</a>
+        <a class="@(Context.Request.Path == "/contact" ? "active" : "")" href="/contact">Inventory</a>
+        <a class="@(Context.Request.Path == "/about" ? "active" : "")" href="/about">Order</a>
         @if (SignInManager.IsSignedIn(User))
         {
-            <a href="#news">Part</a>
-            <a href="#contact">Inventory</a>
-            <a href="#about">Order</a>
-        }        
-        <a href="#about">Login</a>
+            <a class="@(Context.Request.Path == "/contact" ? "active" : "")" href="/contact">Inventory</a>
+            <a class="@(Context.Request.Path == "/about" ? "active" : "")" href="/about">Order</a>
+        }
+        <a class="@(Context.Request.Path == "/Identity/Account/Login" ? "active" : "")" asp-area="Identity" asp-page="/Account/Login">Login</a>
     </div>
+
 
     <div class="content">
         <div class="container">
-            <partial name="_LoginPartial" />
-            <main role="main" class="pb-3">
-                @RenderBody()
-            </main>
+            @RenderBody()
+@*             <main role="main" class="pb-3">
+                
+            </main> *@
         </div>
     </div>
    
@@ -54,9 +57,9 @@
      <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="./js/searchabledropdown.js"></script>
-    <script src="./js/dynamictable.js"></script>
-    <script src="./js/autocomplete.js"></script>
+    <script src="~/js/searchabledropdown.js"></script>
+    <script src="~/js/dynamictable.js"></script>
+    <script src="~/js/autocomplete.js"></script>
     <script>
         const sidebarLinks = document.querySelectorAll('.sidebar a');
         sidebarLinks.forEach(link => {
