@@ -1,4 +1,7 @@
-﻿@inject SignInManager<IdentityUser> signInManager;
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,20 +26,24 @@
     
     <div class="sidebar">
         <a class="active" href="./Index"><i class="fa fa-home"></i> Home</a>
-        <a href="#news">Part</a>
-        <a href="#contact">Inventory</a>
-        <a href="#about">Order</a>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <a href="#news">Part</a>
+            <a href="#contact">Inventory</a>
+            <a href="#about">Order</a>
+        }        
         <a href="#about">Login</a>
     </div>
 
     <div class="content">
         <div class="container">
+            <partial name="_LoginPartial" />
             <main role="main" class="pb-3">
                 @RenderBody()
             </main>
         </div>
     </div>
-
+   
 @*     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2024 - Bintainer - <a asp-area="" asp-page="/Privacy">Privacy</a>
