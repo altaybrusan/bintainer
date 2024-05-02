@@ -71,20 +71,20 @@ body {
     text-decoration: none;
 }
 
-    .sidebar a.active {
+.sidebar a.active {
         background-color: #04AA6D;
         color: white;
     }
 
-        .sidebar a.active:hover {
+.sidebar a.active:hover {
             background-color: #04AA6D; /* Keep the same color when hovered */
         }
 
-        .sidebar a.active:active {
+.sidebar a.active:active {
             background-color: green; /* Change color when clicked */
         }
 
-    .sidebar a:hover:not(.active) {
+.sidebar a:hover:not(.active) {
         background-color: #555;
         color: white;
     }
@@ -102,11 +102,9 @@ div.content {
         height: auto;
         position: relative;
     }
-
-        .sidebar a {
+    .sidebar a {
             float: left;
         }
-
     div.content {
         margin-left: 0;
     }
