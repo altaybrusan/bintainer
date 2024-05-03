@@ -31,11 +31,10 @@
        
         @if (SignInManager.IsSignedIn(User))
         {
-            <a class="@(Context.Request.Path == "/dashboard/dashboard" ? "active" : "")" href="/dashboard/dashboard">Part</a>
-            <a class="@(Context.Request.Path == "/contact" ? "active" : "")" href="/contact">Inventory</a>
-            <a class="@(Context.Request.Path == "/about" ? "active" : "")" href="/about">Order</a>
-            <a class="@(Context.Request.Path == "/contact" ? "active" : "")" href="/contact">Inventory</a>
-            <a class="@(Context.Request.Path == "/about" ? "active" : "")" href="/about">Order</a>
+            <a class="@(Context.Request.Path == "/dashboard/part" ? "active" : "")" asp-page="/dashboard/part">Part</a>
+            <a class="@(Context.Request.Path == "/dashboard/component" ? "active" : "")" asp-page="/dashboard/component">Component</a>
+            <a class="@(Context.Request.Path == "/dashboard/inventory" ? "active" : "")" asp-page="/dashboard/inventory">Inventory</a>
+            <a class="@(Context.Request.Path == "/dashboard/order" ? "active" : "")" asp-page="/dashboard/order">Order</a>
             <a class="@(Context.Request.Path == "/Identity/Account/Logout" ? "active" : "")" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })">Logout</a>
         }
         else
