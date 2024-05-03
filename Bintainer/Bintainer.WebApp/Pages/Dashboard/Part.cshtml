@@ -2,91 +2,64 @@
 @model PartModel
 @{
 }
-<link rel="stylesheet" href="./css/hierarchy-select.min.css">
-<link rel="stylesheet" href="./css/autocomplete.css">
 
+<link rel="stylesheet" href="~/css/hierarchy-select.min.css">
+<link rel="stylesheet" href="~/css/autocomplete.css">
 
 <div class="container">
     <div class="row">
         <div class="col-md-9">
             <form class="well form-horizontal" method="post">
                 <fieldset>
-                    <legend><h2>Part</h2></legend>                    
-                    <div class="form-group">
-                        <label class="col-md-2 control-label align-items-start">Part Name</label>
-                        <div class="col-md-4">
-                            <div class=" inputGroupContainer">
-                                <div class="input-group"><input id="partName" name="partName" placeholder="Part Name" class="form-control" required="true" value="" type="text"></div>
+                    <legend><h2>Part</h2></legend>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Part Name</label>
+                                <input id="partName" name="partName" placeholder="Part Name" class="form-control" required="true" type="text">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Description</label>
+                                <input id="description" name="description" placeholder="Description" class="form-control" required="true" type="text">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Label</label>
+                                <input id="label" name="label" placeholder="Label" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Package</label>
+                                <input class="form-control autocomplete-input" data-source='["Resistor","Capacitor"]' type="text" name="package" placeholder="Package">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Category</label>
+                                <input class="form-control autocomplete-input" data-source='["Resistor","Capacitor"]' type="text" name="category" placeholder="Category">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Group</label>
+                                <input class="form-control autocomplete-input" data-source='["Usb","Ethernet","Can-bus"]' type="text" name="group" placeholder="Group">
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-md-2 control-label align-items-start">Description</label>
-                        <div class="col-md-4">
-                            <div class=" inputGroupContainer">
-                                <div class="input-group"><input id="description" name="description" placeholder="Description" class="form-control" required="true" value="" type="text"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-2 control-label align-items-start">Label</label>
-                        <div class="col-md-4">
-                            <div class=" inputGroupContainer">
-                                <div class="input-group"><input id="label" name="label" placeholder="Label" class="form-control" value="" type="text"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-2 control-label align-items-start">Package</label>
-                        <div class="col-md-4">
-                            <div class="inputGroupContainer">
-                                <div class="input-group">
-                                    <input class="form-control autocomplete-input" data-source='["Resistor","Capacitor"]' type="text" name="category" placeholder="Category">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-2 control-label align-items-start">Category</label>
-                        <div class="col-md-4">
-                            <div class="inputGroupContainer">
-                                <div class="input-group">
-                                    <input class="form-control autocomplete-input" data-source='["Resistor","Capacitor"]' type="text" name="category" placeholder="Category" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>                    
-                    <div class="form-group">
-                        <label class="col-md-2 control-label align-items-start">Group</label>
-                        <div class="col-md-4">
-                            <div class="inputGroupContainer">
-                                <div class="input-group">
-                                    <input class="form-control autocomplete-input" data-source='["Usb","Ethernet","Can-bus"]' type="text" name="Group" placeholder="Group">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-2 control-label align-items-start">Keywords</label>
-                        <div class="col-md-4">
-                            <div class=" inputGroupContainer">
-                                <div class="input-group"><input id="keyWords" name="keyWords" placeholder="Keywords" class="form-control" value="" type="text"></div>
-                            </div>
-                        </div>
-                    </div>
-                </fieldset>                               
+                </fieldset>
                 <fieldset>
-                    <legend><h2>Attributes</h2></legend>                    
+                    <legend><h2>Attributes</h2></legend>
+                    <hr />
                     <div class="button-row">
-                        <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable">Add Row</button>
-                        <div class="dropdown search-dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Load template
-                            </button>
-                            <ul class="dropdown-menu pt-0">
-                                <input type="text" class="form-control border-0 border-bottom shadow-none mb-2 search-input" data-source='["Resistor","Capacitor","Transistor"]' placeholder="Search...">
-                            </ul>
+                        <div class="button-row" style="display: flex;">
+                            <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable">Add Row</button>
+                            <div class="dropdown search-dropdown" style="padding: 5px 10px;">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Load template
+                                </button>
+                                <ul class="dropdown-menu pt-0">
+                                    <input type="text" class="form-control border-0 border-bottom shadow-none mb-2 search-input" data-source='["Resistor","Capacitor","Transistor"]' placeholder="Search...">
+                                </ul>
+                            </div>
                         </div>
+
                         <div class="vertical-line" style="height: 35px;"></div>
                         <label class="control-label align-items-start">Save as</label>
                         <i class="bi bi-grip-vertical"></i>
@@ -158,11 +131,11 @@
         <div class="col-md-3">
             <div class="card card-custom">
                 <button type="button" class="btn btn-secondary">Part</button>
-                <img src="./image/microchip.png" class="img-fluid" alt="part image"/>
+                <img src="~/image/microchip.png" class="img-fluid" alt="part image"/>
             </div>
             <div class="card card-custom">
                 <button type="button" class="btn btn-secondary">Footprint</button>
-                <img src="./image/pinout.png" class="img-fluid" alt="footpring" />
+                <img src="~/image/pinout.png" class="img-fluid" alt="footpring" />
             </div>            
         </div>
     </div>
