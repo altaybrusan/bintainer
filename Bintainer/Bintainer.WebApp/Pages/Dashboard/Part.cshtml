@@ -5,6 +5,12 @@
 
 <link rel="stylesheet" href="~/css/hierarchy-select.min.css">
 <link rel="stylesheet" href="~/css/autocomplete.css">
+<style>
+    ::placeholder {
+        font-size: 12px;        
+        font-style: italic;
+    }
+</style>
 
 <div class="container">
     <div class="row">
@@ -17,15 +23,15 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Part Name</label>
-                                <input id="partName" name="partName" placeholder="Part Name" class="form-control" required="true" type="text">
+                                <input id="partName" name="partName" placeholder="e.g., 2N2222A" class="form-control" required="required" type="text">
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Description</label>
-                                <input id="description" name="description" placeholder="Description" class="form-control" required="true" type="text">
+                                <input id="description" name="description" placeholder="e.g., TRANSISTOR DIS.800mA 50V NPN TO-18" class="form-control" required="required" type="text">
                             </div>
                             <div class="form-group">
-                                <label class="control-label">Label</label>
-                                <input id="label" name="label" placeholder="Label" class="form-control" type="text">
+                                <label class="control-label">Bin Label</label>
+                                <input id="label" name="label" placeholder="e.g., 2N2222" class="form-control" type="text">
                             </div>
                         </div>
                         <div class="col-md-6">
