@@ -91,15 +91,16 @@
                 <fieldset>
                     <legend><h2>Attributes</h2></legend>
                     <hr />
-                    <div class="button-row" style="">
-                        <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable">Add Row</button>
+                    <div class="button-row align-items-start">
+                        <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable" style="height:30px">Add Row</button>
                         <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
                             <option selected>Attributes</option>
                             <option value="1">SMD Resistor</option>
                             <option value="2">THT Transistor</option>
                             <option value="3">SMD Microcontroller</option>
                         </select>    
-                    </div>                    
+                    </div>
+                    <div style="margin-bottom: 20px;"></div>
                     <table class="table" id="attributeTable">
                         <thead>
                             <tr>
@@ -204,7 +205,8 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#addAttribute').on('click', function () {
+        $('#addAttribute').on('click', function (event) {
+            event.preventDefault(); // Prevent default form submission behavior
             var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
             var table = $('#' + targetTableId); // Select the table using the ID
             if (table.length) { // Check if the table exists
