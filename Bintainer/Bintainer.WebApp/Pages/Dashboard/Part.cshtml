@@ -64,29 +64,14 @@
                 <fieldset>
                     <legend><h2>Attributes</h2></legend>
                     <hr />
-                    <div class="button-row">
-                        <div class="button-row" style="display: flex;">
-                            <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable">Add Row</button>
-                            <div class="dropdown search-dropdown" style="padding: 5px 10px;">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Load template
-                                </button>
-                                <ul class="dropdown-menu pt-0">
-                                    <input type="text" class="form-control border-0 border-bottom shadow-none mb-2 search-input" data-source='["Resistor","Capacitor","Transistor"]' placeholder="Search...">
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="vertical-line" style="height: 35px;"></div>
-                        <label class="control-label align-items-start">Save as</label>
-                        <i class="bi bi-grip-vertical"></i>
-                        <div class="col-md-4">
-                            <div class=" inputGroupContainer">
-                                <div class="input-group"><input id="templateName" name="templateName" class="form-control" value="" type="text"></div>
-                            </div>
-                        </div>
-
-
+                    <div class="button-row" style="display: flex; width:fit-content;">
+                        <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable">Add Row</button>
+                        <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                            <option selected>Attribute template</option>
+                            <option value="1">SMD Resistor</option>
+                            <option value="2">THT Transistor</option>
+                            <option value="3">SMD Microcontroller</option>
+                        </select>    
                     </div>                    
                     <table class="table" id="attributeTable">
                         <thead>
