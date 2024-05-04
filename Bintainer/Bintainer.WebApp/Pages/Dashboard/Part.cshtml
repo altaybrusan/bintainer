@@ -12,12 +12,30 @@
         font-style: italic;
     }
 
-    .input-sharp {
-        height: 30px; /* Reduced height */
-        border-radius: 0; /* Sharp corners */
-        border: 1px solid #ced4da; /* Similar to default Bootstrap styling for consistency */
-        color: #002060;
+    .button-row {
+        display: flex;
+        align-items: center; /* Vertically center content */
+        height: 30px; /* Set height to 30px */
     }
+
+        /* Style for the button inside .button-row */
+        .button-row .btn {
+            border-radius: 0; /* Sharp corners for button */
+            margin-right: 10px; /* Add margin between button and select */
+            font-size: 14px; /* Reduce font size */
+        }
+
+        /* Style for the select inside .button-row */
+        .button-row select {
+            height: 100%; /* Fill the height of the .button-row */
+            border-radius: 0; /* Sharp corners for select */
+            border: none; /* Remove default border */
+            padding: 5px; /* Adjust padding */
+            font-size: 14px; /* Reduce font size */
+            width: max-content; /* Fit width to content */
+        } 
+
+
 
 </style>
 
@@ -64,10 +82,10 @@
                 <fieldset>
                     <legend><h2>Attributes</h2></legend>
                     <hr />
-                    <div class="button-row" style="display: flex; width:fit-content;">
+                    <div class="button-row" style="">
                         <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable">Add Row</button>
                         <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-                            <option selected>Attribute template</option>
+                            <option selected>Attributes</option>
                             <option value="1">SMD Resistor</option>
                             <option value="2">THT Transistor</option>
                             <option value="3">SMD Microcontroller</option>
