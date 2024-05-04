@@ -5,6 +5,46 @@
 
 <link rel="stylesheet" href="~/css/hierarchy-select.min.css">
 <link rel="stylesheet" href="~/css/autocomplete.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/js/bootstrap.bundle.min.js" type="module"></script> 
+<script type="module">
+    import Autocomplete from "https://cdn.jsdelivr.net/gh/lekoala/bootstrap5-autocomplete@master/autocomplete.js";
+    const opts = {
+        onSelectItem: console.log,
+    };
+    var src = [];
+    for (let i = 0; i < 50; i++) {
+        src.push({
+            title: "Option " + i,
+            id: "opt" + i,
+            data: {
+                key: i,
+            },
+        });
+    }
+    Autocomplete.init("input.autocomplete", {
+        items: src,
+        valueField: "id",
+        labelField: "title",
+        highlightTyped: true,
+        onSelectItem: console.log,
+    });
+    // We can use regular objects as source and customize label
+    // new Autocomplete(document.getElementById("autocompleteRegularInput"), {
+    //     items: {
+    //         opt_some: "Some",
+    //         opt_value: "Value",
+    //         opt_here: "Here is a very long element that should be truncated",
+    //         opt_dia: "çaça"
+    //     },
+    //     onRenderItem: (item, label) => {
+    //         return label + " (" + item.value + ")";
+    //     },
+    // });
+    // new Autocomplete(document.getElementById("autocompleteDatalist"), opts);
+    // new Autocomplete(document.getElementById("autocompleteRemote"), opts);
+    // new Autocomplete(document.getElementById("autocompleteLiveRemote"), opts);
+</script>
+
 <style>
     ::placeholder {
         font-size: 12px;        
@@ -45,7 +85,8 @@
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Group</label>
-                                <input class="form-control autocomplete-input" data-source='["Usb","Ethernet","Can-bus"]' type="text" name="group" placeholder="Group">
+                                @* <input class="form-control autocomplete-input" data-source='["Usb","Ethernet","Can-bus"]' type="text" name="group" placeholder="Group"> *@
+                                <input type="text" class="form-control autocomplete" id="autocompleteInput" placeholder="Type something" />                                
                             </div>
                         </div>
                     </div>
@@ -153,6 +194,7 @@
     <td><a data-mode='edit' class="action" href="javascript:void(0)">edit</a></td>
     <td><a class="delete" href="javascript:void(0)">delete</a></td>
 </script> 
+
 
 <script type="text/javascript">
     $(document).ready(function () {

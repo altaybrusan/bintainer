@@ -1,28 +1,23 @@
-﻿
-/*the container must be positioned relative:*/
+﻿/*the container must be positioned relative:*/
 .autocomplete {
     position: relative;
     display: inline-block;
 }
-
 input {
     border: 1px solid transparent;
     background-color: #f1f1f1;
     padding: 10px;
     font-size: 16px;
 }
-
-    input[type=text] {
+input[type=text] {
         background-color: #f1f1f1;
         width: 100%;
     }
-
-    input[type=submit] {
+input[type=submit] {
         background-color: DodgerBlue;
         color: #fff;
         cursor: pointer;
     }
-
 .autocomplete-items {
     position: absolute;
     border: 1px solid #d4d4d4;
@@ -34,21 +29,52 @@ input {
     left: 0;
     right: 0;
 }
-
-    .autocomplete-items div {
+.autocomplete-items div {
         padding: 10px;
         cursor: pointer;
         background-color: #fff;
         border-bottom: 1px solid #d4d4d4;
     }
-
-        /*when hovering an item:*/
-        .autocomplete-items div:hover {
+/*when hovering an item:*/
+.autocomplete-items div:hover {
             background-color: #e9e9e9;
         }
-
 /*when navigating through the items using the arrow keys:*/
 .autocomplete-active {
     background-color: DodgerBlue !important;
     color: #ffffff;
 }
+/*-------------------------------------------------
+/* highlightTyped use mark */
+.autocomplete-menu mark {
+    text-decoration: underline;
+    background: none;
+    color: currentColor;
+    padding: 0;
+}
+/* Optional nicer scrollbars */
+.autocomplete-menu {
+    --scroller-color: 0, 0%;
+    --scroller-color-lightness: 80%;
+    --scroller-bg-lightness: 90%;
+    --scroller-hover-factor: 0.8;
+    --scroller-thumb: hsl(var(--scroller-color), var(--scroller-color-lightness));
+    /* Replicate hover for webkit */
+    --scroller-thumb-hover: hsl(var(--scroller-color), calc(var(--scroller-color-lightness) * var(--scroller-hover-factor)));
+    --scroller-background: hsl(var(--scroller-color), calc(var(--scroller-bg-lightness)));
+    scrollbar-color: var(--scroller-thumb) var(--scroller-background);
+    scrollbar-width: thin;
+}
+.autocomplete-menu::-webkit-scrollbar {
+        width: 8px;
+}
+.autocomplete-menu::-webkit-scrollbar-track {
+        background: var(--scroller-background);
+}
+.autocomplete-menu::-webkit-scrollbar-thumb {
+        background: var(--scroller-thumb);
+}
+.autocomplete-menu::-webkit-scrollbar-thumb:hover {
+            background: var(--scroller-thumb-hover);
+}
+
