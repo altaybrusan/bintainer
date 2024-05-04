@@ -120,3 +120,16 @@ div.content {
         margin-left: 140px; /* Adjust content margin to accommodate sidebar */
     }
 }
+
+.input-sharp {
+    height: 30px; /* Reduced height */
+    border-radius: 0; /* Sharp corners */
+    border: 1px solid #ced4da; /* Custom border color */
+    background-color: #ffffff; /* Background color */
+    color: #002060; /* Text color */
+}
+
+    .input-sharp:focus {
+        border-color: #0062cc; /* Focus border color */
+        box-shadow: 0 0 0 0.2rem rgba(0, 98, 204, 0.25); /* Focus glow effect */
+    }
