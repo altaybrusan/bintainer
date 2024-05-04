@@ -88,6 +88,7 @@
                         </div>
                     </div>
                 </fieldset>
+                <div class="mb-4"></div>
                 <fieldset>
                     <legend><h2>Attributes</h2></legend>
                     <hr />
@@ -112,9 +113,11 @@
                         <tbody id="productSpecTable"></tbody>
                     </table>
                 </fieldset>
+                <div class="mb-4"></div>
                 <fieldset>
                     <legend><h2>Suppliers</h2></legend>
-                    <div class="button-row">
+                    <hr />
+                    <div class="button-row mb-4">
                         <button class="btn btn-primary me-2 ms-2" id="addSupplier" target-table="supplierTable">Add Row</button>
                     </div>
                     <table class="table" id="supplierTable">
@@ -130,31 +133,36 @@
                 </fieldset>
                 <fieldset>
                     <legend><h2>Order</h2></legend>
+                    <hr />
                     <div class="form-group">
-                        <label class="col-md-2 control-label align-items-start">Order Number</label>
-                        <div class="col-md-4">
-                            <div class=" inputGroupContainer">
-                                <div class="input-group"><input id="order" name="order" placeholder="Order number" class="form-control" value="" type="text"></div>
+                        <div class="row">
+                            <label class="col-md-2 control-label align-items-start">Order Number</label>
+                            <div class="col-md-4">
+                                <div class=" inputGroupContainer">
+                                    <div class="input-group"><input id="order" name="order" placeholder="Order number" class="form-control  input-sharp" value="" type="text"></div>
+                                </div>
+                            </div>
+                            <label class="col-md-2 control-label align-items-start">Quantity</label>
+                            <div class="col-md-4">
+                                <div class=" inputGroupContainer">
+                                    <div class="input-group"><input id="orderQuantity" name="ordarQuantity" placeholder="Quantity" class="form-control  input-sharp" value="" type="text"></div>
+                                </div>
                             </div>
                         </div>
-                        <label class="col-md-2 control-label align-items-start">Quantity</label>
-                        <div class="col-md-4">
-                            <div class=" inputGroupContainer">
-                                <div class="input-group"><input id="orderQuantity" name="ordarQuantity" placeholder="Quantity" class="form-control" value="" type="text"></div>
+                        <div class="row">
+                            <label class="col-md-2 control-label align-items-start">Order date</label>
+                            <div class="col-md-4">
+                                <div class=" inputGroupContainer">
+                                    <div class="input-group"><input id="orderDate" name="orderDate" placeholder="Order date" class="form-control  input-sharp" value="" type="date"></div>
+                                </div>
                             </div>
-                        </div>
-                        <label class="col-md-2 control-label align-items-start" style="margin:10px 0 0 0">Order date</label>
-                        <div class="col-md-4">
-                            <div class=" inputGroupContainer" style="margin:10px 0 0 0">
-                                <div class="input-group"><input id="orderDate" name="orderDate" placeholder="Order date" class="form-control" value="" type="date"></div>
-                            </div>
-                        </div>
+                        </div>                        
                     </div>
                 </fieldset>
 
-                <div class="text-right">
-                    <button type="button" class="btn btn-danger">Cancel</button>
-                    <button type="button" class="btn btn-success">Create</button>
+                <div class="button-row align-items-end justify-content-end mt-5">
+                        <button type="button" class="btn btn-danger">Cancel</button>
+                        <button type="button" class="btn btn-success">Create</button>
                 </div>
             </form>                      
         </div>
@@ -205,6 +213,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        // Call the function initially
         $('#addAttribute').on('click', function (event) {
             event.preventDefault(); // Prevent default form submission behavior
             var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
@@ -215,7 +224,8 @@
                 console.error('Table with ID "' + targetTableId + '" not found.');
             }
         });
-        $('#addSupplier').on('click', function () {
+        $('#addSupplier').on('click', function (event) {
+            event.preventDefault();
             var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
             var table = $('#' + targetTableId); // Select the table using the ID
             if (table.length) { // Check if the table exists
