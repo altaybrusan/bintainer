@@ -12,31 +12,40 @@
         font-style: italic;
     }
 
+    .input-sharp {
+        height: 30px; /* Reduced height */
+        border-radius: 0; /* Sharp corners */
+        border: 1px solid #ced4da; /* Custom border color */
+        background-color: #ffffff; /* Background color */
+        color: #002060; /* Text color */
+    }
+
+    .input-sharp:focus {
+        border-color: #0062cc; /* Focus border color */
+        box-shadow: 0 0 0 0.2rem rgba(0, 98, 204, 0.25); /* Focus glow effect */
+    }
+
+
     .button-row {
         display: flex;
         align-items: center; /* Vertically center content */
         height: 30px; /* Set height to 30px */
-    }
-
-        /* Style for the button inside .button-row */
-        .button-row .btn {
+    }    
+    /* Style for the button inside .button-row */
+    .button-row .btn {
             border-radius: 0; /* Sharp corners for button */
             margin-right: 10px; /* Add margin between button and select */
             font-size: 14px; /* Reduce font size */
-        }
-
-        /* Style for the select inside .button-row */
-        .button-row select {
+    }
+    /* Style for the select inside .button-row */
+    .button-row select {
             height: 100%; /* Fill the height of the .button-row */
             border-radius: 0; /* Sharp corners for select */
             border: none; /* Remove default border */
             padding: 5px; /* Adjust padding */
             font-size: 14px; /* Reduce font size */
             width: max-content; /* Fit width to content */
-        } 
-
-
-
+    }
 </style>
 
 <div class="container">
