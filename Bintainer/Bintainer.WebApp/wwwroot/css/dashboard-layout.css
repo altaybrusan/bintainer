@@ -1,17 +1,25 @@
+/* Define base font size */
 html {
     font-size: 14px;
 }
 
+/* Increase font size on larger screens */
 @media (min-width: 768px) {
     html {
         font-size: 16px;
     }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+/* Style focus states for various elements */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
+/* Set base styles for the entire page */
 html {
     position: relative;
     min-height: 100%;
@@ -21,50 +29,51 @@ body {
     background-color: #fff;
     margin: 0;
     font-family: "Lato", sans-serif;
-    overflow: hidden;
 }
 
+/* Adjust main content area padding when sidebar is present */
 @media (min-width: 991.98px) {
     main {
         padding-left: 240px;
     }
 }
 
-
+/* Sidebar styles */
 .sidebar {
     position: fixed;
     top: 0;
-    bottom: 0;
     left: 0;
-    padding: 58px 0 0; /* Height of navbar */
+    padding-top: 58px; /* Height of navbar */
     box-shadow: 0 2px 5px 0 rgb(0 0 0 / 5%), 0 2px 10px 0 rgb(0 0 0 / 5%);
-    width: 240px;
+    width: 140px;
     z-index: 600;
     background-color: #808080;
-
+    height: 100%; /* Full height by default */
+    overflow-y: auto; /* Allow sidebar to scroll if content exceeds */
 }
 
-@media (max-width: 991.98px) {
-    .sidebar {
-        width: 100%;
+    /* Show the sidebar when .show class is applied */
+    .sidebar.show {
+        height: auto; /* Allow sidebar to expand based on its content */
     }
-}
 
-.sidebar .active {
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-    box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
-}
+    /* Rounded corners for active sidebar item */
+    .sidebar .active {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+        box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
+    }
 
+/* Sticky sidebar for scrolling */
 .sidebar-sticky {
     position: relative;
     top: 0;
-    height: calc(100vh - 48px);
+    height: calc(100vh - 58px); /* Adjusted height to account for navbar */
     padding-top: 0.5rem;
-    overflow-x: hidden;
-    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content */
 }
 
+/* Style links in the sidebar */
 .sidebar a {
     display: block;
     color: black;
@@ -72,49 +81,42 @@ body {
     text-decoration: none;
 }
 
-.sidebar a.active {
+    /* Active and hover states for sidebar links */
+    .sidebar a.active {
         background-color: #04AA6D;
         color: white;
     }
 
-.sidebar a.active:hover {
-            background-color: #04AA6D; /* Keep the same color when hovered */
+        .sidebar a.active:hover,
+        .sidebar a:hover:not(.active) {
+            background-color: #555;
+            color: white;
         }
 
-.sidebar a.active:active {
-            background-color: green; /* Change color when clicked */
-        }
-
-.sidebar a:hover:not(.active) {
-        background-color: #555;
-        color: white;
-    }
-
+/* Main content area styles */
 div.content {
-    margin-left: 200px;
+    margin-left: 140px; /* Adjusted to match sidebar width */
     padding: 1px 16px;
-    height: 100vh;
+    min-height: 100vh; /* Set minimum height to fill the screen */
     background-color: #d7d7d7; /* Light gray */
-    overflow-y: auto;
+    overflow-y: auto; /* Allow content to scroll if needed */
 }
 
+/* Responsive adjustments for smaller screens */
 @media screen and (max-width: 700px) {
     .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
+        width: 140px; /* Show sidebar with minimum width */
+        height: auto; /* Allow sidebar height to adjust */
+        position: fixed; /* Fix sidebar position */
+        z-index: 601; /* Ensure sidebar is above other content */
     }
-    .sidebar a {
-            float: left;
-        }
-    div.content {
-        margin-left: 0;
-    }
-}
 
-@media screen and (max-width: 400px) {
-    .sidebar a {
-        text-align: center;
-        float: none;
+        .sidebar a {
+            float: none; /* Remove float for sidebar links */
+            text-align: left; /* Adjust text alignment for sidebar links */
+        }
+
+    div.content {
+        margin-left: 140px; /* Adjust content margin to accommodate sidebar */
     }
 }
