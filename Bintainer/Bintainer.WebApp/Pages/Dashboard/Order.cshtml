@@ -46,38 +46,40 @@
         }
 </style>
 
-<form class="row g-3">
-    <div class="col-md-6">
-        <div class="row align-items-center">
-            <div class="col-auto">
-                <label for="orderNumber" class="form-label mb-0">Order number</label>
-            </div>
-            <div class="col-md-5">
-                <input type="text" class="form-control input-sharp mt-0" id="orderNumber" placeholder="Order number">
-            </div>
-        </div>
-        <div class="row align-items-center mt-3">
-            <div class="col-auto">
-                <label for="supplier" class="form-label mb-0">Supplier</label>
-            </div>
-            <div class="col-md-5">
-                <input type="text" class="form-control input-sharp mt-0" id="supplier" placeholder="e.g., Digikey">
-            </div>
-        </div>
-        <div class="row align-items-center mt-3">
-            <div class="col-auto">
-                <label for="fromDate" class="form-label mb-0">From</label>
-            </div>
-            <div class="col-auto">
-                <input type="date" id="fromDate" name="fromDate" class="form-control input-sharp">
-            </div>
-            <div class="col-auto">
-                <label for="toDate" class="form-label mb-0">To</label>
-            </div>
-            <div class="col-auto">
-                <input type="date" id="toDate" name="toDate" class="form-control input-sharp">
-            </div>
-        </div>
-        <button class="button-row btn btn-primary mt-3">Search</button>
+<div class="card mt-3">
+    <div class="card-header">
+        Search
     </div>
-</form>
+    <div class="card-body">
+        <form class="row g-3">
+            <div class="col-md-6">
+                <div class="row align-items-center">                    
+                    <div class="col-md-3">
+                        <label for="orderNumber" class="form-label">Order number</label>
+                        <label for="supplier" class="form-label">Supplier</label>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control input-sharp " id="orderNumber" placeholder="Order number">
+                        <input type="text" class="form-control input-sharp" id="supplier" placeholder="e.g., Digikey">
+                    </div>
+                </div>
+                <div class="row align-items-center mt-3">
+                    <div class="col-auto">
+                        <label for="fromDate" class="form-label mb-0">From</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="date" id="fromDate" name="fromDate" class="form-control input-sharp">
+                    </div>
+                    <div class="col-auto">
+                        <label for="toDate" class="form-label mb-0">To</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="date" id="toDate" name="toDate" class="form-control input-sharp">
+                    </div>
+                </div>
+                <button class="button-row btn btn-primary mt-3">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
