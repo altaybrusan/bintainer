@@ -3,7 +3,7 @@
 @{
 	Layout = "_DashboardLayout";
 }
-<style>
+@* <style>
 	html, * {
 		font-family: 'Inter';
 		box-sizing: border-box;
@@ -130,4 +130,35 @@
 <script src="~/js/bootstable.min.js"></script>
 <script>
 	$('#DyanmicTable').SetEditable({ $addButton: $('#addNewRow')});
+</script> *@
+
+<div class="example">   
+</div>
+<script>
+	var data = [
+		{
+			title: "Warehouse",
+			children: [
+				{
+					title: "Shelfs A",
+					children: [
+						{ title: "Shelf A1" },
+						{ title: "Shelf A2" },
+						{ title: "Shelf A3" },
+						{ title: "Shelf A4" }
+					]
+				},
+				{
+					title: "Shelfs B",
+					children: [
+						{ title: "Shelf B1" },
+						{ title: "Shelf B2" }
+					]
+				},
+				{ title: "Ground" }
+			]
+		}
+	];
+
+	const myTree = new DinampTreeEditor('.example').setData(data);
 </script>

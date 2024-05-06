@@ -20,6 +20,11 @@
         color: #002060; /* Text color */
     }
 
+    .load-button-sharp {
+        height: 30px; /* Reduced height */
+        border-radius: 0; /* Sharp corners */        
+    }
+
     .input-sharp:focus {
         border-color: #0062cc; /* Focus border color */
         box-shadow: 0 0 0 0.2rem rgba(0, 98, 204, 0.25); /* Focus glow effect */
@@ -168,11 +173,11 @@
         </div>
         <div class="col-md-3">
             <div class="card card-custom">
-                <button type="button" class="btn btn-secondary">Part</button>
+                <button type="button" class="btn btn-secondary load-button-sharp">Part</button>
                 <img src="~/image/microchip.png" class="img-fluid" alt="part image"/>
             </div>
             <div class="card card-custom">
-                <button type="button" class="btn btn-secondary">Footprint</button>
+                <button type="button" class="btn btn-secondary load-button-sharp">Footprint</button>
                 <img src="~/image/pinout.png" class="img-fluid" alt="footpring" />
             </div>            
         </div>
