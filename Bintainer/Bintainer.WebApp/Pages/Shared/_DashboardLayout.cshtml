@@ -34,7 +34,7 @@
         @if (SignInManager.IsSignedIn(User))
         {
             <a class="@(Context.Request.Path == "/dashboard/part" ? "active" : "")" asp-page="/dashboard/part"><i class="fa fa-braille"></i>&nbsp;Store part</a>
-            <a class="@(Context.Request.Path == "/dashboard/component" ? "active" : "")" asp-page="/dashboard/component">Component</a>
+            <a class="@(Context.Request.Path == "/dashboard/component" ? "active" : "")" asp-page="/dashboard/component"><i class="fa fa-map-o"></i>&nbsp;Category</a>
             <a class="@(Context.Request.Path == "/dashboard/inventory" ? "active" : "")" asp-page="/dashboard/inventory"><i class="fa fa-linode"></i>&nbsp;Inventory</a>
             <a class="@(Context.Request.Path == "/dashboard/order" ? "active" : "")" asp-page="/dashboard/order"><i class="fa fa-search"></i>&nbsp; Search</a>
             <a class="@(Context.Request.Path == "/Identity/Account/Logout" ? "active" : "")" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })"><i class="fa fa-user-circle-o"></i>&nbsp;Logout</a>

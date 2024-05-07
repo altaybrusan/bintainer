@@ -132,8 +132,20 @@
 	$('#DyanmicTable').SetEditable({ $addButton: $('#addNewRow')});
 </script> *@
 
-<div class="example">   
+<div class="container">
+	<div class="row">
+		<h1> Part category treeview </h1>
+		<div class="category-treeview">
+		</div>
+	</div>
+	<div class="row">
+		<div class="button-row align-items-end justify-content-end mt-5">
+			<button type="button" class="btn btn-success">save</button>
+		</div>
+
+	</div>
 </div>
+
 <script>
 	var data = [
 		{
@@ -160,5 +172,5 @@
 		}
 	];
 
-	const myTree = new DinampTreeEditor('.example').setData(data);
+	const myTree = new DinampTreeEditor('.category-treeview').setData(data);
 </script>
