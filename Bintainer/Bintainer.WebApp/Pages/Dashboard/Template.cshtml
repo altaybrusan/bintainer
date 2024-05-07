@@ -1,0 +1,161 @@
+﻿@page "/dashboard/template"
+@model TemplateModel
+@{
+	Layout = "_DashboardLayout";
+}
+<!-- In your CSS file -->
+<style>
+	.italic-small {
+		font-style: italic;
+		font-size: small;
+		color: #002060 !important; /* Text color */
+	}
+
+	::placeholder {
+		font-size: 12px;
+		font-style: italic;
+	}
+
+	.input-sharp {
+		height: 30px; /* Reduced height */
+		border-radius: 0; /* Sharp corners */
+		border: 1px solid #ced4da; /* Custom border color */
+		background-color: #ffffff; /* Background color */
+		color: #002060; /* Text color */
+	}
+
+	.load-button-sharp {
+		height: 30px; /* Reduced height */
+		border-radius: 0; /* Sharp corners */
+	}
+
+	.input-sharp:focus {
+		border-color: #0062cc; /* Focus border color */
+		box-shadow: 0 0 0 0.2rem rgba(0, 98, 204, 0.25); /* Focus glow effect */
+	}
+
+
+	.button-row {
+		display: flex;
+		align-items: center; /* Vertically center content */
+		height: 30px; /* Set height to 30px */
+	}
+		/* Style for the button inside .button-row */
+		.button-row .btn {
+			border-radius: 0; /* Sharp corners for button */
+			margin-right: 10px; /* Add margin between button and select */
+			font-size: 14px; /* Reduce font size */
+		}
+		/* Style for the select inside .button-row */
+		.button-row select {
+			height: 100%; /* Fill the height of the .button-row */
+			border-radius: 0; /* Sharp corners for select */
+			border: none; /* Remove default border */
+			padding: 5px; /* Adjust padding */
+			font-size: 14px; /* Reduce font size */
+			width: max-content; /* Fit width to content */
+		}
+</style>
+
+<ul class="nav nav-tabs">
+	<li class="nav-item">
+		<a class="nav-link active" aria-current="page" id="organize-category-tab" data-bs-toggle="tab" data-bs-target="#organize-category" href="#">Categories</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" id="update-tab" data-bs-toggle="tab" data-bs-target="#update-part" href="#">Attributes</a>
+	</li>
+</ul>
+
+<div class="tab-content">
+	<div id="organize-category" class="tab-pane fade show active" role="tabpanel" aria-labelledby="organize-category-tab">
+		<div class="container mt-5">
+			<div class="row">
+				<h4>Parts Category</h4>
+				<p class="lead" style="font-style: italic; font-size: small;">Organize parts in hierarchical structure</p>
+				<div class="category-treeview"></div>
+			</div>
+			<div class="row">
+				<div class="button-row align-items-end justify-content-end mt-5">
+					<button type="button" class="btn btn-success">save</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="update-part" class="tab-pane fade" role="tabpanel" aria-labelledby="create-tab">
+		<div class="container">
+			<h2>Attributes Template</h2>
+			<hr />
+			<div class="button-row align-items-start">
+				<div class="col-md-1">
+					<button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable" style="height:30px">Add Row</button>
+				</div>
+				<div class="col-md-1">
+					<button type="button" class="btn btn-success" style="height:30px">Save</button>
+				</div>
+				<div class="col-md-4">
+					<input name="attributeName" placeholder="attributes template name" class="form-control  input-sharp" required="required" type="text">
+				</div>
+			</div>
+			<div style="margin-bottom: 20px;"></div>
+			<table class="table" id="attributeTable">
+				<thead>
+					<tr>
+						<th>Product Attribute</th>
+						<th>Attribute Value</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody id="productSpecTable"></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/template" id="tr_template">
+	<td class="dtable-col1"></td>
+	<td class="dtable-col2"></td>
+	<td><a data-mode='edit' class="action" href="javascript:void(0)">edit</a></td>
+	<td><a class="delete" href="javascript:void(0)">delete</a></td>
+</script>
+
+<script type="text/javascript">
+	var data = [
+		{
+			title: "Electonics",
+			children: [
+				{
+					title: "Resistors",
+					children: [
+						{ title: "SMD" },
+						{ title: "THT" }
+					]
+				},
+				{
+					title: "Capacitors",
+					children: [
+						{ title: "SMD" },
+						{ title: "THT" }
+					]
+				},
+				{ title: "Integrated" }
+			]
+		}
+	];
+	const myTree = new DinampTreeEditor('.category-treeview').setData(data);
+
+	$(document).ready(function () {
+		// Call the function initially
+		$('#addAttribute').on('click', function (event) {
+			event.preventDefault(); // Prevent default form submission behavior
+			var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
+			var table = $('#' + targetTableId); // Select the table using the ID
+			if (table.length) { // Check if the table exists
+				appendRowToTable(table); // Call the function with the table jQuery object
+			} else {
+				console.error('Table with ID "' + targetTableId + '" not found.');
+			}
+		});
+	});
+
+</script>

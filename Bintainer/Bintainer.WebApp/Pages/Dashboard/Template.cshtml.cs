@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Bintainer.WebApp.Pages.Dashboard
 {
-    public class CategoryModel : PageModel
+    public class TemplateModel : PageModel
     {
         public void OnGet()
         {
