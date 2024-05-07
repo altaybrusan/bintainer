@@ -75,7 +75,7 @@
 				<div class="category-treeview"></div>
 			</div>
 			<div class="row">
-				<div class="button-row align-items-end justify-content-end mt-5">
+				<div class="button-row mt-5">
 					<button type="button" class="btn btn-success">save</button>
 				</div>
 			</div>
@@ -89,11 +89,21 @@
 				<div class="col-md-1">
 					<button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable" style="height:30px">Add Row</button>
 				</div>
-				<div class="col-md-1">
-					<button type="button" class="btn btn-success" style="height:30px">Save</button>
+				<div class="col-md-2">
+					<div class="row">
+						<select class="form-select" aria-label="example">
+							<option selected>Load template</option>
+							<option value="1">SMD Resistor</option>
+							<option value="2">THT Transistor</option>
+							<option value="3">SMD Microcontroller</option>
+						</select>
+					</div>					
 				</div>
 				<div class="col-md-4">
-					<input name="attributeName" placeholder="attributes template name" class="form-control  input-sharp" required="required" type="text">
+					<div class="button-row align-items-start">
+						<button type="button" class="btn btn-success" style="height:30px">Save</button>
+						<input name="attributeName" placeholder="attribute's template name" class="form-control  input-sharp" required="required" type="text">
+					</div>					
 				</div>
 			</div>
 			<div style="margin-bottom: 20px;"></div>

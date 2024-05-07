@@ -29,7 +29,7 @@
 <body>
     
     <div class="sidebar">
-        <a class="@(Context.Request.Path == "/Index" ? "active" : "")" href="/Index"><i class="fa fa-home"></i>&nbsp;Home</a>
+        <a class="@(Context.Request.Path == "/dashboard/index" ? "active" : "")" href="/dashboard/index"><i class="fa fa-home"></i>&nbsp;Home</a>
        
         @if (SignInManager.IsSignedIn(User))
         {
