@@ -4,6 +4,7 @@
 }
 <link rel="stylesheet" href="~/css/hierarchy-select.min.css">
 <link rel="stylesheet" href="~/css/autocomplete.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/js/bootstrap.bundle.min.js" type="module"></script>
 
 <style>
 ::placeholder {
@@ -41,40 +42,170 @@
 }
 </style>
 
-<div class="card mt-3">
-    <div class="card-header">
-        <i class="fa fa-search"></i>&nbsp; Search
-    </div>
-    <div class="card-body">
-        <form class="row g-3">
-            <div class="col-md-6">
-                <div class="row align-items-center">                    
-                    <div class="col-md-3">
-                        <label for="orderNumber" class="form-label">Order number</label>
-                        <label for="supplier" class="form-label">Supplier</label>
-                    </div>
-                    <div class="col-md-5">
-                        <input type="text" class="form-control input-sharp " id="orderNumber" placeholder="Order number">
-                        <input type="text" class="form-control input-sharp" id="supplier" placeholder="e.g., Digikey">
-                    </div>
-                </div>
-                <div class="row align-items-center mt-3">
-                    <div class="col-auto">
-                        <label for="fromDate" class="form-label mb-0">From</label>
-                    </div>
-                    <div class="col-auto">
-                        <input type="date" id="fromDate" name="fromDate" class="form-control input-sharp">
-                    </div>
-                    <div class="col-auto">
-                        <label for="toDate" class="form-label mb-0">To</label>
-                    </div>
-                    <div class="col-auto">
-                        <input type="date" id="toDate" name="toDate" class="form-control input-sharp">
-                    </div>
-                </div>
-                <button class="button-row btn btn-primary mt-3">Search</button>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" id="create-order-tab" data-bs-toggle="tab" data-bs-target="#create-order" href="#">Create</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="search-order-tab" data-bs-toggle="tab" data-bs-target="#search-order" href="#">Search</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div id="create-order" class="tab-pane fade show active" role="tabpanel" aria-labelledby="create-order">
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="fa fa-search"></i>&nbsp; Order Details
             </div>
-        </form>
+            <div class="card-body">
+                <form class="row">
+                    <div class="col-md-9">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <div class="row">
+                                    <label for="orderNumber" class="form-label">Order number</label>
+                                </div>
+                                <div class="row">
+                                    <label for="orderSupplier" class="form-label">Supplier</label>
+                                </div>
+                                <div class="row">
+                                    <label for="orderDate" class="form-label mb-0">Order date</label>
+                                </div>
+                                <div class="row">
+                                    <label for="handoverDate" class="form-label mb-0">Handover date</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control input-sharp " id="orderNumber" placeholder="Order number">
+                                <input type="text" class="form-control input-sharp" id="orderSupplier" placeholder="e.g., Digikey">
+                                <input type="date" id="orderDate" name="orderDate" class="form-control input-sharp">
+                                <input type="date" id="handoverDate" name="handoverDate" class="form-control input-sharp">
+                            </div>
+                        </div>
+                        <button class="button-row btn btn-primary mt-3">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="row col-12 mt-3">
+                    <div class="col-12">
+                        <table class="table" id="sectionlist">
+                            <thead>
+                                <tr>
+                                    <th style="width:300px">Part name</th>
+                                    <th style="width:150px;">Quantity</th>                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="inventory-subsection-list">
+                                    <td>
+                                        <input type="text" class="form-control  input-sharp autocomplete" id="autocompleteInput" placeholder="e.g., part name" />
+                                    </td>
+                                    <td>
+                                        <input type="number" name="section-width" class="form-control input-sharp" min="0" placeholder="quantity">
+                                    </td>                                    
+                                    <td>
+                                        <button type="button" id="btnAdd" class="button-row btn btn-xs btn-primary classAdd ">Add More</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="button-row align-items-end justify-content-end mt-5">
+                            <button type="button" id="btnSubmit" class="button-row btn btn-primary btn-md pull-right btn-sm">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="search-order" class="tab-pane fade" role="tabpanel" aria-labelledby="update-tab">
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="fa fa-search"></i>&nbsp; Search
+            </div>
+            <div class="card-body">
+                <form class="row g-3">
+                    <div class="col-md-6">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <label for="orderNumber" class="form-label">Order number</label>
+                                <label for="supplier" class="form-label">Supplier</label>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="text" class="form-control input-sharp " id="orderNumber" placeholder="Order number">
+                                <input type="text" class="form-control input-sharp" id="supplier" placeholder="e.g., Digikey">
+                            </div>
+                        </div>
+                        <div class="row align-items-center mt-3">
+                            <div class="col-auto">
+                                <label for="fromDate" class="form-label mb-0">From</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="date" id="fromDate" name="fromDate" class="form-control input-sharp">
+                            </div>
+                            <div class="col-auto">
+                                <label for="toDate" class="form-label mb-0">To</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="date" id="toDate" name="toDate" class="form-control input-sharp">
+                            </div>
+                        </div>
+                        <button class="button-row btn btn-primary mt-3">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
+
+
+<script type="module">
+    import Autocomplete from "https://cdn.jsdelivr.net/gh/lekoala/bootstrap5-autocomplete@master/autocomplete.js";
+    const opts = {
+        onSelectItem: console.log,
+    };
+    var src = [];
+    for (let i = 0; i < 50; i++) {
+        src.push({
+            title: "Option " + i,
+            id: "opt" + i,
+            data: {
+                key: i,
+            },
+        });
+    }
+    Autocomplete.init("input.autocomplete", {
+        items: src,
+        valueField: "id",
+        labelField: "title",
+        highlightTyped: true,
+        onSelectItem: console.log,
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).on("click", ".classAdd", function () { //
+            var rowCount = $('.inventory-subsection-list').length + 1;
+            var contactdiv = '<tr class="inventory-subsection-list">' +
+                '<td><input type="text" name="section-name' + rowCount + '" class="form-control input-sharp" /></td>' +
+                '<td><input type="number" name="section-width' + rowCount + '" class="form-control input-sharp" min="1" max="5"/></td>' +
+                '<td><input type="number" name="section-hight' + rowCount + '" class="form-control input-sharp" min="1" max="5"/></td>' +
+                '<td><input type="number" name="bin-section' + rowCount + '" class="form-control input-sharp" min="1" max="5"/></td>' +
+                '<td><div class ="button-row"><button type="button" id="btnAdd" class="button-row btn btn-xs btn-primary classAdd">Add</button>' +
+                '<button type="button" id="btnDelete" class="button-row btn deleteContact btn btn-danger btn-xs btnDelete">Remove</button></div></td>' +
+                '</tr>';
+            $('#sectionlist').append(contactdiv); // Adding these controls to Main table class
+        });
+
+        $(document).on("click", ".btnDelete", function () {
+            $(this).closest("tr").remove();
+        });
+    });
+</script>
+
+
 

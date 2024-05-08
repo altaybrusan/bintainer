@@ -57,6 +57,9 @@
 		}
 </style>
 
+<link rel="stylesheet" href="~/css/autocomplete.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/js/bootstrap.bundle.min.js" type="module"></script>
+
 <ul class="nav nav-tabs">
 	<li class="nav-item">
 		<a class="nav-link active" aria-current="page" id="organize-category-tab" data-bs-toggle="tab" data-bs-target="#organize-category" href="#">Categories</a>
@@ -129,6 +132,29 @@
 	<td><a class="delete" href="javascript:void(0)">delete</a></td>
 </script>
 
+<script type="module">
+	import Autocomplete from "https://cdn.jsdelivr.net/gh/lekoala/bootstrap5-autocomplete@master/autocomplete.js";
+	const opts = {
+		onSelectItem: console.log,
+	};
+	var src = [];
+	for (let i = 0; i < 50; i++) {
+		src.push({
+			title: "Option " + i,
+			id: "opt" + i,
+			data: {
+				key: i,
+			},
+		});
+	}
+	Autocomplete.init("input.autocomplete", {
+		items: src,
+		valueField: "id",
+		labelField: "title",
+		highlightTyped: true,
+		onSelectItem: console.log,
+	});
+</script>
 <script type="text/javascript">
 	var data = [
 		{

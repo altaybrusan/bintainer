@@ -36,7 +36,7 @@
             <a class="@(Context.Request.Path == "/dashboard/part" ? "active" : "")" asp-page="/dashboard/part"><i class="fa fa-braille"></i>&nbsp;Part</a>
             <a class="@(Context.Request.Path == "/dashboard/template" ? "active" : "")" asp-page="/dashboard/template"><i class="fa fa-list"></i>&nbsp;Template</a>
             <a class="@(Context.Request.Path == "/dashboard/inventory" ? "active" : "")" asp-page="/dashboard/inventory"><i class="fa fa-linode"></i>&nbsp;Inventory</a>
-            <a class="@(Context.Request.Path == "/dashboard/order" ? "active" : "")" asp-page="/dashboard/order"><i class="fa fa-search"></i>&nbsp; Search</a>
+            <a class="@(Context.Request.Path == "/dashboard/order" ? "active" : "")" asp-page="/dashboard/order"><i class="fa fa-search"></i>&nbsp; Order</a>
             <a class="@(Context.Request.Path == "/Identity/Account/Logout" ? "active" : "")" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })"><i class="fa fa-user-circle-o"></i>&nbsp;Logout</a>
         }
         else
