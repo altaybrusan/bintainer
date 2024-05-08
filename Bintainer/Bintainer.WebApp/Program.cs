@@ -20,6 +20,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IEmailSender, SESEmailSender>();
+builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
 
 var app = builder.Build();
 

@@ -3,6 +3,7 @@
 @{
 	Layout = "_DashboardLayout";
 }
+@Html.AntiForgeryToken()
 <!-- In your CSS file -->
 <style>
 	.italic-small {
@@ -104,8 +105,8 @@
 				</div>
 				<div class="col-md-4">
 					<div class="button-row align-items-start">
-						<button type="button" class="btn btn-success" style="height:30px">Save</button>
-						<input name="attributeName" placeholder="attribute's template name" class="form-control  input-sharp" required="required" type="text">
+						<button id="saveBtn" type="submit" class="btn btn-success" style="height:30px">Save</button>
+						<input id="attributeName" name="attributeName" placeholder="attribute's template name" class="form-control  input-sharp" required="required" type="text">
 					</div>					
 				</div>
 			</div>
@@ -192,6 +193,64 @@
 				console.error('Table with ID "' + targetTableId + '" not found.');
 			}
 		});
+
+
+		$('#saveBtn').on('click', function (event) {
+			event.preventDefault(); // Prevent default form submission behavior
+
+			var productAttributes = []; // Array to hold all product attributes
+
+			// Iterate through each row of the table
+			$('#productSpecTable tr').each(function () {
+				var row = $(this); // Current row
+				var attribute = row.find('td').eq(0).find('input').val().trim(); // Extracting value from input in the first column
+				var value = row.find('td').eq(1).find('input').val().trim(); // Extracting value from input in the second column
+				// Push the attribute and value into the array as an object
+				productAttributes.push({ attribute: attribute, value: value });
+			});
+
+			// AJAX request to send data to the server
+			$('#saveBtn').on('click', function (event) {
+				event.preventDefault(); // Prevent default form submission behavior
+
+				var setName = $('#attributeName').val().trim(); // Assume there's an input with ID 'setName' for the name
+				var productAttributes = {};
+
+				// Iterate through each row of the table
+				$('#productSpecTable tr').each(function () {
+					var row = $(this);
+					var attribute = row.find('td').eq(0).find('input').val().trim();
+					var value = row.find('td').eq(1).find('input').val().trim();
+
+					productAttributes[attribute] = value; // Adding as key-value pairs
+				});
+
+				// AJAX request to send data to the server
+				$.ajax({
+					type: 'POST', // Set the method to POST
+					beforeSend: function (xhr) {
+						xhr.setRequestHeader("XSRF-TOKEN",
+							$('input:hidden[name="__RequestVerificationToken"]').val());
+					},
+					url: '/dashboard/template?handler=Test', // Set the URL to your Razor page endpoint
+					contentType: 'application/json', // Set the content type
+					data: JSON.stringify({ attributes: productAttributes, tablename: setName }), // Stringify the object including name
+					success: function (response) {
+						// Handle success
+						console.log('Data saved successfully:', response);
+						alert('Data saved successfully!');
+					},
+					error: function (xhr, status, error) {
+						// Handle errors
+						console.error('Error saving data:', status, error);
+						alert('Failed to save data.');
+					}
+				});
+			});
+
+		});
+
+
 	});
 
 </script>
