@@ -60,9 +60,9 @@
     <li class="nav-item">
         <a class="nav-link" id="update-tab" data-bs-toggle="tab" data-bs-target="#update-part" href="#">Update</a>
     </li>
-    <li class="nav-item">
+@*     <li class="nav-item">
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-    </li>
+    </li> *@
 </ul>
 
 <div class="tab-content">
@@ -201,8 +201,30 @@
         </div>
     </div>
     <div id="update-part" class="tab-pane fade" role="tabpanel" aria-labelledby="update-tab">
-        <h3>Update part</h3>
-        <!-- Add your update content here -->
+ 
+        <div class="card mt-5">
+            <div class="card-header">
+                <i class="fa fa-search"></i>&nbsp; Search part
+            </div>
+            <div class="card-body">
+                <form class="row">
+                    <div class="col-md-9">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <div class="row">
+                                    <label for="partName" class="form-label">Part name</label>
+                                </div>      
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control input-sharp " id="partName" placeholder="partName">                                
+                            </div>
+                        </div>
+                        <button class="button-row btn btn-primary mt-3">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
 </div>
 
