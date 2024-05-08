@@ -70,6 +70,26 @@
 	</li>
 </ul>
 
+<div class="modal" id="myModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Error</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<p id="modalMessage"></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" id="closeModalBtn" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
 <div class="tab-content">
 	<div id="organize-category" class="tab-pane fade show active" role="tabpanel" aria-labelledby="organize-category-tab">
 		<div class="container mt-5">
@@ -184,38 +204,44 @@
 	$(document).ready(function () {
 		
 		$('#saveBtn').on('click', function (event) {
-			event.preventDefault(); // Prevent default form submission behavior
+			event.preventDefault(); 
+			var setName = $('#attributeName').val(); 
+			if (setName !== null && setName.trim() !== '') {
+				setName = setName.trim(); 
+			} else {
+				
+				$('#modalMessage').text('Table name is required');
+				$('#myModal').modal('show');
+				console.error('attributeName is null or empty.');
+								
+				$('#closeModalBtn').on('click', function () {
+					$('#myModal').modal('hide');
+				});
+				return;
+			}
 
-			var setName = $('#attributeName').val().trim(); // Assume there's an input with ID 'setName' for the name
-			var productAttributes = {};
-
-			// Iterate through each row of the table
+			var productAttributes = {};			
 			$('#productSpecTable tr').each(function () {
-				var row = $(this); // Current row
-				var attribute = row.find('td').eq(0).find('input').val().trim(); // Extracting value from input in the first column
-				var value = row.find('td').eq(1).find('input').val().trim(); // Extracting value from input in the second column
-				// Push the attribute and value into the array as an object
+				var row = $(this); 
+				var attribute = row.find('td').eq(0).find('input').val().trim();
+				var value = row.find('td').eq(1).find('input').val().trim(); 
 				productAttributes[attribute] = value;
 			});
-
-
-			// AJAX request to send data to the server
+								
 			$.ajax({
-				type: 'POST', // Set the method to POST
+				type: 'POST',
 				beforeSend: function (xhr) {
 					xhr.setRequestHeader("XSRF-TOKEN",
 						$('input:hidden[name="__RequestVerificationToken"]').val());
 				},
-				url: '/dashboard/template?handler=Test', // Set the URL to your Razor page endpoint
-				contentType: 'application/json', // Set the content type
-				data: JSON.stringify({ attributes: productAttributes, tablename: setName }), // Stringify the object including name
-				success: function (response) {
-					// Handle success
+				url: '/dashboard/template?handler=Test', 
+				contentType: 'application/json', 
+				data: JSON.stringify({ attributes: productAttributes, tablename: setName }),
+				success: function (response) {					
 					console.log('Data saved successfully:', response);
 					alert('Data saved successfully!');
 				},
-				error: function (xhr, status, error) {
-					// Handle errors
+				error: function (xhr, status, error) {					
 					console.error('Error saving data:', status, error);
 					alert('Failed to save data.');
 				}
