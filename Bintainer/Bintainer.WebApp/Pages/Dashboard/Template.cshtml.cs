@@ -25,11 +25,18 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         public void OnPostTest([FromBody] AttributeTableTemplate attributeTable) 
         {
-		
-			foreach ( var item in attributeTable.Attributes ) 
+			
+			PartAttributeTemplate table = new() { TemplateName = attributeTable.TableName };
+
+			foreach (var item in attributeTable.Attributes)
 			{
-				_dbcontext.PartAttributes.Add(new PartAttribute() { Name= item.Key, Value= item.Value });
+				var attribute = new PartAttribute() { Name = item.Key, Value = item.Value };
+				table.PartAttributes.Add(attribute);
+
 			}
+			_dbcontext.PartAttributeTemplates.Add(table);
+			_dbcontext.SaveChanges();
+
 		}
 
     }

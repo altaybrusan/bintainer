@@ -9,9 +9,7 @@ public partial class PartAttributeTemplate
 
     public string? TemplateName { get; set; }
 
-    public int AttributeId { get; set; }
-
-    public virtual PartAttribute Attribute { get; set; } = null!;
+    public virtual ICollection<PartAttribute> PartAttributes { get; set; } = new List<PartAttribute>();
 
     public virtual ICollection<PartTemplate> Templates { get; set; } = new List<PartTemplate>();
 }

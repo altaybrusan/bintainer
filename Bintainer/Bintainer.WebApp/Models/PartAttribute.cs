@@ -11,5 +11,7 @@ public partial class PartAttribute
 
     public string? Value { get; set; }
 
-    public virtual ICollection<PartAttributeTemplate> PartAttributeTemplates { get; set; } = new List<PartAttributeTemplate>();
+    public int TemplateId { get; set; }
+
+    public virtual PartAttributeTemplate Template { get; set; } = null!;
 }
