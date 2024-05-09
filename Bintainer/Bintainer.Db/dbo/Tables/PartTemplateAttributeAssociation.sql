@@ -1,8 +1,8 @@
 ﻿CREATE TABLE [dbo].[PartTemplateAttributeAssociation]
 (
 	[TemplateId] INT NOT NULL,
-	[AttributeId] INT NOT NULL,
-	PRIMARY KEY (TemplateId, AttributeId),
-	FOREIGN KEY ([TemplateId]) REFERENCES [PartTemplate]([Id]),
-	FOREIGN KEY ([AttributeId]) REFERENCES [PartAttribute]([Id])
+	[AttributeTemplateId] INT NOT NULL,
+	PRIMARY KEY (TemplateId, AttributeTemplateId),
+	CONSTRAINT [FK_PartTemplateAttributeAssociation_PartTemplate] FOREIGN KEY ([TemplateId]) REFERENCES [PartTemplate]([Id]),
+	CONSTRAINT [FK_PartTemplateAttributeAssociation_PartAttributeTemplate] FOREIGN KEY ([AttributeTemplateId]) REFERENCES [PartAttributeTemplate]([Id])
 )
