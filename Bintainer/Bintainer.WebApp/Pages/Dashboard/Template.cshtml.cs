@@ -14,9 +14,17 @@ namespace Bintainer.WebApp.Pages.Dashboard
 	public class TemplateModel : PageModel
     {
 		BintainerContext _dbcontext;
-		public TemplateModel(BintainerContext dbContext )
+
+        public List<string> AttributeTables { get; set; } = new List<string>();
+         
+        public TemplateModel(BintainerContext dbContext )
 		{
 			_dbcontext = dbContext;
+			foreach (var item in _dbcontext.PartAttributeTemplates)
+			{
+				if (item.TemplateName != null)
+					AttributeTables.Add(item.TemplateName);
+			}
 		}
         public void OnGet()
         {
