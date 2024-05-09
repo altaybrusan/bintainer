@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Bintainer.WebApp;
 using Bintainer.WebApp.Data;
+using Bintainer.WebApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,13 +12,13 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 { 
     options.SignIn.RequireConfirmedAccount = true; 
     options.Lockout.AllowedForNewUsers = true;
 })
     .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddDbContext<BintainerContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IEmailSender, SESEmailSender>();
 builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
