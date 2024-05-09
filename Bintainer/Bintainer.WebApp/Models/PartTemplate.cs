@@ -15,7 +15,7 @@ public partial class PartTemplate
 
     public string? DatasheetUri { get; set; }
 
-    public virtual ICollection<PartAttribute> Attributes { get; set; } = new List<PartAttribute>();
+    public virtual ICollection<PartAttributeTemplate> AttributeTemplates { get; set; } = new List<PartAttributeTemplate>();
 
     public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
 }
