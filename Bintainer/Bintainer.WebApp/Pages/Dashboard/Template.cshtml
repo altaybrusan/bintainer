@@ -1,4 +1,5 @@
 ﻿@page "/dashboard/template"
+@using System.Text.Json;
 @model TemplateModel
 @{
 	Layout = "_DashboardLayout";
@@ -100,7 +101,7 @@
 			</div>
 			<div class="row">
 				<div class="button-row mt-5">
-					<button type="button" class="btn btn-success">save</button>
+					<button id ="categorySaveBtn" type="button" class="btn btn-success">save</button>
 				</div>
 			</div>
 		</div>
@@ -177,33 +178,38 @@
 		onSelectItem: console.log,
 	});
 </script>
-<script type="text/javascript">
-	var data = [
-		{
-			title: "Electonics",
-			children: [
-				{
-					title: "Resistors",
-					children: [
-						{ title: "SMD" },
-						{ title: "THT" }
-					]
-				},
-				{
-					title: "Capacitors",
-					children: [
-						{ title: "SMD" },
-						{ title: "THT" }
-					]
-				},
-				{ title: "Integrated" }
-			]
-		}
-	];
+<script type="text/javascript">	
+	var data = @Html.Raw(JsonSerializer.Serialize(Model.Categories, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+
 	const myTree = new DinampTreeEditor('.category-treeview').setData(data);
 
 	$(document).ready(function () {
 		
+		$('#categorySaveBtn').on('click', function (event) {
+			event.preventDefault();
+			var data = myTree.getData();
+
+			$.ajax({
+				type: 'POST',
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader("XSRF-TOKEN",
+						$('input:hidden[name="__RequestVerificationToken"]').val());
+				},
+				url: '/dashboard/template?handler=Test2',
+				contentType: 'application/json',
+				data: JSON.stringify(data),
+				success: function (response) {
+					console.log('Data saved successfully:', response);
+					alert('Data saved successfully!');
+				},
+				error: function (xhr, status, error) {
+					console.error('Error saving data:', status, error);
+					alert('Failed to save data.');
+				}
+			});
+
+		});
+
 		$('#saveBtn').on('click', function (event) {
 			event.preventDefault(); 
 			var setName = $('#attributeName').val(); 

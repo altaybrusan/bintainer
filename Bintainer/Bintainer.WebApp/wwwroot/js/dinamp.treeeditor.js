@@ -103,7 +103,8 @@ class DinampTreeEditor {
     if(subject.is("ul")) return;
     if(subject.is(".itemParent")) {
       let currentItem = {
-        title: subject.find("p").text()
+          title: subject.find("p").text(),
+          id: subject.attr("id")
       };
       if(subject.find(".preIcon").hasClass("checked")) currentItem.checked = true;
       if(subject.next().is("ul")) {
@@ -116,12 +117,12 @@ class DinampTreeEditor {
     }
   }
 
-  addElement(el, parentNode = null) {
+    addElement(el, parentNode = null) {
     var $newNode;
     if(parentNode.is("ul"))
-      $newNode = $("<li class='item'><div class='itemParent'><span class='preIcon'></span><p contenteditable='true'>"+el.title+"</p><span class='afterIcon'></span></div></li>");
+      $newNode = $("<li class='item'><div class='itemParent' id='"+el.id+"' ><span class='preIcon'></span><p contenteditable='true'>"+el.title+"</p><span class='afterIcon'></span></div></li>");
     else
-      $newNode = $("<div class='itemParent'><span class='preIcon'></span><p contenteditable='true'>"+el.title+"</p><span class='afterIcon'></span></div>");
+        $newNode = $("<div class='itemParent' id='" + el.id +"' ><span class='preIcon'></span><p contenteditable='true'>"+el.title+"</p><span class='afterIcon'></span></div>");
     //if(parentNode == null) parentNode = $(this.mainNode);
     parentNode.append($newNode);
     if(el.checked === true || el.checked === "true") $newNode.find(".preIcon").addClass("checked");
@@ -166,7 +167,9 @@ class DinampTreeEditor {
     });
 
     $(this.mainNode+" p").on('blur', function () {
-      jsTree.options.onchange(jsTree);
+        if (jsTree.options.onchange !== undefined) {
+            jsTree.options.onchange(jsTree);
+        }
     });
 
     $(this.mainNode+" .preIcon").on('click', function(){
