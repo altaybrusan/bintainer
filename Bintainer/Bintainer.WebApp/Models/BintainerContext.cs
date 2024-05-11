@@ -285,7 +285,8 @@ public partial class BintainerContext : DbContext
 
             entity.ToTable("PartCategory");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
             entity.Property(e => e.Name)
                 .HasMaxLength(75)
                 .IsFixedLength();

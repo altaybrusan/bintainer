@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Policy;
 
 
 namespace Bintainer.WebApp.Pages.Dashboard
@@ -139,17 +140,58 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
 		}
 
+		private void DeleteItem(CategoryView parent) 
+		{
+			_dbcontext.PartCategories.Remove(_dbcontext.PartCategories.First(i => i.Id == parent.Id));
+			foreach (var item in parent.Children)
+			{
+				DeleteItem(item);
+			}						
 
+		}
+		private void AddItem(CategoryView nodeView, int? parentId=null)
+		{
+			PartCategory newCategory = new() { Name=nodeView.Title };
+			if(parentId != null) 
+			{
+				newCategory.ParentCategory = _dbcontext.PartCategories.First(i => i.Id == parentId);
+			}
+						
+			_dbcontext.PartCategories.Add(newCategory);
+			_dbcontext.SaveChanges();
+			
+			foreach (var item in nodeView.Children)
+			{
+				AddItem(item,newCategory.Id);
+			}
+		}
 		public async Task OnPostTest2([FromBody] List<CategoryView> categories)
 		{
 			var original = await GetCategoryHierarchyAsync();
 			CategoryViewComparer comparer = new CategoryViewComparer(original, categories);
-			var result1 = comparer.Added;
-			var result2 = comparer.Deleted;
-			var result3 = comparer.Unchanged;
-			var result4 = comparer.Updated;
+			var AddedItems = comparer.Added;
+			var deletedItems = comparer.Deleted;
+			var updatedItems = comparer.Updated;
+
+			foreach (var item in updatedItems) 
+			{
+				var _category = _dbcontext.PartCategories.First(i => i.Id == item.Id);
+				_category.Name= item.Title;
+				_dbcontext.PartCategories.Update(_category);
+			}
+
+			foreach (var item in deletedItems) 
+			{
+				DeleteItem(item);
+			}
+			foreach (var item in AddedItems)
+			{
+				AddItem(item,item.ParentId);
+			}
 
 
+
+			_dbcontext.SaveChanges();
 		}
 	}
 }
