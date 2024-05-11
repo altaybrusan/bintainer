@@ -1,7 +1,24 @@
-﻿function appendRowToTable(table) {
-    var trHtml = $('#tr_template').html();
+﻿function appendRowToTable(table, name, value) {
+    var trHtml = '<td class="dtable-col1">';
+    if (name !== null && name !== undefined) {
+        trHtml += name;
+    }
+    trHtml += '</td>' +
+        '<td class="dtable-col2">';
+    if (value !== null && value !== undefined) {
+        trHtml += value;
+    }
+    trHtml += '</td>' +
+        '<td><a data-mode="edit" class="action" href="javascript:void(0)">edit</a></td>' +
+        '<td><a class="delete" href="javascript:void(0)">delete</a></td>';
+
+
     var tr = $('<tr>' + trHtml + '</tr>');
     table.find('tbody').append(tr);
+
+    //var trHtml = $('#tr_template').html();
+    //var tr = $('<tr>' + trHtml + '</tr>');
+    //table.find('tbody').append(tr);
 
     // Show the row in edit mode
     showRowInEditMode(tr);

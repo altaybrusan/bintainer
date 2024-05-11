@@ -120,11 +120,11 @@
 				</div>
 				<div class="col-md-2">
 					<div class="container-fluid">
-						<select class="" aria-label="example">
+						<select id="templateList" class="" aria-label="example" target-table="attributeTable">
 							<option selected>Load template</option>
-							@for(int i=0;i<Model.AttributeTables.Count();i++)
+							@foreach(var item in Model.AttributeTables)
 							{
-								<option value=@i>@Model.AttributeTables[i]</option>
+								<option value=@item.Key>@item.Value</option>
 							}							
 						</select>
 					</div>					
@@ -152,13 +152,13 @@
 </div>
 
 
-<script type="text/template" id="tr_template">
+@* <script type="text/template" id="tr_template">
 	<td class="dtable-col1"></td>
 	<td class="dtable-col2"></td>
 	<td><a data-mode='edit' class="action" href="javascript:void(0)">edit</a></td>
 	<td><a class="delete" href="javascript:void(0)">delete</a></td>
 </script>
-
+ *@
 <script type="module">
 	import Autocomplete from "https://cdn.jsdelivr.net/gh/lekoala/bootstrap5-autocomplete@master/autocomplete.js";
 	const opts = {
@@ -187,8 +187,71 @@
 
 	const myTree = new DinampTreeEditor('.category-treeview').setData(data);
 
+	// function onTemplateSelected() {
+	// 	var selectedId = document.getElementById("templateList").value;
+	// 	//console.log("You selected: " + selectedId);
+	// 	$.ajax({
+	// 		type: 'POST',
+	// 		beforeSend: function (xhr) {
+	// 			xhr.setRequestHeader("XSRF-TOKEN",
+	// 				$('input:hidden[name="__RequestVerificationToken"]').val());
+	// 		},
+	// 		url: '/dashboard/template?handler=LoadAttributeTable&tableId=' + selectedId,
+	// 		contentType: 'application/json',
+	// 		success: function (response) {
+	// 			console.log('Data saved successfully:', response);
+	// 			//var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
+	// 			var table = $('#templateList'); // Select the table using the ID
+	// 			if (table.length) { // Check if the table exists
+	// 				$.each(response, function (index, item) {
+	// 					appendRowToTable(table);
+	// 				});
+	// 				// Call the function with the table jQuery object
+	// 			} else {
+	// 				console.error('Table with ID "' + targetTableId + '" not found.');
+	// 			}
+	// 		},
+	// 		error: function (xhr, status, error) {
+	// 			console.error('Error saving data:', status, error);
+	// 			alert('Failed to save data.');
+	// 		}
+	// 	});
+
+	// }
+
 	$(document).ready(function () {
-		
+		$('#templateList').on('change', function (event) {
+			var selectedId = document.getElementById("templateList").value;
+			//console.log("You selected: " + selectedId);
+			var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
+			var table = $('#' + targetTableId); // Select the table using the ID
+			$.ajax({
+				type: 'POST',
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader("XSRF-TOKEN",
+						$('input:hidden[name="__RequestVerificationToken"]').val());
+				},
+				url: '/dashboard/template?handler=LoadAttributeTable&tableId=' + selectedId,
+				contentType: 'application/json',
+				success: function (response) {
+					console.log('Data saved successfully:', response);					
+					if (table.length) { // Check if the table exists
+						$.each(response, function (index, item) {
+							appendRowToTable(table,item.name,item.value);
+						});
+						// Call the function with the table jQuery object
+					} else {
+						console.error('Table with ID "' + targetTableId + '" not found.');
+					}
+				},
+				error: function (xhr, status, error) {
+					console.error('Error saving data:', status, error);
+					alert('Failed to save data.');
+				}
+			});
+
+		});
+
 		$('#categorySaveBtn').on('click', function (event) {
 			event.preventDefault();
 			var data = myTree.getData();

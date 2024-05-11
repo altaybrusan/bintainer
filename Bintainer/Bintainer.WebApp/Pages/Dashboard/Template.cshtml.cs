@@ -88,7 +88,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
     {
 		BintainerContext _dbcontext;
 
-        public List<string> AttributeTables { get; set; } = new List<string>();
+        public Dictionary<int,string> AttributeTables { get; set; } = new Dictionary<int, string>();
 		public List<CategoryView> Categories { get; set; } = new();
 
 
@@ -115,7 +115,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			foreach (var item in _dbcontext.PartAttributeTemplates)
 			{
 				if (item.TemplateName != null)
-					AttributeTables.Add(item.TemplateName);
+					AttributeTables[item.Id] = item.TemplateName;
 			}
 		}
         public async Task OnGet()
@@ -123,6 +123,14 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			Categories = await GetCategoryHierarchyAsync();
 		}
 
+		public IActionResult OnPostLoadAttributeTable(int tableId) 
+		{
+			var resultList = _dbcontext.PartAttributes
+									   .Where(t => t.TemplateId == tableId)
+									   .Select(attribute => new { Name = attribute.Name, Value = attribute.Value })
+									   .ToList();			
+			return new JsonResult(resultList);
+		}
 
         public void OnPostTest([FromBody] AttributeTableTemplate attributeTable) 
         {
