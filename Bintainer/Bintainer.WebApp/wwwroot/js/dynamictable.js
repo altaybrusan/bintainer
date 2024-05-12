@@ -1,47 +1,33 @@
 ﻿function appendRowToTable(table, name, value) {
-    var trHtml = '<td class="dtable-col1">';
-    if (name !== null && name !== undefined) {
-        trHtml += name;
-    }
-    trHtml += '</td>' +
-        '<td class="dtable-col2">';
-    if (value !== null && value !== undefined) {
-        trHtml += value;
-    }
-    trHtml += '</td>' +
-        '<td><a data-mode="edit" class="action" href="javascript:void(0)">edit</a></td>' +
-        '<td><a class="delete" href="javascript:void(0)">delete</a></td>';
-
+    var trHtml =
+          '<td class="dtable-col1"></td>' 
+        + '<td class="dtable-col2"></td > '
+        + '<td><a data-mode="edit" class="action" href="javascript:void(0)">edit</a></td>'
+        + '<td><a class="delete" href="javascript:void(0)">delete</a></td>';
 
     var tr = $('<tr>' + trHtml + '</tr>');
     table.find('tbody').append(tr);
 
-    //var trHtml = $('#tr_template').html();
-    //var tr = $('<tr>' + trHtml + '</tr>');
-    //table.find('tbody').append(tr);
+    name = name ? name.trim() : ' ';
+    value = value ? value.trim() : ' ';
 
-    // Show the row in edit mode
-    showRowInEditMode(tr);
+    showRowInEditMode(tr, name, value);
 
-    // Delete button click handler
     tr.find('a.delete').on('click', function () {
         tr.remove();
     });
 
-    // Update button click handler
     tr.find('.action').on('click', function () {
-        toggleRowEditMode(tr); // Toggle edit mode when action button is clicked
+        toggleRowEditMode(tr); 
     });
 
-    function showRowInEditMode(tr) {
+    function showRowInEditMode(tr,name,value) {
         var action = tr.find('.action');
         action.attr('data-mode', 'update');
         action.text('Update');
 
-        // Replace text with inputs containing current values
-        var col1_input = $('<input type="text" class="form-control  input-sharp" value="">');
-        var col2_input = $('<input type="text" class="form-control  input-sharp" value="">');
-
+        var col1_input = $('<input type="text" class="form-control input-sharp" value="' + (name ? name : '') + '">');
+        var col2_input = $('<input type="text" class="form-control input-sharp" value="' + (value ? value : '') + '">');
         var col1 = tr.find('.dtable-col1');
         col1.html(col1_input);
 
@@ -54,9 +40,8 @@
         var mode = action.attr('data-mode');
 
         if (mode === 'edit') {
-            showRowInEditMode(tr); // Show in edit mode if currently in view mode
+            showRowInEditMode(tr); 
         } else {
-            // Save input values back to text
             var col1 = tr.find('.dtable-col1');
             var col2 = tr.find('.dtable-col2');
 
