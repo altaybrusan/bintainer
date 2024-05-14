@@ -180,38 +180,6 @@
 
 	const myTree = new DinampTreeEditor('.category-treeview').setData(data);
 
-	// function onTemplateSelected() {
-	// 	var selectedId = document.getElementById("templateList").value;
-	// 	//console.log("You selected: " + selectedId);
-	// 	$.ajax({
-	// 		type: 'POST',
-	// 		beforeSend: function (xhr) {
-	// 			xhr.setRequestHeader("XSRF-TOKEN",
-	// 				$('input:hidden[name="__RequestVerificationToken"]').val());
-	// 		},
-	// 		url: '/dashboard/template?handler=LoadAttributeTable&tableId=' + selectedId,
-	// 		contentType: 'application/json',
-	// 		success: function (response) {
-	// 			console.log('Data saved successfully:', response);
-	// 			//var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
-	// 			var table = $('#templateList'); // Select the table using the ID
-	// 			if (table.length) { // Check if the table exists
-	// 				$.each(response, function (index, item) {
-	// 					appendRowToTable(table);
-	// 				});
-	// 				// Call the function with the table jQuery object
-	// 			} else {
-	// 				console.error('Table with ID "' + targetTableId + '" not found.');
-	// 			}
-	// 		},
-	// 		error: function (xhr, status, error) {
-	// 			console.error('Error saving data:', status, error);
-	// 			alert('Failed to save data.');
-	// 		}
-	// 	});
-
-	// }
-
 	$(document).ready(function () {
 		$('#templateList').on('change', function (event) {
 			var selectedId = document.getElementById("templateList").value;
