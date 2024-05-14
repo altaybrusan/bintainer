@@ -1,7 +1,9 @@
 ﻿@page "/dashboard/inventory"
+@using System.Text.Json;
 @model InventoryModel
 @{
 }
+@Html.AntiForgeryToken()
 <link rel="stylesheet" href="~/css/hierarchy-select.min.css">
 <link rel="stylesheet" href="~/css/autocomplete.css">
 <style>
@@ -56,7 +58,7 @@
                     </tbody>
                 </table>
                 <div class="button-row align-items-end justify-content-end mt-5">
-                    <button type="button" id="btnSubmit" class="button-row btn btn-primary btn-md pull-right btn-sm">Submit</button>
+                    <button type="button" id="submitBtn" class="button-row btn btn-primary btn-md pull-right btn-sm">Submit</button>
                 </div>
             </div>
         </div>
@@ -77,9 +79,42 @@
                 '</tr>';
             $('#sectionlist').append(contactdiv); // Adding these controls to Main table class
         });
-
         $(document).on("click", ".btnDelete", function () {
             $(this).closest("tr").remove();
         });
+        $(document).on("click", "#submitBtn", function () {
+            var data = [];
+            $("#sectionlist tbody tr").each(function () {
+                var row = $(this);
+                var rowData = {
+                    sectionName: row.find("input[name^='section-name']").val(),
+                    width: parseInt(row.find("input[name^='section-width']").val(), 10),
+                    height: parseInt(row.find("input[name^='section-hight']").val(), 10),
+                    subSections: parseInt(row.find("input[name^='bin-section']").val(), 10)
+                };
+                data.push(rowData);
+            });
+
+            $.ajax({
+                type: "POST",
+                url: '/dashboard/inventory?handler=SubmitForm',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },               
+                success: function (response) {
+                    console.log('Data saved successfully:', response);
+                    alert('Data submitted successfully.');
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error saving data:', status, error);
+                    alert('Failed to save data.');
+                }
+            });
+        });
+
+
     });
 </script>
