@@ -9,5 +9,7 @@ public partial class Inventory
 
     public string UserId { get; set; } = null!;
 
+    public string? Name { get; set; }
+
     public virtual ICollection<InventorySection> InventorySections { get; set; } = new List<InventorySection>();
 }
