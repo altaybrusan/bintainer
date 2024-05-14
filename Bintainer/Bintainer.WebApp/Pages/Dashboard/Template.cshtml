@@ -218,6 +218,7 @@
 			//console.log("You selected: " + selectedId);
 			var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
 			var table = $('#' + targetTableId); // Select the table using the ID
+			table.find('tbody').empty();
 			$.ajax({
 				type: 'POST',
 				beforeSend: function (xhr) {
