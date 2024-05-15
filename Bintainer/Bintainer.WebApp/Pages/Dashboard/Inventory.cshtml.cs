@@ -7,24 +7,6 @@ using System.Text.Json.Serialization;
 
 namespace Bintainer.WebApp.Pages.Dashboard
 {
-    //public class InventorySectionModel 
-    //{
-    //    [JsonPropertyName("sectionName")]
-    //    public string SectionName { get; set; }= string.Empty;
-    //    [JsonPropertyName("width")]
-    //    public int Width { get; set; }
-    //    [JsonPropertyName("height")]
-    //    public int Height { get; set; }
-    //    [JsonPropertyName("subSections")]
-    //    public int Subsections { get; set; }
-    //};
-    //public class InventoryViewModel 
-    //{
-    //    public List<InventorySectionModel> Sections { get; set; } = new();
-    //    public string InventoryName { get; set; } = string.Empty;
-
-    //}
-
     public class InventoryModel : PageModel
     {
         SignInManager<IdentityUser> _SignInManager;
