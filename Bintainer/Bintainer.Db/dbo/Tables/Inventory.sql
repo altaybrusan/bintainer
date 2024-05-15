@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Inventory]
 (
-	[Id] INT NOT NULL PRIMARY KEY, 
-    [UserId] NCHAR(10) NOT NULL, 
+	[Id] INT NOT NULL CONSTRAINT PK_Inventory PRIMARY KEY IDENTITY(1000,1), 
+    [Admin] NVARCHAR(256) NOT NULL, 
     [Name] NCHAR(150) NULL	
 )
