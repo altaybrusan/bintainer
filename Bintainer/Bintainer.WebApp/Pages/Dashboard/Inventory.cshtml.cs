@@ -7,41 +7,94 @@ using System.Text.Json.Serialization;
 
 namespace Bintainer.WebApp.Pages.Dashboard
 {
-    public class InventoryViewModel 
-    {
-        [JsonPropertyName("sectionName")]
-        public string SectionName { get; set; }= string.Empty;
-        [JsonPropertyName("width")]
-        public int Width { get; set; }
-        [JsonPropertyName("height")]
-        public int Height { get; set; }
-        [JsonPropertyName("subSections")]
-        public int Subsections { get; set; }
-    };
+    //public class InventorySectionModel 
+    //{
+    //    [JsonPropertyName("sectionName")]
+    //    public string SectionName { get; set; }= string.Empty;
+    //    [JsonPropertyName("width")]
+    //    public int Width { get; set; }
+    //    [JsonPropertyName("height")]
+    //    public int Height { get; set; }
+    //    [JsonPropertyName("subSections")]
+    //    public int Subsections { get; set; }
+    //};
+    //public class InventoryViewModel 
+    //{
+    //    public List<InventorySectionModel> Sections { get; set; } = new();
+    //    public string InventoryName { get; set; } = string.Empty;
+
+    //}
+
     public class InventoryModel : PageModel
     {
         SignInManager<IdentityUser> _SignInManager;
         BintainerContext _dbContext;
 
+        public List<InventorySection> Sections { get; set; } = new();
+        public string InventoryName { get; set; } = string.Empty;
 
         public InventoryModel(SignInManager<IdentityUser> signInManager, BintainerContext dbContext)
         {
             _SignInManager = signInManager;
             _dbContext = dbContext;
-
         }
 
         public void OnGet()
         {
-        }
-        public void OnPostSubmitForm([FromBody] List<InventoryViewModel> sections) 
-        {
-            foreach (var item in sections)
+            if(User.Identity != null) 
             {
-                _dbContext.InventorySections.Add(new InventorySection() { SectionName = item.SectionName, Width = item.Width, Height = item.Height });
-            }
+                string userName = User.Identity.Name ?? string.Empty;
+                var inventory = _dbContext.Inventories.FirstOrDefault(i => i.Admin == userName);
+                InventoryName = inventory?.Name;
 
-            _dbContext.SaveChanges();
+                if(inventory != null) 
+                {
+                    Sections = _dbContext.InventorySections.Where(s=>s.InventoryId==inventory.Id).ToList();
+                }
+            }            
+        }
+        public void OnPostSubmitForm([FromBody] List<InventorySection> sectionList, string inventoryName) 
+        {
+            if(User.Identity != null) 
+            {
+                string userName = User.Identity.Name ?? string.Empty;
+                var inventory = _dbContext.Inventories.FirstOrDefault(i => i.Admin == userName);
+                if (inventory == null)
+                {
+                    inventory = new Inventory() { Admin = userName, Name = inventoryName?.Trim() };
+                    _dbContext.Inventories.Add(inventory);
+                    _dbContext.SaveChanges();
+                }
+                else 
+                {
+                    // the user already created an inventory
+                   if( inventory.Name != inventoryName) 
+                   {
+                        inventory.Name = inventoryName?.Trim();
+                        _dbContext.Update(inventory);
+                        _dbContext.SaveChanges(true);
+                   }
+
+                }
+
+                foreach (var item in sectionList)
+                {
+                    if (item.Id == 0) 
+                    {
+                        item.InventoryId = inventory.Id;
+                        _dbContext.InventorySections.Add(item);
+                    }
+                    else
+                    {
+                        item.InventoryId = inventory.Id;
+                        _dbContext.InventorySections.Update(item);
+                        _dbContext.SaveChanges(true);
+                    }
+                    
+                }
+
+                _dbContext.SaveChanges();
+            }            
         }
     }
 }

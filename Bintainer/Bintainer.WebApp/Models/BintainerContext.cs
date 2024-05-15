@@ -153,26 +153,18 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<Inventory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Inventor__3214EC073D80D263");
-
             entity.ToTable("Inventory");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Admin).HasMaxLength(256);
             entity.Property(e => e.Name)
                 .HasMaxLength(150)
-                .IsFixedLength();
-            entity.Property(e => e.UserId)
-                .HasMaxLength(10)
                 .IsFixedLength();
         });
 
         modelBuilder.Entity<InventorySection>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Inventor__3214EC07943807C8");
-
             entity.ToTable("InventorySection");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.SectionName)
                 .HasMaxLength(150)
                 .IsFixedLength();

@@ -15,6 +15,8 @@ public partial class InventorySection
 
     public int InventoryId { get; set; }
 
+    public int? Subsection { get; set; }
+
     public virtual ICollection<Bin> Bins { get; set; } = new List<Bin>();
 
     public virtual Inventory Inventory { get; set; } = null!;
