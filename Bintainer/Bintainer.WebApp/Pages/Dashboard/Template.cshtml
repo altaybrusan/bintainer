@@ -114,27 +114,40 @@
 		<div class="container">
 			<h2>Attributes Template</h2>
 			<hr />
+
+			<div class="card-body">
+				<form class="row">
+					<div class="col-md-9">
+						<div class="row align-items-center">
+							<div class="col-md-2">
+								<div class="row">
+									<label for="templateList" class="form-label">Load  template</label>
+								</div>
+								<div class="row">
+									<label for="attributeName" class="form-label">Name</label>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<select id="templateList" class="w-100" aria-label="example" target-table="attributeTable">
+									<option selected>select one</option>
+									@foreach (var item in Model.AttributeTables)
+									{
+										<option value=@item.Key>@item.Value.Trim()</option>
+									}
+								</select>
+								<input id="attributeName" name="attributeName" placeholder="attribute's template name" class="form-control  input-sharp" required="required" type="text">
+							</div>
+						</div>
+						<div class="button-row align-items-start">
+							<button id="saveBtn" type="submit" class="btn btn-success" style="height:30px">Save</button>
+							<button id="saveBtn" type="submit" class="btn btn-danger" style="height:30px">Delete</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<hr />
 			<div class="button-row align-items-start">
-				<div class="col-md-1">
-					<button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable" style="height:30px">Add Row</button>
-				</div>
-				<div class="col-md-2">
-					<div class="container-fluid">
-						<select id="templateList" class="" aria-label="example" target-table="attributeTable">
-							<option selected>Load template</option>
-							@foreach(var item in Model.AttributeTables)
-							{
-								<option value=@item.Key>@item.Value</option>
-							}							
-						</select>
-					</div>					
-				</div>
-				<div class="col-md-4">
-					<div class="button-row align-items-start">
-						<button id="saveBtn" type="submit" class="btn btn-success" style="height:30px">Save</button>
-						<input id="attributeName" name="attributeName" placeholder="attribute's template name" class="form-control  input-sharp" required="required" type="text">
-					</div>					
-				</div>
+				<button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable" style="height:30px">Add Row</button>
 			</div>
 			<div style="margin-bottom: 20px;"></div>
 			<table class="table" id="attributeTable">
@@ -183,7 +196,8 @@
 	$(document).ready(function () {
 		$('#templateList').on('change', function (event) {
 			var selectedId = document.getElementById("templateList").value;
-			//console.log("You selected: " + selectedId);
+			var selectedText = $(this).find('option:selected').text();
+			$('#attributeName').val(selectedText.trim());
 			var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
 			var table = $('#' + targetTableId); // Select the table using the ID
 			table.find('tbody').empty();
