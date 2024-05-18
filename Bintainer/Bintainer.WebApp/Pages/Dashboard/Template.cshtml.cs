@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Security.Policy;
 
 
@@ -131,8 +132,16 @@ namespace Bintainer.WebApp.Pages.Dashboard
 									   .ToList();			
 			return new JsonResult(resultList);
 		}
+		public async Task<IActionResult> OnPostDeleteAttributeTable(int tableId)
+		{
+			await _dbcontext.PartAttributes.Where(a => a.TemplateId == tableId).ExecuteDeleteAsync();
+			await _dbcontext.PartAttributeTemplates.Where(t => t.Id == tableId).ExecuteDeleteAsync();
+			await _dbcontext.SaveChangesAsync();
+			return new OkResult();
+		}
 
-        public void OnPostTest([FromBody] AttributeTableTemplate attributeTable) 
+
+		public void OnPostTest([FromBody] AttributeTableTemplate attributeTable) 
         {
 			
 			PartAttributeTemplate table = new() { TemplateName = attributeTable.TableName };

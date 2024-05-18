@@ -299,7 +299,40 @@
 
 
 		});
-		// Call the function initially
+		
+		$('#deleteBtn').on('click', function (event) {
+			event.preventDefault();
+
+			var selectedId = document.getElementById("templateList").value;			
+			var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
+			if (selectedId == "select one")
+				return;
+
+			var table = $('#' + targetTableId); // Select the table using the ID
+			table.find('tbody').empty();
+			$.ajax({
+				type: 'POST',
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader("XSRF-TOKEN",
+						$('input:hidden[name="__RequestVerificationToken"]').val());
+				},
+				url: '/dashboard/template?handler=DeleteAttributeTable&tableId=' + selectedId,
+				contentType: 'application/json',
+				success: function (response) {					
+					$('#templateList option[value="' + selectedId + '"]').remove();
+					$('#templateList').val('select one').change();
+					$('#attributeName').val('');
+					//console.log('Data deleted successfully:', response);
+				},
+				error: function (xhr, status, error) {
+					console.error('Error saving data:', status, error);
+					alert('Failed to save data.');
+				}
+			});
+
+		
+		});
+
 		$('#addAttribute').on('click', function (event) {
 			event.preventDefault(); // Prevent default form submission behavior
 			var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
