@@ -21,11 +21,11 @@ public partial class Part
 
     public virtual PartFootprint FootPrintNavigation { get; set; } = null!;
 
-    public virtual ICollection<PartGroup> PartGroups { get; set; } = new List<PartGroup>();
-
     public virtual ICollection<PartLabel> PartLabels { get; set; } = new List<PartLabel>();
 
     public virtual ICollection<Bin> Bins { get; set; } = new List<Bin>();
+
+    public virtual ICollection<PartGroup> Groups { get; set; } = new List<PartGroup>();
 
     public virtual ICollection<PartTemplate> Templates { get; set; } = new List<PartTemplate>();
 }
