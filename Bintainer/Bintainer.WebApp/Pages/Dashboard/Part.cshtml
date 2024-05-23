@@ -248,8 +248,8 @@
         @if (Model.Packages[i] != null)
         {
             @:src.push({
-            @:title: "@Model.Packages[i]?.Trim()",  
-            @:id: "@(string.Format("{0}{1}", Model.Packages[i]?.Trim(), i))",
+            @:title: "@Model.Packages[i].Name?.Trim()",  
+            @:id: "@(Model.Packages[i].Id)",
             @:data: {
             @:key: @i,
             @:    }

@@ -7,12 +7,12 @@ namespace Bintainer.WebApp.Pages.Dashboard
 {
     public class PartModel : PageModel
     {
-        public List<string?> Packages { get; set; } = new List<string?>();
+        public List<PartPackage> Packages { get; set; } = new List<PartPackage>();
         BintainerContext _dbcontext;
 		public PartModel(BintainerContext dbContext)
         {
 			_dbcontext = dbContext;
-            Packages = _dbcontext.PartPackages.Select(p => p.Name).ToList();
+            Packages = _dbcontext.PartPackages.ToList();
 		}
 
         public void OnGet()
