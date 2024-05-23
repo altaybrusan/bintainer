@@ -318,13 +318,10 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<PartGroup>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartGrou__3214EC07EE54B1EF");
-
             entity.ToTable("PartGroup");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name)
-                .HasMaxLength(10)
+                .HasMaxLength(150)
                 .IsFixedLength();
         });
 
