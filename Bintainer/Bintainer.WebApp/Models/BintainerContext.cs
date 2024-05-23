@@ -230,6 +230,23 @@ public partial class BintainerContext : DbContext
                         j.ToTable("PartBin");
                     });
 
+            entity.HasMany(d => d.Groups).WithMany(p => p.Parts)
+                .UsingEntity<Dictionary<string, object>>(
+                    "PartGroupAssociation",
+                    r => r.HasOne<PartGroup>().WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_Part_PartGroup_PartGroup"),
+                    l => l.HasOne<Part>().WithMany()
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_Part_PartGroup_Part"),
+                    j =>
+                    {
+                        j.HasKey("PartId", "GroupId").HasName("PK_Part_PartGroup");
+                        j.ToTable("PartGroupAssociation");
+                    });
+
             entity.HasMany(d => d.Templates).WithMany(p => p.Parts)
                 .UsingEntity<Dictionary<string, object>>(
                     "PartTemplateAssignment",
@@ -309,11 +326,6 @@ public partial class BintainerContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(10)
                 .IsFixedLength();
-
-            entity.HasOne(d => d.Part).WithMany(p => p.PartGroups)
-                .HasForeignKey(d => d.PartId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PartGroup_Part");
         });
 
         modelBuilder.Entity<PartLabel>(entity =>
