@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[PartGroup]
 (
-	[Id] INT NOT NULL PRIMARY KEY, 
-    [Name] NCHAR(10) NULL, 
+	[Id] INT NOT NULL CONSTRAINT PK_PartGroup PRIMARY KEY IDENTITY(500,1), 
+    [Name] NCHAR(150) NULL, 
 )
