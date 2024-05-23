@@ -114,12 +114,15 @@
                                 <hr />
                                 <div class="button-row align-items-start">
                       @*               <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable" style="height:30px">Add Row</button> *@
-                                    <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-                                        <option selected>Attributes</option>
-                                        <option value="1">SMD Resistor</option>
-                                        <option value="2">THT Transistor</option>
-                                        <option value="3">SMD Microcontroller</option>
-                                    </select>
+                                    <div class="col-4">
+                                        <select id="templateList" class="form-select form-select-lg mb-3 w-100" aria-label=".form-select-lg example" target-table="attributeTable">
+                                            <option selected>Attributes</option>
+                                            @foreach (var item in Model.AttributeTables)
+                                            {
+                                                <option value=@item.Key>@item.Value.Trim()</option>
+                                            }
+                                        </select>
+                                    </div>                                    
                                 </div>
                                 <div style="margin-bottom: 20px;"></div>
                                 <table class="table" id="attributeTable">
@@ -312,7 +315,42 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+
         // Call the function initially
+        $('#templateList').on('change', function (event) {
+            var selectedId = document.getElementById("templateList").value;
+            var selectedText = $(this).find('option:selected').text();
+            $('#attributeName').val(selectedText.trim());
+            var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
+            var table = $('#' + targetTableId); // Select the table using the ID
+            table.find('tbody').empty();
+            $.ajax({
+                type: 'POST',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                url: '/dashboard/template?handler=LoadAttributeTable&tableId=' + selectedId,
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log('Data saved successfully:', response);
+                    if (table.length) { // Check if the table exists
+                        $.each(response, function (index, item) {
+                            appendRowToTable(table, item.name, item.value);
+                        });
+                        // Call the function with the table jQuery object
+                    } else {
+                        console.error('Table with ID "' + targetTableId + '" not found.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error saving data:', status, error);
+                    alert('Failed to save data.');
+                }
+            });
+
+        });
+        
         $('#addAttribute').on('click', function (event) {
             event.preventDefault(); // Prevent default form submission behavior
             var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
