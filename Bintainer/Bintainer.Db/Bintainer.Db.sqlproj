@@ -148,6 +148,7 @@
     <Build Include="dbo\Tables\PartTemplateAssignment.sql" />
     <Build Include="dbo\Tables\PartTemplateAttributeAssociation.sql" />
     <Build Include="dbo\Tables\PartAttributeTemplate.sql" />
+    <Build Include="dbo\Tables\PartGroupAssociation.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="PartsBinStockTool.Db.refactorlog" />
