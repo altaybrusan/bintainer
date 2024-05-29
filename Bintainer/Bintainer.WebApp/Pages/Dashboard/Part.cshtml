@@ -140,9 +140,9 @@
                             <fieldset>
                                 <legend><h2>Suppliers</h2></legend>
                                 <hr />
-                                <div class="button-row mb-4">
+@*                                 <div class="button-row mb-4">
                                     <button class="btn btn-primary me-2 ms-2" id="addSupplier" target-table="supplierTable">Add Row</button>
-                                </div>
+                                </div> *@
                                 <table class="table" id="supplierTable">
                                     <thead>
                                         <tr>
@@ -151,7 +151,34 @@
                                             <th></th>
                                         </tr>
                                     </thead>
-                                    <tbody id="supplierPartNumberTable"></tbody>
+                                    <tbody id="supplierPartNumberTable">  
+                                        <tr>
+                                            <td class="dtable-col1">
+                                                <span>
+                                                 Digikey
+                                                </span>
+                                            </td>
+                                            <td class="dtable-col2">
+                                                <input type="text" class="form-control input-sharp" placeholder="Digikey part number">
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-success button-row">Fetch </button>
+                                            </td>                                            
+                                        </tr>
+                                        <tr>
+                                            <td class="dtable-col1">
+                                                <span>
+                                                    Mouser
+                                                </span>
+                                            </td>
+                                            <td class="dtable-col2">
+                                                <input type="text" class="form-control input-sharp" placeholder="Mouser part number">
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-success button-row">Fetch </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </fieldset>
                             <fieldset>
