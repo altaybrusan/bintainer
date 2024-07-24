@@ -1,4 +1,5 @@
 using Bintainer.WebApp.Models;
+using Bintainer.WebApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -14,9 +15,11 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
 
         BintainerContext _dbcontext;
-		public PartModel(BintainerContext dbContext)
+        DigikeyService _digikeyService;
+        public PartModel(BintainerContext dbContext, DigikeyService digikeyServices)
         {
 			_dbcontext = dbContext;
+            _digikeyService = digikeyServices;
             Packages = _dbcontext.PartPackages.ToList();
             Category = _dbcontext.PartCategories.ToList();
             Group = _dbcontext.PartGroups.ToList();
@@ -26,6 +29,12 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 if (item.TemplateName != null)
                     AttributeTables[item.Id] = item.TemplateName;
             }
+        }
+
+        public IActionResult OnGetDigikeyParameters(string partNumber) 
+        {
+            var parameters = _digikeyService.ExtractParameters(partNumber);
+            return new JsonResult(parameters);
         }
 
         public void OnGet()

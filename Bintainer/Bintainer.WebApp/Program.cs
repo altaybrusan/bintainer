@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Bintainer.WebApp;
 using Bintainer.WebApp.Data;
 using Bintainer.WebApp.Models;
+using Bintainer.WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +17,14 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 { 
     options.SignIn.RequireConfirmedAccount = true; 
     options.Lockout.AllowedForNewUsers = true;
-})
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+}).AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Add services to the container.
+builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<DigikeyService>();
+
+builder.Services.AddScoped<DigikeyService, DigikeyService>();
 builder.Services.AddDbContext<BintainerContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IEmailSender, SESEmailSender>();
