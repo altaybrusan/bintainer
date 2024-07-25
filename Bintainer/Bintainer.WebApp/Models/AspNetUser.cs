@@ -41,5 +41,21 @@ public partial class AspNetUser
 
     public virtual ICollection<AspNetUserToken> AspNetUserTokens { get; set; } = new List<AspNetUserToken>();
 
+    public virtual ICollection<Inventory> Inventories { get; set; } = new List<Inventory>();
+
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+
+    public virtual ICollection<PartAttributeTemplate> PartAttributeTemplates { get; set; } = new List<PartAttributeTemplate>();
+
+    public virtual ICollection<PartCategory> PartCategories { get; set; } = new List<PartCategory>();
+
+    public virtual ICollection<PartFootprint> PartFootprints { get; set; } = new List<PartFootprint>();
+
+    public virtual ICollection<PartGroup> PartGroups { get; set; } = new List<PartGroup>();
+
+    public virtual ICollection<PartTemplate> PartTemplates { get; set; } = new List<PartTemplate>();
+
+    public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
+
     public virtual ICollection<AspNetRole> Roles { get; set; } = new List<AspNetRole>();
 }

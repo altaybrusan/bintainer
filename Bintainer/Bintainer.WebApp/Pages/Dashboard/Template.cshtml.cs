@@ -9,7 +9,7 @@ using System.Security.Policy;
 
 namespace Bintainer.WebApp.Pages.Dashboard
 {
-	public class AttributeTableTemplate
+    public class AttributeTableTemplate
 	{
 		public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
 		public string TableName { get; set; } = string.Empty;

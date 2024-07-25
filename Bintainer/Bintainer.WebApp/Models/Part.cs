@@ -17,11 +17,15 @@ public partial class Part
 
     public int? Package { get; set; }
 
+    public string UserId { get; set; } = null!;
+
     public virtual PartCategory? Category { get; set; }
 
     public virtual PartFootprint FootPrintNavigation { get; set; } = null!;
 
     public virtual ICollection<PartLabel> PartLabels { get; set; } = new List<PartLabel>();
+
+    public virtual AspNetUser User { get; set; } = null!;
 
     public virtual ICollection<Bin> Bins { get; set; } = new List<Bin>();
 

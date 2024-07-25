@@ -14,4 +14,8 @@ public partial class Order
     public DateTime? DateTime { get; set; }
 
     public string? Number { get; set; }
+
+    public string UserId { get; set; } = null!;
+
+    public virtual AspNetUser User { get; set; } = null!;
 }
