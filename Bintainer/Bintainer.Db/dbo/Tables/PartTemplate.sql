@@ -4,5 +4,7 @@
     [Supplier] NCHAR(100) NULL, 
     [PartNumber] NCHAR(150) NULL, 
     [ImageUri] NCHAR(100) NULL, 
-    [DatasheetUri] NCHAR(100) NULL    
+    [DatasheetUri] NCHAR(100) NULL,
+    [UserId] NVARCHAR (450) NOT NULL,
+    CONSTRAINT [FK_PartTemplate_AspNetUsers] FOREIGN KEY ([UserId])  REFERENCES [AspNetUsers]([ID])
 )

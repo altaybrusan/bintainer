@@ -1,5 +1,8 @@
 ﻿CREATE TABLE [dbo].[PartGroup]
 (
 	[Id] INT NOT NULL CONSTRAINT PK_PartGroup PRIMARY KEY IDENTITY(500,1), 
-    [Name] NCHAR(150) NULL, 
+    [Name] NCHAR(150) NULL,
+    [UserId] NVARCHAR (450) NOT NULL,
+    CONSTRAINT [FK_PartGroup_AspNetUsers] FOREIGN KEY ([UserId])  REFERENCES [AspNetUsers]([ID])
+
 )

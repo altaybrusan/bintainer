@@ -6,8 +6,10 @@
     [CategoryId]INT NULL,
     [FootPrint] INT NOT NULL, 
     [Package] INT NULL,
+    [UserId] NVARCHAR (450) NOT NULL,
     CONSTRAINT [FK_Part_PartCategory] FOREIGN KEY ([CategoryId]) REFERENCES [PartCategory]([Id]),
-    CONSTRAINT [FK_Part_PartFootprint] FOREIGN KEY ([FootPrint]) REFERENCES [PartFootprint]([Id])
+    CONSTRAINT [FK_Part_PartFootprint] FOREIGN KEY ([FootPrint]) REFERENCES [PartFootprint]([Id]),
+    CONSTRAINT [FK_Part_AspNetUsers] FOREIGN KEY ([UserId])  REFERENCES [AspNetUsers]([ID])
 )
 GO
 
