@@ -48,7 +48,8 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 var inventory = _dbContext.Inventories.FirstOrDefault(i => i.Admin == userName);
                 if (inventory == null)
                 {
-                    inventory = new Inventory() { Admin = userName, Name = inventoryName?.Trim() };
+                    var UserId = User.Claims.ToList().FirstOrDefault(c=>c.Type.Contains("nameidentifier"))?.Value;
+                    inventory = new Inventory() { Admin = userName, Name = inventoryName?.Trim(), UserId = UserId };
                     _dbContext.Inventories.Add(inventory);
                     _dbContext.SaveChanges();
                 }
