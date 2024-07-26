@@ -33,6 +33,11 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 {
                     Sections = _dbContext.InventorySections.Where(s=>s.InventoryId==inventory.Id).ToList();
                 }
+                else 
+                {
+                    Sections = new List<InventorySection>();
+                    Sections.Add(new InventorySection() { Height = 1, Width = 1 });
+                }
             }            
         }
         public void OnPostSubmitForm([FromBody] List<InventorySection> sectionList, string inventoryName) 
