@@ -141,7 +141,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 									   .ToList();			
 			return new JsonResult(resultList);
 		}
-		public void OnPostTest([FromBody] AttributeTableTemplate attributeTable) 
+		public void OnPostAttributesTemplateSave([FromBody] AttributeTableTemplate attributeTable) 
         {
 			
 			PartAttributeTemplate table = new() { TemplateName = attributeTable.TableName };
@@ -200,7 +200,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 				AddItem(item,userId, newCategory.Id);
 			}
 		}
-		public async Task OnPostTest2([FromBody] List<CategoryView> categories)
+		public async Task OnPostCategorySave([FromBody] List<CategoryView> categories)
 		{
 			var original = await GetCategoryHierarchyAsync();
 			CategoryViewComparer comparer = new CategoryViewComparer(original, categories);

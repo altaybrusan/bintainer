@@ -238,7 +238,7 @@
 					xhr.setRequestHeader("XSRF-TOKEN",
 						$('input:hidden[name="__RequestVerificationToken"]').val());
 				},
-				url: '/dashboard/template?handler=Test2',
+				url: '/dashboard/template?handler=CategorySave',
 				contentType: 'application/json',
 				data: JSON.stringify(data),
 				success: function (response) {
@@ -284,7 +284,7 @@
 					xhr.setRequestHeader("XSRF-TOKEN",
 						$('input:hidden[name="__RequestVerificationToken"]').val());
 				},
-				url: '/dashboard/template?handler=Test', 
+				url: '/dashboard/template?handler=AttributesTemplateSave',
 				contentType: 'application/json', 
 				data: JSON.stringify({ attributes: productAttributes, tablename: setName }),
 				success: function (response) {					
