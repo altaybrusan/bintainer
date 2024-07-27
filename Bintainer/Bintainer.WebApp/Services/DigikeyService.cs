@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -11,15 +12,17 @@ namespace Bintainer.WebApp.Services
         private readonly IMemoryCache _cache;
         private readonly string? _clientId;
         private readonly string? _clientSecret;
-        private readonly string? _tokenEndpoint = "https://sandbox-api.digikey.com/v1/oauth2/token";
+        private readonly string? _grantType;
+		private readonly string? _tokenEndpoint = "https://sandbox-api.digikey.com/v1/oauth2/token";
         private readonly string? _apiEndpointBase = "https://sandbox-api.digikey.com/products/v4/";
 
-        public DigikeyService(HttpClient httpClient, IMemoryCache cache, IConfiguration configuration)
+        public DigikeyService(HttpClient httpClient, IMemoryCache cache, IOptions<DigikeySettings> settings)
         {
             _httpClient = httpClient;
             _cache = cache;
-            _clientId = configuration["Digikey:ClientId"];
-            _clientSecret = configuration["Digikey:ClientSecret"];
+            _clientId = settings.Value.ClientId;
+			_grantType = settings.Value.GrantType;
+            _clientSecret = settings.Value.ClientSecret;
         }
 
         public async Task<string?> GetTokenAsync()
@@ -32,8 +35,8 @@ namespace Bintainer.WebApp.Services
             var requestBody = new Dictionary<string, string?>
             {
                 { "client_id", _clientId },
-                { "grant_type", "client_credentials" },
-                { "client_secret", _clientSecret }
+                { "grant_type", _grantType },
+				{ "client_secret", _clientSecret }
             };
 
             var requestContent = new FormUrlEncodedContent(requestBody);

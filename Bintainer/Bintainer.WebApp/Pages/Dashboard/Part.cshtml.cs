@@ -24,11 +24,6 @@ namespace Bintainer.WebApp.Pages.Dashboard
             Category = _dbcontext.PartCategories.ToList();
             Group = _dbcontext.PartGroups.ToList();
 
-            foreach (var item in _dbcontext.PartAttributeTemplates)
-            {
-                if (item.TemplateName != null)
-                    AttributeTables[item.Id] = item.TemplateName;
-            }
         }
 
         public IActionResult OnGetDigikeyParameters(string partNumber) 
@@ -37,9 +32,20 @@ namespace Bintainer.WebApp.Pages.Dashboard
             return new JsonResult(parameters);
         }
 
-        public void OnGet()
+        public async Task OnGet()
         {
+			//var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+			//LoadTemplate(userId);
+			var r = await _digikeyService.GetProductDetailsAsync("2N2222-ND");
+		}
 
-        }
+        private void LoadTemplate(string userId)         
+        {
+			foreach (var item in _dbcontext.PartAttributeTemplates.Where(p=>p.UserId==userId))
+			{
+				if (item.TemplateName != null)
+					AttributeTables[item.Id] = item.TemplateName;
+			}
+		}
     }
 }

@@ -22,20 +22,30 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 // Add services to the container.
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
+
+if (builder.Environment.IsDevelopment())
+{
+	builder.Configuration.AddUserSecrets<Program>();
+}
+
+builder.Services.Configure<DigikeySettings>(builder.Configuration.GetSection("Digikey"));
+
+
 builder.Services.AddScoped<DigikeyService>();
 
-builder.Services.AddScoped<DigikeyService, DigikeyService>();
 builder.Services.AddDbContext<BintainerContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IEmailSender, SESEmailSender>();
 builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
+
+
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseMigrationsEndPoint();
+    app.UseMigrationsEndPoint();	
 }
 else
 {
