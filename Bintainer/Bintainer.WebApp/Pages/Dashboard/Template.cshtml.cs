@@ -104,12 +104,6 @@ namespace Bintainer.WebApp.Pages.Dashboard
 							 }).ToList();
 		}
 
-		public async Task<List<CategoryView>> GetCategoryHierarchyAsync()
-		{
-			var categories = await _dbcontext.PartCategories.ToListAsync();
-			return BuildCategoryTree(categories);
-		}
-
 		public TemplateModel(BintainerContext dbContext )
 		{
 			_dbcontext = dbContext;
@@ -121,9 +115,24 @@ namespace Bintainer.WebApp.Pages.Dashboard
 		}
         public async Task OnGet()
         {
+            var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+
+            if (FindRoot(userId) == null) 
+			{
+				AddRootNode(userId);
+			}
 			Categories = await GetCategoryHierarchyAsync();
 		}
-
+		
+        public async Task<List<CategoryView>> GetCategoryHierarchyAsync()
+        {
+            var categories = await _dbcontext.PartCategories.ToListAsync();
+            //if (!categories.Any())
+            //{
+            //    categories.Add(new PartCategory() { Name = "root" });
+            //}
+            return BuildCategoryTree(categories);
+        }
 		public IActionResult OnPostLoadAttributeTable(int tableId) 
 		{
 			var resultList = _dbcontext.PartAttributes
@@ -132,15 +141,6 @@ namespace Bintainer.WebApp.Pages.Dashboard
 									   .ToList();			
 			return new JsonResult(resultList);
 		}
-		public async Task<IActionResult> OnPostDeleteAttributeTable(int tableId)
-		{
-			await _dbcontext.PartAttributes.Where(a => a.TemplateId == tableId).ExecuteDeleteAsync();
-			await _dbcontext.PartAttributeTemplates.Where(t => t.Id == tableId).ExecuteDeleteAsync();
-			await _dbcontext.SaveChangesAsync();
-			return new OkResult();
-		}
-
-
 		public void OnPostTest([FromBody] AttributeTableTemplate attributeTable) 
         {
 			
@@ -156,7 +156,25 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			_dbcontext.SaveChanges();
 
 		}
+		public async Task<IActionResult> OnPostDeleteAttributeTable(int tableId)
+		{
+			await _dbcontext.PartAttributes.Where(a => a.TemplateId == tableId).ExecuteDeleteAsync();
+			await _dbcontext.PartAttributeTemplates.Where(t => t.Id == tableId).ExecuteDeleteAsync();
+			await _dbcontext.SaveChangesAsync();
+			return new OkResult();
+		}
 
+		private PartCategory? FindRoot(string userId) 
+		{
+            return _dbcontext.PartCategories.Where(p=> p.UserId == userId).FirstOrDefault();        }
+		private void AddRootNode(string userId) 
+		{
+			CategoryView viewNode = new CategoryView() {
+				Title = "Root"
+			};
+			AddItem(viewNode, userId);
+
+        }
 		private void DeleteItem(CategoryView parent) 
 		{
 			_dbcontext.PartCategories.Remove(_dbcontext.PartCategories.First(i => i.Id == parent.Id));
@@ -166,9 +184,9 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			}						
 
 		}
-		private void AddItem(CategoryView nodeView, int? parentId=null)
+		private void AddItem(CategoryView nodeView, string userId ,int? parentId=null)
 		{
-			PartCategory newCategory = new() { Name=nodeView.Title };
+			PartCategory newCategory = new() { Name = nodeView.Title, UserId = userId };
 			if(parentId != null) 
 			{
 				newCategory.ParentCategory = _dbcontext.PartCategories.First(i => i.Id == parentId);
@@ -179,7 +197,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			
 			foreach (var item in nodeView.Children)
 			{
-				AddItem(item,newCategory.Id);
+				AddItem(item,userId, newCategory.Id);
 			}
 		}
 		public async Task OnPostTest2([FromBody] List<CategoryView> categories)
@@ -190,11 +208,16 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			var deletedItems = comparer.Deleted;
 			var updatedItems = comparer.Updated;
 
-			foreach (var item in updatedItems) 
+			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+
+
+            foreach (var item in updatedItems) 
 			{
 				var _category = _dbcontext.PartCategories.First(i => i.Id == item.Id);
 				_category.Name= item.Title;
-				_dbcontext.PartCategories.Update(_category);
+				_category.UserId = userId;
+
+                _dbcontext.PartCategories.Update(_category);
 			}
 
 			foreach (var item in deletedItems) 
@@ -203,7 +226,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			}
 			foreach (var item in AddedItems)
 			{
-				AddItem(item,item.ParentId);
+				AddItem(item, userId, item.ParentId);
 			}
 
 
