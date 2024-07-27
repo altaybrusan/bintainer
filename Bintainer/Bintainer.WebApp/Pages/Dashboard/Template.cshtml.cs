@@ -107,11 +107,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 		public TemplateModel(BintainerContext dbContext )
 		{
 			_dbcontext = dbContext;
-			foreach (var item in _dbcontext.PartAttributeTemplates)
-			{
-				if (item.TemplateName != null)
-					AttributeTables[item.Id] = item.TemplateName;
-			}
+
 		}
         public async Task OnGet()
         {
@@ -121,16 +117,14 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			{
 				AddRootNode(userId);
 			}
-			Categories = await GetCategoryHierarchyAsync();
+			Categories = await GetCategoryHierarchyAsync(userId);
+			LoadAttributes(userId);
 		}
+
 		
-        public async Task<List<CategoryView>> GetCategoryHierarchyAsync()
+        public async Task<List<CategoryView>> GetCategoryHierarchyAsync(string userId)
         {
-            var categories = await _dbcontext.PartCategories.ToListAsync();
-            //if (!categories.Any())
-            //{
-            //    categories.Add(new PartCategory() { Name = "root" });
-            //}
+            var categories = await _dbcontext.PartCategories.Where(p=>p.UserId== userId).ToListAsync();
             return BuildCategoryTree(categories);
         }
 		public IActionResult OnPostLoadAttributeTable(int tableId) 
@@ -165,6 +159,14 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			return new OkResult();
 		}
 
+		private void LoadAttributes(string userId) 
+		{
+			foreach (var item in _dbcontext.PartAttributeTemplates.Where(p => p.UserId == userId))
+			{
+				if (item.TemplateName != null)
+					AttributeTables[item.Id] = item.TemplateName;
+			}
+		}
 		private PartCategory? FindRoot(string userId) 
 		{
             return _dbcontext.PartCategories.Where(p=> p.UserId == userId).FirstOrDefault();        }
@@ -203,14 +205,12 @@ namespace Bintainer.WebApp.Pages.Dashboard
 		}
 		public async Task OnPostCategorySave([FromBody] List<CategoryView> categories)
 		{
-			var original = await GetCategoryHierarchyAsync();
+            var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+			var original = await GetCategoryHierarchyAsync(userId);
 			CategoryViewComparer comparer = new CategoryViewComparer(original, categories);
 			var AddedItems = comparer.Added;
 			var deletedItems = comparer.Deleted;
 			var updatedItems = comparer.Updated;
-
-			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-
 
             foreach (var item in updatedItems) 
 			{
