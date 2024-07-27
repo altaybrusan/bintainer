@@ -32,14 +32,20 @@ namespace Bintainer.WebApp.Pages.Dashboard
             return new JsonResult(parameters);
         }
 
-        public async Task OnGet()
+        public void OnGet()
         {
-			//var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-			//LoadTemplate(userId);
-			var r = await _digikeyService.GetProductDetailsAsync("2N2222-ND");
+			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+			LoadTemplate(userId);
+            
 		}
 
-        private void LoadTemplate(string userId)         
+        public async Task OnPostFetchDigikey(string digiKeyPartNumber) 
+        {
+			var result = await _digikeyService.GetProductDetailsAsync(digiKeyPartNumber);
+
+		}
+
+		private void LoadTemplate(string userId)         
         {
 			foreach (var item in _dbcontext.PartAttributeTemplates.Where(p=>p.UserId==userId))
 			{
