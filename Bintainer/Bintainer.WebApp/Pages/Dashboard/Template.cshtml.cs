@@ -144,7 +144,8 @@ namespace Bintainer.WebApp.Pages.Dashboard
 		public void OnPostAttributesTemplateSave([FromBody] AttributeTableTemplate attributeTable) 
         {
 			
-			PartAttributeTemplate table = new() { TemplateName = attributeTable.TableName };
+			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+			PartAttributeTemplate table = new() { TemplateName = attributeTable.TableName, UserId = userId };
 
 			foreach (var item in attributeTable.Attributes)
 			{
