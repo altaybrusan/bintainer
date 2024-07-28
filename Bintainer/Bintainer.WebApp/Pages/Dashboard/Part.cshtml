@@ -162,7 +162,7 @@
                                                 <input type="text" class="form-control input-sharp" id="digikeyPartNumber" placeholder="Digikey part number">
                                             </td>
                                             <td>
-                                                <button type="button" class="btn btn-success button-row" id="fetchDigikey">Fetch </button>
+                                                <button type="button" class="btn btn-success button-row" id="fetchDigikey" target-table="attributeTable">Fetch </button>
                                             </td>                                            
                                         </tr>
                                         <tr>
@@ -415,8 +415,10 @@
         });
         $('#fetchDigikey').on('click', function (event) {
             event.preventDefault();
-
+            var targetTableId = $(this).attr('target-table');
             var digiKeyPartNumber = $('#digikeyPartNumber').val();
+            var table = $('#' + targetTableId);
+            table.find('tbody').empty();
             var url = '@Url.Page("Part", "DigikeyParameters")';
             $.ajax({
                 url: url,
@@ -424,9 +426,17 @@
                 data: {
                     partNumber: digiKeyPartNumber
                 },
-                success: function (result) {
-                    // Handle the result here (e.g., display the result on the page)
-                    console.log(result);
+                success: function (response) {
+                    console.log('Data saved successfully:', response);
+                    if (table.length) { // Check if the table exists
+                        $.each(response, function (index, item) {
+                            if (item.category === "Parameter")
+                            appendRowToTable(table, item.name, item.value);
+                        });
+                        // Call the function with the table jQuery object
+                    } else {
+                        console.error('Table with ID "' + targetTableId + '" not found.');
+                    }
                 },
                 error: function (xhr, status, error) {
                     // Handle any errors here

@@ -79,13 +79,18 @@ namespace Bintainer.WebApp.Services
         {
             JObject jsonObject = JObject.Parse(productDetails);
             List<Parameter> parameters = new List<Parameter>();
+            string detailedDescription = (string)jsonObject["Product"]["Description"]["DetailedDescription"];
+            parameters.Add(new Parameter { Category = "DetailedDescription", Name = "DetailedDescription", Value = detailedDescription });
+            string PhotoUrl = (string)jsonObject["Product"]["PhotoUrl"];
+            parameters.Add(new Parameter { Category = "PhotoUrl", Name = "PhotoUrl", Value = PhotoUrl });
             JArray parameterArray = (JArray)jsonObject["Product"]["Parameters"];
             foreach (var item in parameterArray)
             {
                 parameters.Add(new Parameter
                 {
-                    ParameterText = item["ParameterText"].ToString(),
-                    ValueText = item["ValueText"].ToString()
+                    Category= "Parameter",
+                    Name = item["ParameterText"].ToString(),
+                    Value = item["ValueText"].ToString()
                 });
             }
             return parameters;
@@ -100,8 +105,9 @@ namespace Bintainer.WebApp.Services
 
         public class Parameter
         {
-            public string ParameterText { get; set; }
-            public string ValueText { get; set; }
+            public string Category { get; set; }
+            public string Name { get; set; }
+            public string Value { get; set; }
         }
 
 
