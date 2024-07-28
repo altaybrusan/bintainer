@@ -37,8 +37,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public void OnGet()
         {
 			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-			LoadTemplate(userId);
-            
+			LoadTemplate(userId);            
 		}
 
         public async Task OnPostFetchDigikey(string digiKeyPartNumber) 

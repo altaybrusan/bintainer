@@ -438,16 +438,27 @@
                     console.log('Data saved successfully:', response);
                     if (table.length) { // Check if the table exists
                         $.each(response, function (index, item) {
-                            if (item.category === "Parameter")
-                            appendRowToTable(table, item.name, item.value);
-                            if (item.category === "PhotoUrl" && item.value) {
-                                // Check if item.value is a valid URL
+                            if (item.category === "Parameter") {
+                                appendRowToTable(table, item.name, item.value);
+
+                                if (item.name === "Package / Case") {
+                                    $('#packageInput').val(item.value);
+
+                                }
+                            }
+                            if (item.category === "PhotoUrl" && item.value) {                               
                                 if (isValidUrl(item.value)) {
                                     $('#partImage').attr('src', item.value);
                                 } else {
                                     console.error('Invalid URL:', item.value);
                                 }
                             }
+                            if (item.category === "DetailedDescription" && item.value){
+                                $('#description').val(item.value);
+                                $('#partName').val(digiKeyPartNumber);
+
+                            }
+
                         });
                         // Call the function with the table jQuery object
                     } else {
