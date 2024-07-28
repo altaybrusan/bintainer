@@ -219,7 +219,7 @@
                     <div class="col-md-2">
                         <div class="card card-custom">
                             <button type="button" class="btn btn-secondary load-button-sharp">Part</button>
-                            <img src="~/image/microchip.png" class="img-fluid" alt="part image" />
+                            <img src="~/image/microchip.png" id="partImage" class="img-fluid" alt="part image" />
                         </div>
                         <div class="card card-custom">
                             <button type="button" class="btn btn-secondary load-button-sharp">Footprint</button>
@@ -341,6 +341,14 @@
 </script>
 
 <script type="text/javascript">
+    function isValidUrl(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
     $(document).ready(function () {
 
         // Call the function initially
@@ -432,6 +440,14 @@
                         $.each(response, function (index, item) {
                             if (item.category === "Parameter")
                             appendRowToTable(table, item.name, item.value);
+                            if (item.category === "PhotoUrl" && item.value) {
+                                // Check if item.value is a valid URL
+                                if (isValidUrl(item.value)) {
+                                    $('#partImage').attr('src', item.value);
+                                } else {
+                                    console.error('Invalid URL:', item.value);
+                                }
+                            }
                         });
                         // Call the function with the table jQuery object
                     } else {
