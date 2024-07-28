@@ -13,8 +13,8 @@ namespace Bintainer.WebApp.Services
         private readonly string? _clientId;
         private readonly string? _clientSecret;
         private readonly string? _grantType;
-		private readonly string? _tokenEndpoint = "https://sandbox-api.digikey.com/v1/oauth2/token";
-        private readonly string? _apiEndpointBase = "https://sandbox-api.digikey.com/products/v4/";
+		private readonly string? _tokenEndpoint = "https://api.digikey.com/v1/oauth2/token";
+        private readonly string? _apiEndpointBase = "https://api.digikey.com/products/v4/";
 
         public DigikeyService(HttpClient httpClient, IMemoryCache cache, IOptions<DigikeySettings> settings)
         {

@@ -159,10 +159,10 @@
                                                 </span>
                                             </td>
                                             <td class="dtable-col2">
-                                                <input type="text" class="form-control input-sharp" placeholder="Digikey part number">
+                                                <input type="text" class="form-control input-sharp" id="digikeyPartNumber" placeholder="Digikey part number">
                                             </td>
                                             <td>
-                                                <button type="button" class="btn btn-success button-row">Fetch </button>
+                                                <button type="button" class="btn btn-success button-row" id="fetchDigikey">Fetch </button>
                                             </td>                                            
                                         </tr>
                                         <tr>
@@ -413,7 +413,27 @@
                 populateList(matchingWords, $menu, $dropdown.find('.dropdown-toggle'));
             });
         });
+        $('#fetchDigikey').on('click', function (event) {
+            event.preventDefault();
 
+            var digiKeyPartNumber = $('#digikeyPartNumber').val();
+            var url = '@Url.Page("Part", "DigikeyParameters")';
+            $.ajax({
+                url: url,
+                type: 'Get',
+                data: {
+                    partNumber: digiKeyPartNumber
+                },
+                success: function (result) {
+                    // Handle the result here (e.g., display the result on the page)
+                    console.log(result);
+                },
+                error: function (xhr, status, error) {
+                    // Handle any errors here
+                    console.error(error);
+                }
+            });
+        });
     });
 </script>
 

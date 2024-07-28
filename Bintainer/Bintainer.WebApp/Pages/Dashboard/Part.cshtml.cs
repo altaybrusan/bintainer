@@ -26,9 +26,10 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         }
 
-        public IActionResult OnGetDigikeyParameters(string partNumber) 
+        public async Task<IActionResult> OnGetDigikeyParameters(string partNumber) 
         {
-            var parameters = _digikeyService.ExtractParameters(partNumber);
+            var details = await _digikeyService.GetProductDetailsAsync(partNumber);
+            var parameters = _digikeyService.ExtractParameters(details);
             return new JsonResult(parameters);
         }
 
@@ -42,7 +43,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public async Task OnPostFetchDigikey(string digiKeyPartNumber) 
         {
 			var result = await _digikeyService.GetProductDetailsAsync(digiKeyPartNumber);
-
+            
 		}
 
 		private void LoadTemplate(string userId)         
