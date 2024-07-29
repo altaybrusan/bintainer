@@ -29,8 +29,21 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         public async Task<IActionResult> OnGetDigikeyParameters(string partNumber) 
         {
-            var details = await _digikeyService.GetProductDetailsAsync(partNumber);
-            var parameters = _digikeyService.ExtractParameters(details);
+            List<DigikeyService.Parameter>? parameters = new();
+            try 
+            {
+                var details = await _digikeyService.GetProductDetailsAsync(partNumber);
+                parameters = _digikeyService.ExtractParameters(details);
+            }
+            catch(Exception e) 
+            {
+                Console.Error.WriteLine($"Error fetching Digikey parameters for part number {partNumber}: {e.Message}");
+                return new JsonResult(new { Error = "An error occurred while fetching the parameters. Please check the part number and try again." })
+                {
+                    StatusCode = 500 // Internal Server Error
+                };
+            }
+            
             return new JsonResult(parameters);
         }
 
