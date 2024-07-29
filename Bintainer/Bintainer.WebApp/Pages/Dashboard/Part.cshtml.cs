@@ -53,10 +53,12 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			LoadTemplate(userId);            
 		}
 
+        public void OnPostSearchForPart(string partNumber) 
+        { 
+        }
         public async Task OnPostFetchDigikey(string digiKeyPartNumber) 
         {
-			var result = await _digikeyService.GetProductDetailsAsync(digiKeyPartNumber);
-            
+			var result = await _digikeyService.GetProductDetailsAsync(digiKeyPartNumber);            
 		}
 
 		private void LoadTemplate(string userId)         

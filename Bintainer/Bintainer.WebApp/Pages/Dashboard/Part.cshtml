@@ -237,7 +237,7 @@
                 <i class="fa fa-search"></i>&nbsp; Search part
             </div>
             <div class="card-body">
-                <form class="row">
+                <form class="row" method="post" asp-page-handler="SearchForPart">
                     <div class="col-md-9">
                         <div class="row align-items-center">
                             <div class="col-md-2">
@@ -246,11 +246,28 @@
                                 </div>      
                             </div>
                             <div class="col-md-4">
-                                <input type="text" class="form-control input-sharp " id="partName" placeholder="partName">                                
+                                <input type="text" class="form-control input-sharp " id="searchPartName" placeholder="partName">                                
                             </div>
                         </div>
-                        <button class="button-row btn btn-primary mt-3">Search</button>
+                        <button type="submit" class="button-row btn btn-primary mt-3" id="searchPartBtn1">Search</button>
                     </div>
+                </form>
+                <form class="well form-horizontal" style="margin-top: 20px;">
+                    <legend><h2>Attributes</h2></legend>
+                    <hr />
+                    <fieldset>
+                        <div style="margin-bottom: 20px;"></div>
+                        <table class="table" id="attributeTable">
+                            <thead>
+                                <tr>
+                                    <th>Product Attribute</th>
+                                    <th>Attribute Value</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="searchedProductSpecTable"></tbody>
+                        </table>
+                    </fieldset>
                 </form>
             </div>
         </div>
@@ -384,8 +401,7 @@
                 }
             });
 
-        });
-        
+        });        
         $('#addAttribute').on('click', function (event) {
             event.preventDefault(); // Prevent default form submission behavior
             var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
@@ -472,6 +488,33 @@
                 }
             });
         });
+        $('#searchPartBtn').on('click', function (event) {
+            event.preventDefault();
+            var partNumber = $('#searchPartName').val();
+            var url = '@Url.Page("Part", "SearchForPart")';
+            var token = $('input[name="__RequestVerificationToken"]').val(); // Extract CSRF token
+            var jsonText = JSON.stringify({
+                name: partNumber,
+                __RequestVerificationToken: token // Add the CSRF token to the data
+            });
+            $.ajax({
+                url: url,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                type: 'Post',
+                data: jsonText,
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log('Data saved successfully:', response);
+                    // Handle the response
+                },
+                error: function (xhr, status, error) {
+                    alert('The part number is not valid.');
+                    console.error(error);
+                }
+            });
+        });
+      
     });
 </script>
 
