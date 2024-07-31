@@ -503,8 +503,9 @@
                 dataType: "json",
                 type: 'Post',
                 data: jsonText,
-                headers: {
-                    'RequestVerificationToken': token // Add the CSRF token to the headers
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
                 },
                 success: function (response) {
                     console.log('Data saved successfully:', response);
