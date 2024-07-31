@@ -212,7 +212,7 @@
 
                             <div class="button-row align-items-end justify-content-end mt-5">
                                 <button type="button" class="btn btn-danger">Cancel</button>
-                                <button type="button" class="btn btn-success">Create</button>
+                                <button type="button" class="btn btn-success" id="createPartBtn">Create</button>
                             </div>
                         </form>
                     </div>
@@ -249,7 +249,7 @@
                                 <input type="text" class="form-control input-sharp " id="searchPartName" placeholder="partName">                                
                             </div>
                         </div>
-                        <button type="button" class="button-row btn btn-primary mt-3" id="searchPartBtn1">Search</button>
+                        <button type="button" class="button-row btn btn-primary mt-3" id="searchPartBtn">Search</button>
                     </div>
                 </form>
                 <form class="well form-horizontal" style="margin-top: 20px;">
@@ -503,7 +503,9 @@
                 dataType: "json",
                 type: 'Post',
                 data: jsonText,
-                contentType: 'application/json',
+                headers: {
+                    'RequestVerificationToken': token // Add the CSRF token to the headers
+                },
                 success: function (response) {
                     console.log('Data saved successfully:', response);
                     // Handle the response
@@ -514,7 +516,57 @@
                 }
             });
         });
-      
+        $('#createPartBtn').on('click', function (event) {
+            event.preventDefault();
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            // Gather data from the form fields
+            var partData = {
+                PartName: $('#partName').val(),
+                Description: $('#description').val(),
+                Label: $('#label').val(),
+                Package: $('#packageInput').val(),
+                Category: $('#categoryInput').val(),
+                Group: $('#groupInput').val(),
+                OrderNumber: $('#order').val(),
+                OrderQuantity: $('#orderQuantity').val(),
+                OrderDate: $('#orderDate').val(),
+                //Attributes: [],
+                __RequestVerificationToken: token
+            };
+
+            // Gather attributes from the attribute table
+            // $('#attributeTable tbody tr').each(function () {
+            //     var attributeName = $(this).find('.dtable-col1 input').val().trim();
+            //     var attributeValue = $(this).find('.dtable-col2 input').val().trim();
+
+            //     if (attributeName && attributeValue) {
+            //         partData.Attributes.push({
+            //             name: attributeName,
+            //             value: attributeValue
+            //         });
+            //     }
+            // });
+
+
+            // Send data to the server
+            $.ajax({
+                url: '/dashboard/Part?handler=CreatePart',
+                dataType: "json",
+                type: 'PUT',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(partData),
+                success: function (response) {
+                    // Handle successful response
+                    console.log(response);
+                    // Optionally, you can redirect or show a success message
+                },
+                error: function (xhr, status, error) {
+                    // Handle error response
+                    console.error('Error:', error);
+                    // Optionally, you can show an error message
+                }
+            });
+        });
     });
 </script>
 

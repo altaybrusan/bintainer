@@ -1,3 +1,4 @@
+using Bintainer.WebApp.Data.DTOs;
 using Bintainer.WebApp.Models;
 using Bintainer.WebApp.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -61,7 +62,12 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			var result = await _digikeyService.GetProductDetailsAsync(digiKeyPartNumber);            
 		}
 
-		private void LoadTemplate(string userId)         
+        public void OnPutCreatePart() 
+        {
+           
+        }
+
+        private void LoadTemplate(string userId)         
         {
 			foreach (var item in _dbcontext.PartAttributeTemplates.Where(p=>p.UserId==userId))
 			{
