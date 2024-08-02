@@ -62,7 +62,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			var result = await _digikeyService.GetProductDetailsAsync(digiKeyPartNumber);            
 		}
 
-        public void OnPutCreatePart() 
+        public void OnPutCreatePart([FromBody]CreatePartRequestModel request) 
         {
            
         }

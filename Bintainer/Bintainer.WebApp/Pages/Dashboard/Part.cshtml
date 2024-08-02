@@ -531,23 +531,19 @@
                 OrderNumber: $('#order').val(),
                 OrderQuantity: $('#orderQuantity').val(),
                 OrderDate: $('#orderDate').val(),
-                //Attributes: [],
-                __RequestVerificationToken: token
+                Attributes: {},
             };
 
-            // Gather attributes from the attribute table
-            // $('#attributeTable tbody tr').each(function () {
-            //     var attributeName = $(this).find('.dtable-col1 input').val().trim();
-            //     var attributeValue = $(this).find('.dtable-col2 input').val().trim();
+            //Gather attributes from the attribute table
+            $('#attributeTable tbody tr').each(function () {
+                var attributeName = $(this).find('.dtable-col1 input').val().trim();
+                var attributeValue = $(this).find('.dtable-col2 input').val().trim();
 
-            //     if (attributeName && attributeValue) {
-            //         partData.Attributes.push({
-            //             name: attributeName,
-            //             value: attributeValue
-            //         });
-            //     }
-            // });
+                if (attributeName && attributeValue) {
+                    partData.Attributes[attributeName] = attributeValue;
 
+                }
+            });
 
             // Send data to the server
             $.ajax({
@@ -556,6 +552,9 @@
                 type: 'PUT',
                 contentType: 'application/json; charset=utf-8',
                 data: JSON.stringify(partData),
+                headers: {
+                    'XSRF-TOKEN': token // Include the CSRF token in the request header
+                },
                 success: function (response) {
                     // Handle successful response
                     console.log(response);
