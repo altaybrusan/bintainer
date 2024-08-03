@@ -520,6 +520,7 @@
         $('#createPartBtn').on('click', function (event) {
             event.preventDefault();
             var token = $('input[name="__RequestVerificationToken"]').val();
+            var selectedIndex = $('#templateList')[0].selectedIndex;
             // Gather data from the form fields
             var partData = {
                 PartName: $('#partName').val(),
@@ -531,6 +532,7 @@
                 OrderNumber: $('#order').val(),
                 OrderQuantity: $('#orderQuantity').val(),
                 OrderDate: $('#orderDate').val(),
+                SelectedAttributeTableIndex: selectedIndex,
                 Attributes: {},
             };
 

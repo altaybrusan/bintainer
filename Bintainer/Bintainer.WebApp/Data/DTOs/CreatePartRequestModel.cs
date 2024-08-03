@@ -11,6 +11,7 @@
         public string? OrderNumber { get; set; }
         public string? OrderQuantity { get; set; }
         public DateTime? OrderDate { get; set; }
+        public int? SelectedAttributeTableIndex { get; set; }
         public Dictionary<string, string>? Attributes { get; set; }
     }
 }
