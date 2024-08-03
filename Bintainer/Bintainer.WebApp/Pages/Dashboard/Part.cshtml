@@ -520,8 +520,10 @@
         $('#createPartBtn').on('click', function (event) {
             event.preventDefault();
             var token = $('input[name="__RequestVerificationToken"]').val();
-            var selectedIndex = $('#templateList')[0].selectedIndex;
             // Gather data from the form fields
+            var selectedIndex = $('#templateList')[0].selectedIndex;
+            var orderDate = $('#orderDate').val();
+
             var partData = {
                 PartName: $('#partName').val(),
                 Description: $('#description').val(),
@@ -531,10 +533,12 @@
                 Group: $('#groupInput').val(),
                 OrderNumber: $('#order').val(),
                 OrderQuantity: $('#orderQuantity').val(),
-                OrderDate: $('#orderDate').val(),
                 SelectedAttributeTableIndex: selectedIndex,
                 Attributes: {},
             };
+            if (orderDate) {
+                partData.OrderDate = orderDate;
+            }
 
             //Gather attributes from the attribute table
             $('#attributeTable tbody tr').each(function () {
