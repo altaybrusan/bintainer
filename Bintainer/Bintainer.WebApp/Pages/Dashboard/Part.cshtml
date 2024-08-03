@@ -1,4 +1,5 @@
 ﻿@page "/dashboard/part"
+@using Bintainer.WebApp.Models
 @model PartModel
 @{
 }
@@ -70,8 +71,8 @@
         <div class="container">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-8" style="margin-left: 10px;">
-                        <form class="well form-horizontal" method="post">
+                    <div class="col-md-8" style="margin-left: 10px;">                     
+                        <form id="myForm" class="well form-horizontal" method="post" asp-page-handler="CreatePart">
                             <fieldset>
                                 <legend><h2>Part</h2></legend>
                                 <hr />
@@ -98,8 +99,11 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label">Category</label>
-                                            <input type="text" class="form-control  input-sharp autocomplete" id="categoryInput" placeholder="e.g., Resistor" />
-
+                                            <select id="categorySelect" class="form-select form-select-sm"
+                                                    required="required"
+                                                    asp-items="@(new SelectList(Model.Category,nameof(PartCategory.Id),nameof(PartCategory.Name)))">
+                                                <option value="">Select Category</option>
+                                            </select>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label">Group</label>
@@ -112,15 +116,13 @@
                             <fieldset>
                                 <legend><h2>Attributes</h2></legend>
                                 <hr />
-                                <div class="button-row align-items-start">
-                      @*               <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable" style="height:30px">Add Row</button> *@
+                                <div class="button-row align-items-start">                      
                                     <div class="col-4">
-                                        <select id="templateList" class="form-select form-select-lg mb-3 w-100" aria-label=".form-select-lg example" target-table="attributeTable">
-                                            <option selected>Attributes</option>
-                                            @foreach (var item in Model.AttributeTables)
-                                            {
-                                                <option value=@item.Key>@item.Value.Trim()</option>
-                                            }
+                                        <select id="templateList" class="form-select form-select-lg mb-3 w-100" 
+                                                aria-label=".form-select-lg example" 
+                                                asp-items="@(new SelectList(Model.AttributeTemplatesTable,"Key","Value"))"
+                                                target-table="attributeTable">
+                                            <option selected value="">Templates</option>
                                         </select>
                                     </div>                                    
                                 </div>
@@ -140,9 +142,6 @@
                             <fieldset>
                                 <legend><h2>Suppliers</h2></legend>
                                 <hr />
-@*                                 <div class="button-row mb-4">
-                                    <button class="btn btn-primary me-2 ms-2" id="addSupplier" target-table="supplierTable">Add Row</button>
-                                </div> *@
                                 <table class="table" id="supplierTable">
                                     <thead>
                                         <tr>
@@ -209,10 +208,9 @@
                                     </div>
                                 </div>
                             </fieldset>
-
                             <div class="button-row align-items-end justify-content-end mt-5">
                                 <button type="button" class="btn btn-danger">Cancel</button>
-                                <button type="button" class="btn btn-success" id="createPartBtn">Create</button>
+                                <button type="submit" class="btn btn-success" id="createPartBtn">Create</button>
                             </div>
                         </form>
                     </div>
@@ -290,7 +288,6 @@
         onSelectItem: console.log,
     };    
     var packageList = [];
-    var categoryList = [];
     var groupList = [];
 
     @for (int i = 0; i < @Model.Packages.Count; i++)
@@ -306,19 +303,6 @@
             @:});
         }
     }
-    @for (int i = 0; i < @Model.Category.Count; i++)
-    {
-        @if (Model.Category[i] != null)
-        {
-            @:categoryList.push({
-            @:title: "@Model.Category[i].Name?.Trim()",
-            @:id: "@(Model.Category[i].Id)",
-            @:data: {
-            @:key: @i,
-            @:    }
-            @:});
-    }
-        }
     @for (int i = 0; i < @Model.Group.Count; i++)
     {
         @if (Model.Group[i] != null)
@@ -339,14 +323,7 @@
             labelField: "title",
             highlightTyped: true,
             onSelectItem: console.log,
-        });
-    Autocomplete.init("#categoryInput", {
-            items: categoryList,
-            valueField: "id",
-            labelField: "title",
-            highlightTyped: true,
-            onSelectItem: console.log,
-        });
+        });   
     Autocomplete.init("#groupInput", {
         items: groupList,
         valueField: "id",
@@ -366,6 +343,7 @@
             return false;
         }
     }
+    
     $(document).ready(function () {
 
         // Call the function initially
@@ -389,8 +367,7 @@
                     if (table.length) { // Check if the table exists
                         $.each(response, function (index, item) {
                             appendRowToTable(table, item.name, item.value);
-                        });
-                        // Call the function with the table jQuery object
+                        });                       
                     } else {
                         console.error('Table with ID "' + targetTableId + '" not found.');
                     }
@@ -517,27 +494,31 @@
                 }
             });
         });
-        $('#createPartBtn').on('click', function (event) {
-            event.preventDefault();
+        $('#createPartBtn').on('click', function (event) {                     
             var token = $('input[name="__RequestVerificationToken"]').val();
             // Gather data from the form fields
             var selectedIndex = $('#templateList')[0].selectedIndex;
             var orderDate = $('#orderDate').val();
+            var groupValue = $('#groupInput').val();
+            var packageValue = $('#packageInput').val();
 
             var partData = {
                 PartName: $('#partName').val(),
                 Description: $('#description').val(),
-                Label: $('#label').val(),
-                Package: $('#packageInput').val(),
-                Category: $('#categoryInput').val(),
-                Group: $('#groupInput').val(),
+                Label: $('#label').val(),                                         
                 OrderNumber: $('#order').val(),
                 OrderQuantity: $('#orderQuantity').val(),
-                SelectedAttributeTableIndex: selectedIndex,
+                CategoryId: $('#categorySelect').val(),
                 Attributes: {},
             };
+            if (groupValue) {
+                partData.Group = groupValue;
+            }
             if (orderDate) {
                 partData.OrderDate = orderDate;
+            }
+            if (packageValue) {
+                partData.Package = packageValue;
             }
 
             //Gather attributes from the attribute table
@@ -555,7 +536,7 @@
             $.ajax({
                 url: '/dashboard/Part?handler=CreatePart',
                 dataType: "json",
-                type: 'PUT',
+                type: 'Post',
                 contentType: 'application/json; charset=utf-8',
                 data: JSON.stringify(partData),
                 headers: {
@@ -564,6 +545,7 @@
                 success: function (response) {
                     // Handle successful response
                     console.log(response);
+                    event.preventDefault(); // enable validation
                     // Optionally, you can redirect or show a success message
                 },
                 error: function (xhr, status, error) {
@@ -572,6 +554,7 @@
                     // Optionally, you can show an error message
                 }
             });
+            
         });
     });
 </script>

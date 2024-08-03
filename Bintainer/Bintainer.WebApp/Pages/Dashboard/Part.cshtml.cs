@@ -5,15 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
 
 namespace Bintainer.WebApp.Pages.Dashboard
 {
     public class PartModel : PageModel
     {
         public List<PartPackage> Packages { get; set; } = new List<PartPackage>();
+
         public List<PartCategory> Category { get; set; } = new List<PartCategory>();
+        
         public List<PartGroup> Group { get; set; } = new List<PartGroup>();
-        public Dictionary<int, string> AttributeTables { get; set; } = new Dictionary<int, string>();
+        public Dictionary<int, string> AttributeTemplatesTable { get; set; } = new Dictionary<int, string>();
 
 
         BintainerContext _dbcontext;
@@ -55,16 +58,18 @@ namespace Bintainer.WebApp.Pages.Dashboard
 		}
 
         public void OnPostSearchForPart(string partNumber) 
-        { 
+        {
+
         }
         public async Task OnPostFetchDigikey(string digiKeyPartNumber) 
         {
 			var result = await _digikeyService.GetProductDetailsAsync(digiKeyPartNumber);            
 		}
 
-        public void OnPutCreatePart([FromBody]CreatePartRequestModel request) 
+        public void OnPostCreatePart([FromBody]CreatePartRequestModel request) 
         {
-           
+            if (ModelState.IsValid) { }
+
         }
 
         private void LoadTemplate(string userId)         
@@ -72,7 +77,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			foreach (var item in _dbcontext.PartAttributeTemplates.Where(p=>p.UserId==userId))
 			{
 				if (item.TemplateName != null)
-					AttributeTables[item.Id] = item.TemplateName;
+					AttributeTemplatesTable[item.Id] = item.TemplateName;
 			}
 		}
     }
