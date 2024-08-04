@@ -73,22 +73,43 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 // TODO: Reuest issued two or more time. Resolve this issue later.
                 Part _part= new Part();
                 _part.Name = request.PartName;
-
-                PartFootprint _footprint= new PartFootprint();
-
                 _part.Description = request.Description;
                 _part.CategoryId = request.CategoryId;
+
+                var packageName = request.Package;
+
+                var footPrint = _dbcontext.PartFootprints.FirstOrDefault(f => f.Name.Contains(request.FootprintUrl));
+                if (footPrint != null) 
+                {
+                    _part.FootPrint = footPrint.Id;
+                }
                 
-                //_part.Package = request.Package;
                 PartPackage _package = new PartPackage() { Name= request.Package };
-                //PartFootprint _footPrine= new PartFootprint() { Name= request. }
+                
                 var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
                 _part.UserId = UserId;
                 
                 List<PartAttribute> attributes = new List<PartAttribute>();
+                var attributeTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.Id == request.AttributeTemplateId);
+                if(attributeTemplate is null) 
+                {
+                    var defaultTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.TemplateName == "default");
+                    if (defaultTemplate is null)
+                    {
+                        attributeTemplate = new PartAttributeTemplate() { TemplateName = "default", UserId = UserId };
+                        _dbcontext.PartAttributeTemplates.Add(attributeTemplate);
+                        _dbcontext.SaveChanges();
+                    }
+                    else
+                    {
+                        attributeTemplate = defaultTemplate;
+                    }
+
+                }
                 foreach (var item in request.Attributes)
                 {
-                    attributes.Add(new PartAttribute() { Name = item.Key, Value = item.Value });
+                    attributes.Add(new PartAttribute() { Name = item.Key, Value = item.Value, Template = attributeTemplate });                    
+                    
                 }
             }
 
