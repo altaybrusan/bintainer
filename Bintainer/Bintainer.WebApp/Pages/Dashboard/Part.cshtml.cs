@@ -72,6 +72,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
             {                
                 // TODO: Reuest issued two or more time. Resolve this issue later.
                 Part _part= new Part();
+                var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
                 _part.Name = request.PartName;
                 _part.Description = request.Description;
                 _part.CategoryId = request.CategoryId;
@@ -86,7 +87,6 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 
                 PartPackage _package = new PartPackage() { Name= request.Package };
                 
-                var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
                 _part.UserId = UserId;
                 
                 List<PartAttribute> attributes = new List<PartAttribute>();
