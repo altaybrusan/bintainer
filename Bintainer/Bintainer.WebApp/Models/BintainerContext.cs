@@ -45,8 +45,6 @@ public partial class BintainerContext : DbContext
 
     public virtual DbSet<PartCategory> PartCategories { get; set; }
 
-    public virtual DbSet<PartFootprint> PartFootprints { get; set; }
-
     public virtual DbSet<PartGroup> PartGroups { get; set; }
 
     public virtual DbSet<PartLabel> PartLabels { get; set; }
@@ -203,11 +201,11 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<Part>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC07C7C41940");
+            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC07BFCA7FE2");
 
             entity.ToTable("Part");
 
-            entity.HasIndex(e => e.FootPrint, "IX_Part_FootPrintId").IsUnique();
+            entity.HasIndex(e => e.PackageId, "IX_Part_PackageId").IsUnique();
 
             entity.Property(e => e.Description)
                 .HasMaxLength(150)
@@ -222,10 +220,10 @@ public partial class BintainerContext : DbContext
                 .HasForeignKey(d => d.CategoryId)
                 .HasConstraintName("FK_Part_PartCategory");
 
-            entity.HasOne(d => d.FootPrintNavigation).WithOne(p => p.Part)
-                .HasForeignKey<Part>(d => d.FootPrint)
+            entity.HasOne(d => d.Package).WithOne(p => p.Part)
+                .HasForeignKey<Part>(d => d.PackageId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Part_PartFootprint");
+                .HasConstraintName("FK_Part_PartPackage");
 
             entity.HasOne(d => d.User).WithMany(p => p.Parts)
                 .HasForeignKey(d => d.UserId)
@@ -276,7 +274,7 @@ public partial class BintainerContext : DbContext
                     l => l.HasOne<Part>().WithMany()
                         .HasForeignKey("PartId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__PartTempl__PartI__02084FDA"),
+                        .HasConstraintName("FK__PartTempl__PartI__208CD6FA"),
                     j =>
                     {
                         j.HasKey("PartId", "TemplateId").HasName("PK__PartTemp__13B8A0823629CDE5");
@@ -335,26 +333,6 @@ public partial class BintainerContext : DbContext
                 .HasConstraintName("FK_PartCategory_AspNetUsers");
         });
 
-        modelBuilder.Entity<PartFootprint>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC0797482D85");
-
-            entity.ToTable("PartFootprint");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.FullFileName).HasMaxLength(250);
-            entity.Property(e => e.Name)
-                .HasMaxLength(100)
-                .IsFixedLength();
-            entity.Property(e => e.Url).HasMaxLength(250);
-            entity.Property(e => e.UserId).HasMaxLength(450);
-
-            entity.HasOne(d => d.User).WithMany(p => p.PartFootprints)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PartFootprint_AspNetUsers");
-        });
-
         modelBuilder.Entity<PartGroup>(entity =>
         {
             entity.ToTable("PartGroup");
@@ -391,9 +369,17 @@ public partial class BintainerContext : DbContext
         {
             entity.ToTable("PartPackage");
 
+            entity.Property(e => e.FullFileName).HasMaxLength(250);
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .IsFixedLength();
+            entity.Property(e => e.Url).HasMaxLength(250);
+            entity.Property(e => e.UserId).HasMaxLength(450);
+
+            entity.HasOne(d => d.User).WithMany(p => p.PartPackages)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PartPackage_AspNetUsers");
         });
 
         modelBuilder.Entity<PartTemplate>(entity =>

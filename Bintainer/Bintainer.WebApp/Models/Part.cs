@@ -13,9 +13,7 @@ public partial class Part
 
     public int? CategoryId { get; set; }
 
-    public int FootPrint { get; set; }
-
-    public int? Package { get; set; }
+    public int PackageId { get; set; }
 
     public string UserId { get; set; } = null!;
 
@@ -23,7 +21,7 @@ public partial class Part
 
     public virtual PartCategory? Category { get; set; }
 
-    public virtual PartFootprint FootPrintNavigation { get; set; } = null!;
+    public virtual PartPackage Package { get; set; } = null!;
 
     public virtual ICollection<PartLabel> PartLabels { get; set; } = new List<PartLabel>();
 

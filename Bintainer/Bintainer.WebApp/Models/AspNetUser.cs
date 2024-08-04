@@ -49,9 +49,9 @@ public partial class AspNetUser
 
     public virtual ICollection<PartCategory> PartCategories { get; set; } = new List<PartCategory>();
 
-    public virtual ICollection<PartFootprint> PartFootprints { get; set; } = new List<PartFootprint>();
-
     public virtual ICollection<PartGroup> PartGroups { get; set; } = new List<PartGroup>();
+
+    public virtual ICollection<PartPackage> PartPackages { get; set; } = new List<PartPackage>();
 
     public virtual ICollection<PartTemplate> PartTemplates { get; set; } = new List<PartTemplate>();
 
