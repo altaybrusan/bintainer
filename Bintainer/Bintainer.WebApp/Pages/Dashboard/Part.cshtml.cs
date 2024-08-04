@@ -79,13 +79,13 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
                 var packageName = request.Package;
 
-                var footPrint = _dbcontext.PartFootprints.FirstOrDefault(f => f.Name.Contains(request.FootprintUrl));
-                if (footPrint != null) 
-                {
-                    _part.FootPrint = footPrint.Id;
+                var package = _dbcontext.PartPackages.FirstOrDefault(p => p.Name == request.Package && p.UserId == UserId);
+                if(package is null) 
+                {                    
+                    var result = _dbcontext.PartPackages.Add(new PartPackage() { Name = request.Package, UserId = UserId });
+                    _dbcontext.SaveChanges();
+                    package = result.Entity;
                 }
-                
-                PartPackage _package = new PartPackage() { Name= request.Package };
                 
                 _part.UserId = UserId;
                 

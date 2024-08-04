@@ -52,6 +52,10 @@
             font-size: 14px; /* Reduce font size */
             width: max-content; /* Fit width to content */
     }
+
+    form .error {
+        color: #ff0000;
+    }
 </style>
 
 <ul class="nav nav-tabs">
@@ -72,7 +76,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-8" style="margin-left: 10px;">                     
-                        <form id="myForm" class="well form-horizontal" method="post" asp-page-handler="CreatePart">
+                        <form id="myForm" class="well form-horizontal" method="post">
                             <fieldset>
                                 <legend><h2>Part</h2></legend>
                                 <hr />
@@ -205,7 +209,7 @@
                                 </div>
                             </fieldset>
                             <div class="button-row align-items-end justify-content-end mt-5">
-                                <button type="button" class="btn btn-danger">Cancel</button>
+                                @* <button type="button" class="btn btn-danger">Cancel</button> *@
                                 <button type="submit" class="btn btn-success" id="createPartBtn">Create</button>
                             </div>
                         </form>
@@ -275,6 +279,7 @@
     </div>
 </div>
 
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
 
 <script type="text/template" id="tr_template">
     <td class="dtable-col1"></td>
@@ -345,7 +350,7 @@
             return false;
         }
     }
-    
+
     $(document).ready(function () {
 
         // Call the function initially
@@ -496,7 +501,14 @@
                 }
             });
         });
-        $('#createPartBtn').on('click', function (event) {                     
+
+
+        $('#createPartBtn').on('click', function (event) {        
+            var validator = $("#myForm").validate();
+            var isValid = validator.form();
+            if (!isValid) {
+                return;                    
+            }
             var token = $('input[name="__RequestVerificationToken"]').val();
             // Gather data from the form fields
             var selectedIndex = $('#templateList')[0].selectedIndex;
@@ -507,10 +519,11 @@
             var partData = {
                 PartName: $('#partName').val(),
                 Description: $('#description').val(),
-                Label: $('#label').val(),                                         
+                //Label: $('#label').val(),                                         
                 OrderNumber: $('#order').val(),
                 OrderQuantity: $('#orderQuantity').val(),
                 CategoryId: $('#categorySelect').val(),
+                AttributeTemplateId: selectedIndex,
                 Attributes: {},
             };
             if (groupValue) {
