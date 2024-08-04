@@ -57,7 +57,7 @@ public partial class BintainerContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-FL9KCPH;Database=Bintainer;Integrated Security=True;Encrypt=False");
+        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-FL9KCPH;Initial Catalog=Bintainer;Integrated Security=True;Connect Timeout=60;Encrypt=False;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -336,14 +336,16 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<PartFootprint>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartFoot__3214EC0718125684");
+            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC0797482D85");
 
             entity.ToTable("PartFootprint");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.FullFileName).HasMaxLength(250);
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .IsFixedLength();
+            entity.Property(e => e.Url).HasMaxLength(250);
             entity.Property(e => e.UserId).HasMaxLength(450);
 
             entity.HasOne(d => d.User).WithMany(p => p.PartFootprints)

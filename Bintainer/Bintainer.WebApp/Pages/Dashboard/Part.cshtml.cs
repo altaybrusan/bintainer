@@ -74,6 +74,8 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 Part _part= new Part();
                 _part.Name = request.PartName;
 
+                PartFootprint _footprint= new PartFootprint();
+
                 _part.Description = request.Description;
                 _part.CategoryId = request.CategoryId;
                 

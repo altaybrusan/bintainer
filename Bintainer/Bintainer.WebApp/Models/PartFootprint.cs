@@ -9,6 +9,10 @@ public partial class PartFootprint
 
     public string? Name { get; set; }
 
+    public string? Url { get; set; }
+
+    public string? FullFileName { get; set; }
+
     public string UserId { get; set; } = null!;
 
     public virtual Part? Part { get; set; }
