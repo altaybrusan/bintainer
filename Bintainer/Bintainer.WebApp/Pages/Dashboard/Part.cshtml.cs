@@ -68,7 +68,27 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         public void OnPostCreatePart([FromBody]CreatePartRequestModel request) 
         {
-            if (ModelState.IsValid) { }
+            if (ModelState.IsValid) 
+            {                
+                // TODO: Reuest issued two or more time. Resolve this issue later.
+                Part _part= new Part();
+                _part.Name = request.PartName;
+
+                _part.Description = request.Description;
+                _part.CategoryId = request.CategoryId;
+                
+                //_part.Package = request.Package;
+                PartPackage _package = new PartPackage() { Name= request.Package };
+                //PartFootprint _footPrine= new PartFootprint() { Name= request. }
+                var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+                _part.UserId = UserId;
+                
+                List<PartAttribute> attributes = new List<PartAttribute>();
+                foreach (var item in request.Attributes)
+                {
+                    attributes.Add(new PartAttribute() { Name = item.Key, Value = item.Value });
+                }
+            }
 
         }
 
