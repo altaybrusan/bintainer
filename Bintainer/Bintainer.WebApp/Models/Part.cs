@@ -19,6 +19,8 @@ public partial class Part
 
     public string UserId { get; set; } = null!;
 
+    public string? ImageSource { get; set; }
+
     public virtual PartCategory? Category { get; set; }
 
     public virtual PartFootprint FootPrintNavigation { get; set; } = null!;

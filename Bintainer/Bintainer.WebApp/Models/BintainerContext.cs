@@ -212,6 +212,7 @@ public partial class BintainerContext : DbContext
             entity.Property(e => e.Description)
                 .HasMaxLength(150)
                 .IsFixedLength();
+            entity.Property(e => e.ImageSource).HasMaxLength(200);
             entity.Property(e => e.Name)
                 .HasMaxLength(60)
                 .IsFixedLength();
