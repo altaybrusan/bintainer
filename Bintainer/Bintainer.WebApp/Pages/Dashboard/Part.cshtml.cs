@@ -76,6 +76,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 _part.Name = request.PartName;
                 _part.Description = request.Description;
                 _part.CategoryId = request.CategoryId;
+                _part.UserId = UserId;
 
                 var packageName = request.Package;
 
@@ -86,8 +87,9 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     _dbcontext.SaveChanges();
                     package = result.Entity;
                 }
+
+                _part.PackageId = package.Id;
                 
-                _part.UserId = UserId;
                 
                 List<PartAttribute> attributes = new List<PartAttribute>();
                 var attributeTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.Id == request.AttributeTemplateId);
@@ -111,6 +113,9 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     attributes.Add(new PartAttribute() { Name = item.Key, Value = item.Value, Template = attributeTemplate });                    
                     
                 }
+
+                _dbcontext.Parts.Add(_part);
+                _dbcontext.SaveChanges(true);
             }
 
         }

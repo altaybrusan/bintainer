@@ -503,7 +503,8 @@
         });
 
 
-        $('#createPartBtn').on('click', function (event) {        
+        $('#createPartBtn').on('click', function (event) {   
+            event.preventDefault();
             var validator = $("#myForm").validate();
             var isValid = validator.form();
             if (!isValid) {
