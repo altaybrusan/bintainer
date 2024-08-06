@@ -77,13 +77,20 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 _part.Description = request.Description;
                 _part.CategoryId = request.CategoryId;
                 _part.UserId = UserId;
+                string packageName;
+                if ( string.IsNullOrEmpty(request.Package)) 
+                {
+                    packageName= "default";
+                }
+                else 
+                {
+                    packageName= request.Package;
+                }
 
-                var packageName = request.Package;
-
-                var package = _dbcontext.PartPackages.FirstOrDefault(p => p.Name == request.Package && p.UserId == UserId);
+                var package = _dbcontext.PartPackages.FirstOrDefault(p => p.Name == packageName && p.UserId == UserId);
                 if(package is null) 
                 {                    
-                    var result = _dbcontext.PartPackages.Add(new PartPackage() { Name = request.Package, UserId = UserId });
+                    var result = _dbcontext.PartPackages.Add(new PartPackage() { Name = packageName, UserId = UserId });
                     _dbcontext.SaveChanges();
                     package = result.Entity;
                 }
