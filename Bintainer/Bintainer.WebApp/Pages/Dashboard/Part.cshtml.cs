@@ -70,7 +70,6 @@ namespace Bintainer.WebApp.Pages.Dashboard
         {
             if (ModelState.IsValid) 
             {                
-                // TODO: Reuest issued two or more time. Resolve this issue later.
                 Part _part= new Part();
                 var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
                 _part.Name = request.PartName;
@@ -120,7 +119,11 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     attributes.Add(new PartAttribute() { Name = item.Key, Value = item.Value, Template = attributeTemplate });                    
                     
                 }
-
+                if (attributes.Any()) 
+                {
+                    _dbcontext.PartAttributes.AddRange(attributes);
+                    _dbcontext.SaveChanges(true);
+                }
                 _dbcontext.Parts.Add(_part);
                 _dbcontext.SaveChanges(true);
             }
