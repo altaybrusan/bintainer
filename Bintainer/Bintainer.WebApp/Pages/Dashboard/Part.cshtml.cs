@@ -103,9 +103,20 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     var defaultTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.TemplateName == _part.Name && t.UserId == UserId);
                     if (defaultTemplate is null)
                     {
-                        attributeTemplate = new PartAttributeTemplate() { TemplateName = _part.Name, UserId = UserId };
+                        // The part is fetched from external source (e.g., DigiKey)
+                        attributeTemplate = new PartAttributeTemplate() { TemplateName = _part.Name, UserId = UserId };                        
                         _dbcontext.PartAttributeTemplates.Add(attributeTemplate);
                         _dbcontext.SaveChanges();
+
+                        PartTemplate partTemplate = new()
+                        {
+                            Supplier = "DigiKey",
+                            PartNumber = _part.Name,
+                            ImageUri = "TODO: fetch from attributes",
+                            DatasheetUri = "TODO: datasheet",
+                            UserId = UserId
+                        };
+                        _part.Templates.Add(partTemplate);
                     }
                     else
                     {
@@ -121,9 +132,13 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     _dbcontext.PartAttributes.AddRange(attributes);
                     _dbcontext.SaveChanges(true);
                 }
+                
+                PartAttributeTemplate partAttributeTemplate = null;
+                
                 _dbcontext.Parts.Add(_part);
                 _dbcontext.SaveChanges(true);
-            }
+                
+            }            
 
         }
 
