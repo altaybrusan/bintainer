@@ -9,7 +9,7 @@ public partial class PartTemplate
 
     public string? Supplier { get; set; }
 
-    public string? PartNumber { get; set; }
+    public string? PartName { get; set; }
 
     public string? ImageUri { get; set; }
 

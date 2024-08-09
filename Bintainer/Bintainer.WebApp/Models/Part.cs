@@ -17,8 +17,6 @@ public partial class Part
 
     public string UserId { get; set; } = null!;
 
-    public string? ImageSource { get; set; }
-
     public virtual PartCategory? Category { get; set; }
 
     public virtual PartPackage Package { get; set; } = null!;
@@ -31,5 +29,5 @@ public partial class Part
 
     public virtual ICollection<PartGroup> Groups { get; set; } = new List<PartGroup>();
 
-    public virtual ICollection<PartTemplate> Templates { get; set; } = new List<PartTemplate>();
+    public virtual ICollection<PartTemplate> PartTemplates { get; set; } = new List<PartTemplate>();
 }

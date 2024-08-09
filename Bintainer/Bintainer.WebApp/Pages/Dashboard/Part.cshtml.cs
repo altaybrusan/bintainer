@@ -111,12 +111,12 @@ namespace Bintainer.WebApp.Pages.Dashboard
                         PartTemplate partTemplate = new()
                         {
                             Supplier = "DigiKey",
-                            PartNumber = _part.Name,
+                            PartName = _part.Name,
                             ImageUri = "TODO: fetch from attributes",
                             DatasheetUri = "TODO: datasheet",
                             UserId = UserId
                         };
-                        _part.Templates.Add(partTemplate);
+                        _part.PartTemplates.Add(partTemplate);
                     }
                     else
                     {
