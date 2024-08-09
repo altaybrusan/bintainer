@@ -90,6 +90,10 @@
                                             <label class="control-label">Description</label>
                                             <input id="description" name="description" placeholder="e.g., TRANSISTOR DIS.800mA 50V NPN TO-18" class="form-control  input-sharp" required="required" type="text">
                                         </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Supplier</label>
+                                            <input id="supplier" name="supplier" placeholder="e.g., Digikey" class="form-control  input-sharp" type="text">
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -520,7 +524,7 @@
             var partData = {
                 PartName: $('#partName').val(),
                 Description: $('#description').val(),
-                //Label: $('#label').val(),                                         
+                Supplier: $('#supplier').val(),                                         
                 OrderNumber: $('#order').val(),
                 OrderQuantity: $('#orderQuantity').val(),
                 CategoryId: $('#categorySelect').val(),
@@ -544,7 +548,6 @@
 
                 if (attributeName && attributeValue) {
                     partData.Attributes[attributeName] = attributeValue;
-
                 }
             });
 

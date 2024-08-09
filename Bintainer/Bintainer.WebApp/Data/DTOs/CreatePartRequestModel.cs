@@ -6,6 +6,7 @@ namespace Bintainer.WebApp.Data.DTOs
     {
         public string? PartName { get; set; }
         public string? Description { get; set; }
+        public string? Supplier { get; set; }
         public string? Package { get; set; } = string.Empty;
         public int? CategoryId { get; set; }
         public string? Group { get; set; }
