@@ -95,16 +95,15 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 }
 
                 _part.PackageId = package.Id;
-                
-                
+                                
                 List<PartAttribute> attributes = new List<PartAttribute>();
                 var attributeTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.Id == request.AttributeTemplateId);
                 if(attributeTemplate is null) 
                 {
-                    var defaultTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.TemplateName == "default");
+                    var defaultTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.TemplateName == _part.Name && t.UserId == UserId);
                     if (defaultTemplate is null)
                     {
-                        attributeTemplate = new PartAttributeTemplate() { TemplateName = "default", UserId = UserId };
+                        attributeTemplate = new PartAttributeTemplate() { TemplateName = _part.Name, UserId = UserId };
                         _dbcontext.PartAttributeTemplates.Add(attributeTemplate);
                         _dbcontext.SaveChanges();
                     }
@@ -112,12 +111,10 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     {
                         attributeTemplate = defaultTemplate;
                     }
-
                 }
                 foreach (var item in request.Attributes)
                 {
-                    attributes.Add(new PartAttribute() { Name = item.Key, Value = item.Value, Template = attributeTemplate });                    
-                    
+                    attributes.Add(new PartAttribute() { Name = item.Key, Value = item.Value, Template = attributeTemplate });                                   
                 }
                 if (attributes.Any()) 
                 {
