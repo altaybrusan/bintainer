@@ -77,7 +77,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 _part.Description = request.Description;
                 _part.CategoryId = request.CategoryId;
                 _part.UserId = UserId;
-                _part.Supplier = !string.IsNullOrEmpty(request.Supplier) ? request.Supplier : null;
+                _part.Supplier = request.Supplier;
                 //TODO: links should be fetched here.
 
                 string packageName;
