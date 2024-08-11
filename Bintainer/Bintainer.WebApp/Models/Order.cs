@@ -7,15 +7,21 @@ public partial class Order
 {
     public int Id { get; set; }
 
-    public int PartId { get; set; }
+    public string PartId { get; set; } = null!;
+
+    public string OrderNumber { get; set; } = null!;
 
     public int? Qunatity { get; set; }
 
-    public DateTime? DateTime { get; set; }
+    public string Supplier { get; set; } = null!;
 
-    public string? Number { get; set; }
+    public DateTime? OrderDate { get; set; }
+
+    public DateTime? HandOverDate { get; set; }
 
     public string UserId { get; set; } = null!;
 
     public virtual AspNetUser User { get; set; } = null!;
+
+    public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
 }

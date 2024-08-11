@@ -25,6 +25,8 @@ public partial class Part
 
     public string UserId { get; set; } = null!;
 
+    public int? OrderId { get; set; }
+
     public virtual PartCategory? Category { get; set; }
 
     public virtual PartPackage Package { get; set; } = null!;
@@ -36,4 +38,6 @@ public partial class Part
     public virtual ICollection<Bin> Bins { get; set; } = new List<Bin>();
 
     public virtual ICollection<PartGroup> Groups { get; set; } = new List<PartGroup>();
+
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

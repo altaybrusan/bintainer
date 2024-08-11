@@ -183,22 +183,47 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC073D0BC377");
+            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC077EC60975");
 
             entity.ToTable("Order");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.DateTime).HasColumnType("datetime");
-            entity.Property(e => e.Number)
-                .HasMaxLength(50)
+            entity.Property(e => e.HandOverDate).HasColumnType("datetime");
+            entity.Property(e => e.OrderDate).HasColumnType("datetime");
+            entity.Property(e => e.OrderNumber)
+                .HasMaxLength(100)
+                .IsFixedLength();
+            entity.Property(e => e.PartId)
+                .HasMaxLength(100)
                 .IsFixedLength();
             entity.Property(e => e.Qunatity).HasDefaultValueSql("((0))");
+            entity.Property(e => e.Supplier)
+                .HasMaxLength(100)
+                .HasDefaultValueSql("('default')")
+                .IsFixedLength();
             entity.Property(e => e.UserId).HasMaxLength(450);
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Order_AspNetUsers");
+
+            entity.HasMany(d => d.Parts).WithMany(p => p.Orders)
+                .UsingEntity<Dictionary<string, object>>(
+                    "OrderPartAssociation",
+                    r => r.HasOne<Part>().WithMany()
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_OrderPart_Part"),
+                    l => l.HasOne<Order>().WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_OrderPart_Order"),
+                    j =>
+                    {
+                        j.HasKey("OrderId", "PartId").HasName("PK_OrderPart");
+                        j.ToTable("OrderPartAssociation");
+                    });
         });
 
         modelBuilder.Entity<Part>(entity =>

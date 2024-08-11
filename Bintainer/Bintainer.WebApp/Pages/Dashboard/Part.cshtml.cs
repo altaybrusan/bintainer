@@ -80,16 +80,8 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 _part.Supplier = request.Supplier;
                 //TODO: links should be fetched here.
 
-                string packageName;
-                if ( string.IsNullOrEmpty(request.Package)) 
-                {
-                    packageName= "default";
-                }
-                else 
-                {
-                    packageName= request.Package;
-                }
-
+                string packageName = string.IsNullOrEmpty(request.Package) ? "undefined" : request.Package;                
+                
                 var package = _dbcontext.PartPackages.FirstOrDefault(p => p.Name == packageName && p.UserId == UserId);
                 if(package is null) 
                 {                    
@@ -102,7 +94,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                                 
                 List<PartAttribute> attributes = new List<PartAttribute>();
                 var attributeTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.Id == request.AttributeTemplateId);
-                if(attributeTemplate is null) 
+                if(attributeTemplate is null)                    
                 {
                     var defaultTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.TemplateName == _part.Name && t.UserId == UserId);
                     if (defaultTemplate is null)
@@ -111,17 +103,6 @@ namespace Bintainer.WebApp.Pages.Dashboard
                         attributeTemplate = new PartAttributeTemplate() { TemplateName = _part.Name, UserId = UserId };                        
                         _dbcontext.PartAttributeTemplates.Add(attributeTemplate);
                         _dbcontext.SaveChanges();
-
-                        //PartTemplate partTemplate = new()
-                        //{
-                        //    Supplier = "DigiKey",
-                        //    PartName = _part.Name,
-                        //    ImageUri = "TODO: fetch from attributes",
-                        //    DatasheetUri = "TODO: datasheet",
-                        //    UserId = UserId
-                        //};
-                        //_part.PartTemplates.Add(partTemplate);
-
                     }
                     else
                     {
@@ -142,7 +123,16 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 
                 _dbcontext.Parts.Add(_part);
                 _dbcontext.SaveChanges(true);
-                
+
+                if (!string.IsNullOrEmpty(request.OrderNumber))                 
+                {
+                    Order _order = _dbcontext.Orders.Where(o => o.OrderNumber == request.OrderNumber && o.UserId == UserId).FirstOrDefault();
+
+                    
+                }
+
+
+
             }            
 
         }
