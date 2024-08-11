@@ -10,6 +10,7 @@
     [DatasheetUri] NCHAR(150) NULL,
     [SupplierUri] NCHAR(150) NULL,
     [UserId] NVARCHAR (450) NOT NULL,
+    [OrderId] INT NULL,
     CONSTRAINT [FK_Part_PartCategory] FOREIGN KEY ([CategoryId]) REFERENCES [PartCategory]([Id]),
     CONSTRAINT [FK_Part_PartPackage] FOREIGN KEY ([PackageId]) REFERENCES [PartPackage]([Id]),
     CONSTRAINT [FK_Part_AspNetUsers] FOREIGN KEY ([UserId])  REFERENCES [AspNetUsers]([Id]),       
