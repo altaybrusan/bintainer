@@ -1,3 +1,4 @@
+using Bintainer.WebApp.Data;
 using Bintainer.WebApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

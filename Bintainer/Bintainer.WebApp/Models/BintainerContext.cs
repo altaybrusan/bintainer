@@ -50,9 +50,7 @@ public partial class BintainerContext : DbContext
     public virtual DbSet<PartLabel> PartLabels { get; set; }
 
     public virtual DbSet<PartPackage> PartPackages { get; set; }
-
-    public virtual DbSet<PartTemplate> PartTemplates { get; set; }
-
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Data Source=DESKTOP-FL9KCPH;Initial Catalog=Bintainer;Integrated Security=True;Connect Timeout=60;Encrypt=False;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
@@ -201,17 +199,30 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<Part>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC0777F0237E");
+            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC0791F53D2B");
 
             entity.ToTable("Part");
 
             entity.HasIndex(e => e.PackageId, "IX_Part_PackageId").IsUnique();
 
+            entity.Property(e => e.DatasheetUri)
+                .HasMaxLength(150)
+                .IsFixedLength();
             entity.Property(e => e.Description)
+                .HasMaxLength(150)
+                .IsFixedLength();
+            entity.Property(e => e.ImageUri)
                 .HasMaxLength(150)
                 .IsFixedLength();
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
+                .IsFixedLength();
+            entity.Property(e => e.Supplier)
+                .HasMaxLength(100)
+                .HasDefaultValueSql("('default')")
+                .IsFixedLength();
+            entity.Property(e => e.SupplierUri)
+                .HasMaxLength(150)
                 .IsFixedLength();
             entity.Property(e => e.UserId).HasMaxLength(450);
 
@@ -261,23 +272,6 @@ public partial class BintainerContext : DbContext
                     {
                         j.HasKey("PartId", "GroupId").HasName("PK_Part_PartGroup");
                         j.ToTable("PartGroupAssociation");
-                    });
-
-            entity.HasMany(d => d.PartTemplates).WithMany(p => p.Parts)
-                .UsingEntity<Dictionary<string, object>>(
-                    "PartTemplateAssignment",
-                    r => r.HasOne<PartTemplate>().WithMany()
-                        .HasForeignKey("PartTemplateId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__PartTempl__PartT__01142BA1"),
-                    l => l.HasOne<Part>().WithMany()
-                        .HasForeignKey("PartId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__PartTempl__PartI__00200768"),
-                    j =>
-                    {
-                        j.HasKey("PartId", "PartTemplateId").HasName("PK__PartTemp__F00ACF114EAA9BDD");
-                        j.ToTable("PartTemplateAssignment");
                     });
         });
 
@@ -380,50 +374,7 @@ public partial class BintainerContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PartPackage_AspNetUsers");
         });
-
-        modelBuilder.Entity<PartTemplate>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__PartTemp__3214EC07A7B1356A");
-
-            entity.ToTable("PartTemplate");
-
-            entity.Property(e => e.DatasheetUri)
-                .HasMaxLength(100)
-                .IsFixedLength();
-            entity.Property(e => e.ImageUri)
-                .HasMaxLength(100)
-                .IsFixedLength();
-            entity.Property(e => e.PartName)
-                .HasMaxLength(100)
-                .IsFixedLength();
-            entity.Property(e => e.Supplier)
-                .HasMaxLength(100)
-                .IsFixedLength();
-            entity.Property(e => e.UserId).HasMaxLength(450);
-
-            entity.HasOne(d => d.User).WithMany(p => p.PartTemplates)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PartTemplate_AspNetUsers");
-
-            entity.HasMany(d => d.AttributeTemplates).WithMany(p => p.PartTemplates)
-                .UsingEntity<Dictionary<string, object>>(
-                    "PartTemplateAttributeAssociation",
-                    r => r.HasOne<PartAttributeTemplate>().WithMany()
-                        .HasForeignKey("AttributeTemplateId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_PartTemplateAttributeAssociation_PartAttributeTemplate"),
-                    l => l.HasOne<PartTemplate>().WithMany()
-                        .HasForeignKey("PartTemplateId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_PartTemplateAttributeAssociation_PartTemplate"),
-                    j =>
-                    {
-                        j.HasKey("PartTemplateId", "AttributeTemplateId").HasName("PK__PartTemp__82D476E69658F74F");
-                        j.ToTable("PartTemplateAttributeAssociation");
-                    });
-        });
-
+        
         OnModelCreatingPartial(modelBuilder);
     }
 

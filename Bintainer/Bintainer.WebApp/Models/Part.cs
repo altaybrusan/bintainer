@@ -15,6 +15,14 @@ public partial class Part
 
     public int PackageId { get; set; }
 
+    public string Supplier { get; set; } = null!;
+
+    public string? ImageUri { get; set; }
+
+    public string? DatasheetUri { get; set; }
+
+    public string? SupplierUri { get; set; }
+
     public string UserId { get; set; } = null!;
 
     public virtual PartCategory? Category { get; set; }
@@ -28,6 +36,4 @@ public partial class Part
     public virtual ICollection<Bin> Bins { get; set; } = new List<Bin>();
 
     public virtual ICollection<PartGroup> Groups { get; set; } = new List<PartGroup>();
-
-    public virtual ICollection<PartTemplate> PartTemplates { get; set; } = new List<PartTemplate>();
 }

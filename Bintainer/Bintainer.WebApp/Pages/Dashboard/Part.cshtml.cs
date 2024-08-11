@@ -1,3 +1,4 @@
+using Bintainer.WebApp.Data;
 using Bintainer.WebApp.Data.DTOs;
 using Bintainer.WebApp.Models;
 using Bintainer.WebApp.Services;
@@ -108,15 +109,15 @@ namespace Bintainer.WebApp.Pages.Dashboard
                         _dbcontext.PartAttributeTemplates.Add(attributeTemplate);
                         _dbcontext.SaveChanges();
 
-                        PartTemplate partTemplate = new()
-                        {
-                            Supplier = "DigiKey",
-                            PartName = _part.Name,
-                            ImageUri = "TODO: fetch from attributes",
-                            DatasheetUri = "TODO: datasheet",
-                            UserId = UserId
-                        };
-                        _part.PartTemplates.Add(partTemplate);
+                        //PartTemplate partTemplate = new()
+                        //{
+                        //    Supplier = "DigiKey",
+                        //    PartName = _part.Name,
+                        //    ImageUri = "TODO: fetch from attributes",
+                        //    DatasheetUri = "TODO: datasheet",
+                        //    UserId = UserId
+                        //};
+                        //_part.PartTemplates.Add(partTemplate);
                     }
                     else
                     {
