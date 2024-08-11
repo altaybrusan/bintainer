@@ -5,10 +5,14 @@
     [Description] NCHAR(150) NULL, 
     [CategoryId] INT NULL,
     [PackageId] INT NOT NULL,
+    [Supplier] NCHAR(100) NOT NULL DEFAULT ('default'),
+    [ImageUri] NCHAR(150) NULL, 
+    [DatasheetUri] NCHAR(150) NULL,
+    [SupplierUri] NCHAR(150) NULL,
     [UserId] NVARCHAR (450) NOT NULL,
     CONSTRAINT [FK_Part_PartCategory] FOREIGN KEY ([CategoryId]) REFERENCES [PartCategory]([Id]),
     CONSTRAINT [FK_Part_PartPackage] FOREIGN KEY ([PackageId]) REFERENCES [PartPackage]([Id]),
-    CONSTRAINT [FK_Part_AspNetUsers] FOREIGN KEY ([UserId])  REFERENCES [AspNetUsers]([Id])
+    CONSTRAINT [FK_Part_AspNetUsers] FOREIGN KEY ([UserId])  REFERENCES [AspNetUsers]([Id]),       
 )
 GO
 
