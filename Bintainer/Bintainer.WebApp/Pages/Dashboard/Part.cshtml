@@ -184,7 +184,7 @@
                                     </tbody>
                                 </table>
                             </fieldset>
-                            <fieldset>
+  @*                           <fieldset>
                                 <legend><h2>Order</h2></legend>
                                 <hr />
                                 <div class="form-group">
@@ -211,7 +211,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </fieldset>
+                            </fieldset> *@
                             <div class="button-row align-items-end justify-content-end mt-5">
                                 @* <button type="button" class="btn btn-danger">Cancel</button> *@
                                 <button type="submit" class="btn btn-success" id="createPartBtn">Create</button>
@@ -518,7 +518,7 @@
             var token = $('input[name="__RequestVerificationToken"]').val();
             // Gather data from the form fields
             var selectedIndex = $('#templateList')[0].selectedIndex;
-            var orderDate = $('#orderDate').val();
+            //var orderDate = $('#orderDate').val();
             var groupValue = $('#groupInput').val();
             var packageValue = $('#packageInput').val();
 
@@ -526,8 +526,8 @@
                 PartName: $('#partName').val(),
                 Description: $('#description').val(),
                 Supplier: $('#supplier').val(),                                         
-                OrderNumber: $('#order').val(),
-                OrderQuantity: $('#orderQuantity').val(),
+                //OrderNumber: $('#order').val(),
+                //OrderQuantity: $('#orderQuantity').val(),
                 CategoryId: $('#categorySelect').val(),
                 AttributeTemplateId: selectedIndex,
                 Attributes: {},
@@ -535,9 +535,9 @@
             if (groupValue) {
                 partData.Group = groupValue;
             }
-            if (orderDate) {
-                partData.OrderDate = orderDate;
-            }
+            // if (orderDate) {
+            //     partData.OrderDate = orderDate;
+            // }
             if (packageValue) {
                 partData.Package = packageValue;
             }

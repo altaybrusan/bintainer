@@ -7,9 +7,7 @@ public partial class Order
 {
     public int Id { get; set; }
 
-    public string PartId { get; set; } = null!;
-
-    public string OrderNumber { get; set; } = null!;
+    public string? OrderNumber { get; set; }
 
     public int? Qunatity { get; set; }
 

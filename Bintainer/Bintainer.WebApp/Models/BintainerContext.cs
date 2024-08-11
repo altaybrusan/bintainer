@@ -192,9 +192,7 @@ public partial class BintainerContext : DbContext
             entity.Property(e => e.OrderDate).HasColumnType("datetime");
             entity.Property(e => e.OrderNumber)
                 .HasMaxLength(100)
-                .IsFixedLength();
-            entity.Property(e => e.PartId)
-                .HasMaxLength(100)
+                .HasDefaultValueSql("('default')")
                 .IsFixedLength();
             entity.Property(e => e.Qunatity).HasDefaultValueSql("((0))");
             entity.Property(e => e.Supplier)
