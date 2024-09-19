@@ -67,12 +67,16 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			var result = await _digikeyService.GetProductDetailsAsync(digiKeyPartNumber);            
 		}
 
-        public void OnPostCreatePart([FromBody]CreatePartRequestModel request) 
+        public IActionResult OnPostCreatePart([FromBody]CreatePartRequestModel request) 
         {
             if (ModelState.IsValid) 
             {                
-                Part _part= new Part();
                 var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+                if (_dbcontext.Parts.Any(p => p.Name == request.PartName && p.Supplier == request.Supplier && p.UserId == UserId)) 
+                {
+                    return new JsonResult(new { message = "The part already exists" }) { StatusCode = 200 };
+                }
+                Part _part= new Part();
                 _part.Name = request.PartName;
                 _part.Description = request.Description;
                 _part.CategoryId = request.CategoryId;
@@ -120,21 +124,24 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 }
                 
                 PartAttributeTemplate partAttributeTemplate = null;
-                
-                _dbcontext.Parts.Add(_part);
-                _dbcontext.SaveChanges(true);
-
-                if (!string.IsNullOrEmpty(request.OrderNumber))                 
+                try
                 {
-                    Order _order = _dbcontext.Orders.Where(o => o.OrderNumber == request.OrderNumber && o.UserId == UserId).FirstOrDefault();
-
-                    
+                    _dbcontext.Parts.Add(_part);
+                    _dbcontext.SaveChanges(true);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(  ex.Message);
+                    throw;
                 }
 
 
-
-            }            
-
+                if (!string.IsNullOrEmpty(request.OrderNumber))                 
+                {
+                    Order _order = _dbcontext.Orders.Where(o => o.OrderNumber == request.OrderNumber && o.UserId == UserId).FirstOrDefault();                    
+                }
+            }
+            return new JsonResult(new { message = "New part created." }) { StatusCode = 200 };                      
         }
 
         private void LoadTemplate(string userId)         

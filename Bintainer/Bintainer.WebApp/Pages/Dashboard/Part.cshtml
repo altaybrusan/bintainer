@@ -566,6 +566,7 @@
                     // Handle successful response
                     console.log(response);
                     event.preventDefault(); // enable validation
+                    alert(response.message); // Show success message
                     // Optionally, you can redirect or show a success message
                 },
                 error: function (xhr, status, error) {
