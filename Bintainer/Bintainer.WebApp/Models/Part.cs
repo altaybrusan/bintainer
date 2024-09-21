@@ -35,6 +35,8 @@ public partial class Part
 
     public virtual AspNetUser User { get; set; } = null!;
 
+    public virtual ICollection<PartAttributeTemplate> AttributeTemplates { get; set; } = new List<PartAttributeTemplate>();
+
     public virtual ICollection<Bin> Bins { get; set; } = new List<Bin>();
 
     public virtual ICollection<PartGroup> Groups { get; set; } = new List<PartGroup>();

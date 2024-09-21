@@ -51,13 +51,9 @@ public partial class BintainerContext : DbContext
 
     public virtual DbSet<PartPackage> PartPackages { get; set; }
 
-    public virtual DbSet<PartTemplate> PartTemplates { get; set; }
-
-    public virtual DbSet<PartTemplateAssignment> PartTemplateAssignments { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-FL9KCPH;Initial Catalog=Bintainer;Integrated Security=True;Connect Timeout=60;Encrypt=False;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
+        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-FL9KCPH;Database=Bintainer;Integrated Security=True;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -123,7 +119,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<Bin>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Bin__3214EC0740336C25");
+            entity.HasKey(e => e.Id).HasName("PK__Bin__3214EC075A80A5FD");
 
             entity.ToTable("Bin", tb => tb.HasTrigger("CheckBinCoordinates"));
 
@@ -136,7 +132,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<BinSubspace>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__BinSubsp__3214EC07C359DF12");
+            entity.HasKey(e => e.Id).HasName("PK__BinSubsp__3214EC077C001786");
 
             entity.ToTable("BinSubspace");
 
@@ -183,7 +179,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC077EC60975");
+            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC074961FD62");
 
             entity.ToTable("Order");
 
@@ -226,7 +222,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<Part>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC0791F53D2B");
+            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC075D626835");
 
             entity.ToTable("Part");
 
@@ -266,6 +262,23 @@ public partial class BintainerContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Part_AspNetUsers");
+
+            entity.HasMany(d => d.AttributeTemplates).WithMany(p => p.Parts)
+                .UsingEntity<Dictionary<string, object>>(
+                    "PartAttributeTemplateAssociation",
+                    r => r.HasOne<PartAttributeTemplate>().WithMany()
+                        .HasForeignKey("AttributeTemplateId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_Part_PartAttributeTemplate_PartAttributeTemplate"),
+                    l => l.HasOne<Part>().WithMany()
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_Part_PartAttributeTemplate_Part"),
+                    j =>
+                    {
+                        j.HasKey("PartId", "AttributeTemplateId").HasName("PK_Part_PartAttributeTemplate");
+                        j.ToTable("PartAttributeTemplateAssociation");
+                    });
 
             entity.HasMany(d => d.Bins).WithMany(p => p.Parts)
                 .UsingEntity<Dictionary<string, object>>(
@@ -370,7 +383,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<PartLabel>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC0764C4B66D");
+            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC078476DBEA");
 
             entity.ToTable("PartLabel");
 
@@ -401,61 +414,6 @@ public partial class BintainerContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PartPackage_AspNetUsers");
-        });
-
-        modelBuilder.Entity<PartTemplate>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__PartTemp__3214EC07A7B1356A");
-
-            entity.ToTable("PartTemplate");
-
-            entity.Property(e => e.DatasheetUri)
-                .HasMaxLength(100)
-                .IsFixedLength();
-            entity.Property(e => e.ImageUri)
-                .HasMaxLength(100)
-                .IsFixedLength();
-            entity.Property(e => e.PartName)
-                .HasMaxLength(100)
-                .IsFixedLength();
-            entity.Property(e => e.Supplier)
-                .HasMaxLength(100)
-                .IsFixedLength();
-            entity.Property(e => e.UserId).HasMaxLength(450);
-
-            entity.HasOne(d => d.User).WithMany(p => p.PartTemplates)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PartTemplate_AspNetUsers");
-
-            entity.HasMany(d => d.AttributeTemplates).WithMany(p => p.PartTemplates)
-                .UsingEntity<Dictionary<string, object>>(
-                    "PartTemplateAttributeAssociation",
-                    r => r.HasOne<PartAttributeTemplate>().WithMany()
-                        .HasForeignKey("AttributeTemplateId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_PartTemplateAttributeAssociation_PartAttributeTemplate"),
-                    l => l.HasOne<PartTemplate>().WithMany()
-                        .HasForeignKey("PartTemplateId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_PartTemplateAttributeAssociation_PartTemplate"),
-                    j =>
-                    {
-                        j.HasKey("PartTemplateId", "AttributeTemplateId").HasName("PK__PartTemp__82D476E69658F74F");
-                        j.ToTable("PartTemplateAttributeAssociation");
-                    });
-        });
-
-        modelBuilder.Entity<PartTemplateAssignment>(entity =>
-        {
-            entity.HasKey(e => new { e.PartId, e.PartTemplateId }).HasName("PK__PartTemp__F00ACF114EAA9BDD");
-
-            entity.ToTable("PartTemplateAssignment");
-
-            entity.HasOne(d => d.PartTemplate).WithMany(p => p.PartTemplateAssignments)
-                .HasForeignKey(d => d.PartTemplateId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__PartTempl__PartT__01142BA1");
         });
 
         OnModelCreatingPartial(modelBuilder);

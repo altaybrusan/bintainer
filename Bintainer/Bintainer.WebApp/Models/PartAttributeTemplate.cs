@@ -15,5 +15,5 @@ public partial class PartAttributeTemplate
 
     public virtual AspNetUser User { get; set; } = null!;
 
-    public virtual ICollection<PartTemplate> PartTemplates { get; set; } = new List<PartTemplate>();
+    public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
 }

@@ -126,8 +126,10 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 PartAttributeTemplate partAttributeTemplate = null;
                 try
                 {
+                    _part.AttributeTemplates.Add(attributeTemplate);
                     _dbcontext.Parts.Add(_part);
                     _dbcontext.SaveChanges(true);
+                    
                 }
                 catch (Exception ex)
                 {

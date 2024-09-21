@@ -53,8 +53,6 @@ public partial class AspNetUser
 
     public virtual ICollection<PartPackage> PartPackages { get; set; } = new List<PartPackage>();
 
-    public virtual ICollection<PartTemplate> PartTemplates { get; set; } = new List<PartTemplate>();
-
     public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
 
     public virtual ICollection<AspNetRole> Roles { get; set; } = new List<AspNetRole>();
