@@ -17,4 +17,4 @@
 )
 GO
 
-CREATE UNIQUE INDEX [IX_Part_PackageId] ON [dbo].[Part]([PackageId])
+--CREATE UNIQUE INDEX [IX_Part_PackageId] ON [dbo].[Part]([PackageId])
