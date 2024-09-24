@@ -1,3 +1,5 @@
+using Amazon.Runtime.Internal;
+using Azure.Core;
 using Bintainer.WebApp.Data;
 using Bintainer.WebApp.Data.DTOs;
 using Bintainer.WebApp.Models;
@@ -10,6 +12,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Bintainer.WebApp.Pages.Dashboard
 {
+    public class UpdateAttributeTableRequest
+    {
+        public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
+        public string PartName { get; set; } = string.Empty;
+    }
+
     public class PartModel : PageModel
     {
         public List<PartPackage> Packages { get; set; } = new List<PartPackage>();
@@ -157,7 +165,79 @@ namespace Bintainer.WebApp.Pages.Dashboard
             return new JsonResult(new { message = "New part created." }) { StatusCode = 200 };                      
         }
 
-        private void LoadTemplate(string userId)         
+        public IActionResult OnPostUpdatePartAttribute([FromBody] UpdateAttributeTableRequest updatedRequest) 
+        {
+            if (ModelState.IsValid) 
+            {
+                var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+                
+                var part = _dbcontext.Parts
+                    .Include(p=> p.AttributeTemplates)
+                    .Where(p=>p.Name== updatedRequest.PartName && p.UserId == UserId)
+                    .FirstOrDefault();
+
+                if (part is null)
+                {
+                    return new JsonResult(new { message = "The part already exists" }) { StatusCode = 200 };
+                }
+               
+                var templateId = part.AttributeTemplates.FirstOrDefault()?.Id;
+                if (templateId is null)
+                {
+                    return new JsonResult(new { message = "No attribute template found" }) { StatusCode = 400 };
+                }
+
+                var partAttributes = 
+                    _dbcontext.PartAttributes
+                    .Where(a => a.TemplateId == templateId)                   
+                    .ToList();
+
+                var updatedAttributeKeys = updatedRequest.Attributes.Keys.ToList();
+                
+                // 1. DELETE attributes that do not exist in the updated request
+                var attributesToDelete = partAttributes
+                                          .Where(pa => !updatedAttributeKeys.Contains(pa.Name?.Trim()))
+                                          .ToList();
+                if (attributesToDelete.Any())
+                {
+                    _dbcontext.PartAttributes.RemoveRange(attributesToDelete);
+                }
+
+                // 2. UPDATE existing attributes or add new ones
+                foreach (var attribute in updatedRequest.Attributes)
+                {
+                    var existingAttribute = partAttributes.FirstOrDefault(pa => pa.Name.Trim() == attribute.Key.Trim());
+
+                    if (existingAttribute != null)
+                    {
+                        // Update existing attribute value
+                        existingAttribute.Value = attribute.Value;
+                    }
+                    else
+                    {
+                        // Add new attribute
+                        var newAttribute = new PartAttribute
+                        {
+                            Name = attribute.Key.Trim(),
+                            Value = attribute.Value.Trim(),
+                            TemplateId = templateId.Value
+                        };
+                        _dbcontext.PartAttributes.Add(newAttribute);
+                    }
+                }
+
+                // 3. Save changes to the database
+                _dbcontext.SaveChanges();
+
+                return new JsonResult(new { message = "Part attributes updated successfully" }) { StatusCode = 200 };
+            }
+            // If ModelState is not valid, return validation errors
+            var errorList = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return new JsonResult(new { errors = errorList }) { StatusCode = 400 };
+
+        }
+
+        private void LoadTemplate(string userId)
         {
 			foreach (var item in _dbcontext.PartAttributeTemplates.Where(p=>p.UserId==userId))
 			{

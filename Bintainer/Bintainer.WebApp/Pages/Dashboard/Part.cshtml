@@ -268,12 +268,13 @@
                                     <th></th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
+                            <tbody id="productAttributeTable"></tbody>
                         </table>
                     </fieldset>
                 </form>
                 <div class="button-row align-items-start">
-                    <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable" style="height:30px">Add Row</button>
+                    <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="searchedProductSpecTable" style="height:30px">Add Row</button>
+                    <button class="btn btn-primary me-2 ms-2" id="updateAttribute" target-table="searchedProductSpecTable" style="height:30px">Update</button>
                 </div>
             </div>
         </div>
@@ -522,7 +523,37 @@
                 console.error('Table with ID searchedProductSpecTable not found.');
             }
         });
+        $('#updateAttribute').on('click', function (event) {
+            event.preventDefault();
+            var partName = $('#searchPartName').val();
+            var productAttributes = {};
+            $('#productAttributeTable tr').each(function () {
+                var row = $(this);
+                var attribute = row.find('td').eq(0).find('input').val().trim();
+                var value = row.find('td').eq(1).find('input').val().trim();
+                productAttributes[attribute] = value;
+            });
 
+            $.ajax({
+                type: 'POST',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                url: '/dashboard/part?handler=UpdatePartAttribute',
+                contentType: 'application/json',
+                data: JSON.stringify({ attributes: productAttributes, partName: partName }),
+                success: function (response) {
+                    console.log('Data saved successfully:', response);
+                    alert('Data saved successfully!');
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error saving data:', status, error);
+                    alert('Failed to save data.');
+                }
+            });
+           
+        });
         $('#createPartBtn').on('click', function (event) {   
             event.preventDefault();
             var validator = $("#myForm").validate();
