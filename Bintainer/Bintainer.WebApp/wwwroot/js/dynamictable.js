@@ -2,7 +2,7 @@
     var trHtml =
           '<td class="dtable-col1"></td>' 
         + '<td class="dtable-col2"></td > '
-        + '<td><a data-mode="edit" class="action" href="javascript:void(0)">edit</a></td>'
+        //+ '<td><a data-mode="edit" class="action" href="javascript:void(0)">edit</a></td>'
         + '<td><a class="delete" href="javascript:void(0)">delete</a></td>';
 
     var tr = $('<tr>' + trHtml + '</tr>');
@@ -17,9 +17,9 @@
         tr.remove();
     });
 
-    tr.find('.action').on('click', function () {
-        toggleRowEditMode(tr); 
-    });
+    //tr.find('.action').on('click', function () {
+    //    toggleRowEditMode(tr); 
+    //});
 
     function showRowInEditMode(tr,name,value) {
         var action = tr.find('.action');
