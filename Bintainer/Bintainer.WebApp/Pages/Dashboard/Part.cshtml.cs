@@ -58,8 +58,17 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			LoadTemplate(userId);            
 		}
 
-        public void OnPostSearchForPart(string partNumber) 
+        public IActionResult OnPostSearchForPart(string partNumber) 
         {
+            var _part = _dbcontext.Parts.Include(p => p.AttributeTemplates).FirstOrDefault(p => p.Name == partNumber);
+            var attributes = _dbcontext.PartAttributes.Where(a => a.TemplateId == _part.AttributeTemplates.FirstOrDefault().Id)
+                .Select(a => new
+                {
+                    Name = a.Name != null ? a.Name.Trim() : null, // Trim if Name is not null
+                    Value = a.Value != null ? a.Value.Trim() : null // Trim if Value is not null
+                }) // Select only Name and Value
+                .ToList();
+            return new JsonResult(attributes);
 
         }
         public async Task OnPostFetchDigikey(string digiKeyPartNumber) 
@@ -87,26 +96,29 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 string packageName = string.IsNullOrEmpty(request.Package) ? "undefined" : request.Package;                
                 
                 var package = _dbcontext.PartPackages.FirstOrDefault(p => p.Name == packageName && p.UserId == UserId);
+
                 if(package is null) 
-                {                    
-                    var result = _dbcontext.PartPackages.Add(new PartPackage() { Name = packageName, UserId = UserId });
-                    _dbcontext.SaveChanges();
-                    package = result.Entity;
+                {
+                    package = new PartPackage() { Name = packageName, UserId = UserId };
+                    //var result = _dbcontext.PartPackages.Add(new PartPackage() { Name = packageName, UserId = UserId });
+                    //_dbcontext.SaveChanges();
+                    //package = result.Entity;
                 }
 
-                _part.PackageId = package.Id;
+                _part.Package= package;
+                //_part.PackageId = package.Id;
                                 
                 List<PartAttribute> attributes = new List<PartAttribute>();
                 var attributeTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.Id == request.AttributeTemplateId);
                 if(attributeTemplate is null)                    
                 {
-                    var defaultTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.TemplateName == _part.Name && t.UserId == UserId);
+                    var defaultTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.TemplateName == "default" && t.UserId == UserId);
                     if (defaultTemplate is null)
                     {
                         // The part is fetched from external source (e.g., DigiKey)
-                        attributeTemplate = new PartAttributeTemplate() { TemplateName = _part.Name, UserId = UserId };                        
+                        attributeTemplate = new PartAttributeTemplate() { TemplateName = "default", UserId = UserId };                        
                         _dbcontext.PartAttributeTemplates.Add(attributeTemplate);
-                        _dbcontext.SaveChanges();
+                        _dbcontext.SaveChanges(true);
                     }
                     else
                     {
@@ -128,8 +140,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 {
                     _part.AttributeTemplates.Add(attributeTemplate);
                     _dbcontext.Parts.Add(_part);
-                    _dbcontext.SaveChanges(true);
-                    
+                    _dbcontext.SaveChanges(true);                    
                 }
                 catch (Exception ex)
                 {

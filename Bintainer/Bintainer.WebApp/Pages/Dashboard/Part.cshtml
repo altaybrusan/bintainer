@@ -232,8 +232,7 @@
             </div>
         </div>
     </div>
-    <div id="update-part" class="tab-pane fade" role="tabpanel" aria-labelledby="update-tab">
- 
+    <div id="update-part" class="tab-pane fade" role="tabpanel" aria-labelledby="update-tab"> 
         <div class="card mt-5">
             <div class="card-header">
                 <i class="fa fa-search"></i>&nbsp; Search part
@@ -250,8 +249,10 @@
                             <div class="col-md-4">
                                 <input type="text" class="form-control input-sharp " id="searchPartName" placeholder="partName">                                
                             </div>
+                            <div class="col-md-1">
+                                <button type="button" class="button-row btn btn-primary" id="searchPartBtn">Search</button>
+                            </div>
                         </div>
-                        <button type="button" class="button-row btn btn-primary mt-3" id="searchPartBtn">Search</button>
                     </div>
                 </form>
                 <form class="well form-horizontal" style="margin-top: 20px;">
@@ -259,7 +260,7 @@
                     <hr />
                     <fieldset>
                         <div style="margin-bottom: 20px;"></div>
-                        <table class="table" id="attributeTable">
+                        <table class="table" id="searchedProductSpecTable">
                             <thead>
                                 <tr>
                                     <th>Product Attribute</th>
@@ -267,10 +268,13 @@
                                     <th></th>
                                 </tr>
                             </thead>
-                            <tbody id="searchedProductSpecTable"></tbody>
+                            <tbody></tbody>
                         </table>
                     </fieldset>
                 </form>
+                <div class="button-row align-items-start">
+                    <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="attributeTable" style="height:30px">Add Row</button>
+                </div>
             </div>
         </div>
 
@@ -479,25 +483,27 @@
         });
         $('#searchPartBtn').on('click', function (event) {
             event.preventDefault();
-            var partNumber = $('#searchPartName').val();
-            var url = '@Url.Page("Part", "SearchForPart")';
+            var number = $('#searchPartName').val();            
             var token = $('input[name="__RequestVerificationToken"]').val(); // Extract CSRF token
-            var jsonText = JSON.stringify({
-                name: partNumber,
-                __RequestVerificationToken: token // Add the CSRF token to the data
-            });
+            //var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
+            var table = $('#searchedProductSpecTable'); // Select the table using the ID
+            table.find('tbody').empty();
             $.ajax({
-                url: url,
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                type: 'Post',
-                data: jsonText,
+                url: '/dashboard/Part?handler=SearchForPart&partNumber=' + number,
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN",
                         $('input:hidden[name="__RequestVerificationToken"]').val());
                 },
+                contentType: "application/json; charset=utf-8",               
+                type: 'Post',
                 success: function (response) {
-                    console.log('Data saved successfully:', response);
+                    if (table.length) { // Check if the table exists
+                        $.each(response, function (index, item) {
+                            appendRowToTable(table, item.name, item.value);
+                        });
+                    } else {
+                        console.error('Table with ID "' + targetTableId + '" not found.');
+                    }
                     // Handle the response
                 },
                 error: function (xhr, status, error) {
@@ -506,7 +512,16 @@
                 }
             });
         });
-
+        $('#addAttribute').on('click', function (event) {
+            event.preventDefault(); // Prevent default form submission behavior
+            //var targetTableId = $(this).attr('searchedProductSpecTable'); // Get the ID from the target-table attribute
+            var table = $('#searchedProductSpecTable'); // Select the table using the ID
+            if (table.length) { // Check if the table exists
+                appendRowToTable(table); // Call the function with the table jQuery object
+            } else {
+                console.error('Table with ID searchedProductSpecTable not found.');
+            }
+        });
 
         $('#createPartBtn').on('click', function (event) {   
             event.preventDefault();
