@@ -94,14 +94,14 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     return new JsonResult(new { message = "The part already exists" }) { StatusCode = 200 };
                 }
                 Part _part= new Part();
-                _part.Name = request.PartName;
-                _part.Description = request.Description;
+                _part.Name = request.PartName.Trim();
+                _part.Description = request.Description.Trim();
                 _part.CategoryId = request.CategoryId;
                 _part.UserId = UserId;
-                _part.Supplier = request.Supplier;
+                _part.Supplier = request.Supplier.Trim();
                 //TODO: links should be fetched here.
 
-                string packageName = string.IsNullOrEmpty(request.Package) ? "undefined" : request.Package;                
+                string packageName = string.IsNullOrEmpty(request.Package) ? "undefined" : request.Package.Trim();                
                 
                 var package = _dbcontext.PartPackages.FirstOrDefault(p => p.Name == packageName && p.UserId == UserId);
 
@@ -118,13 +118,13 @@ namespace Bintainer.WebApp.Pages.Dashboard
                                 
                 List<PartAttribute> attributes = new List<PartAttribute>();
                 var attributeTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.Id == request.AttributeTemplateId);
-                if(attributeTemplate is null)                    
+                if(attributeTemplate is null)
                 {
-                    var defaultTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.TemplateName == "default" && t.UserId == UserId);
+                    var defaultTemplate = _dbcontext.PartAttributeTemplates.FirstOrDefault(t => t.TemplateName == _part.Name && t.UserId == UserId);
                     if (defaultTemplate is null)
                     {
                         // The part is fetched from external source (e.g., DigiKey)
-                        attributeTemplate = new PartAttributeTemplate() { TemplateName = "default", UserId = UserId };                        
+                        attributeTemplate = new PartAttributeTemplate() { TemplateName = _part.Name, UserId = UserId };
                         _dbcontext.PartAttributeTemplates.Add(attributeTemplate);
                         _dbcontext.SaveChanges(true);
                     }
