@@ -362,6 +362,10 @@
 
     $(document).ready(function () {
 
+        // Disable the buttons by default
+        $('#addAttribute').prop('disabled', true);
+        $('#updateAttribute').prop('disabled', true);
+
         // Call the function initially
         $('#templateList').on('change', function (event) {
             var selectedId = document.getElementById("templateList").value;
@@ -492,6 +496,8 @@
                         $.each(response, function (index, item) {
                             appendRowToTable(table, item.name, item.value);
                         });
+                        $('#addAttribute').prop('disabled', false);
+                        $('#updateAttribute').prop('disabled', false);
                     } else {
                         console.error('Table with ID "' + targetTableId + '" not found.');
                     }
@@ -502,6 +508,14 @@
                     console.error(error);
                 }
             });
+        });
+        // Disable buttons if the input is cleared
+        $('#searchPartName').on('keyup', function () {
+            var partName = $(this).val().trim();
+            if (partName.length === 0) {
+                $('#addAttribute').prop('disabled', true);
+                $('#updateAttribute').prop('disabled', true);
+            }
         });
         $('#addAttribute').on('click', function (event) {
             event.preventDefault(); // Prevent default form submission behavior
