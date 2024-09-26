@@ -98,7 +98,6 @@
                                     <div class="form-group">
                                         <label class="control-label">Package/Footprint</label>
                                         <input type="text" class="form-control  input-sharp autocomplete" id="packageInput" placeholder="e.g., SOIC" />
-
                                     </div>
                                     <div class="form-group">
                                         <label class="control-label">Category</label>
@@ -252,36 +251,72 @@
     <div id="arrange-part" class="tab-pane fade" role="tabpanel" aria-labelledby="arrange-part">
         <div class="card mt-5">
             <div class="card-header">
-                <i class="fa fa-search"></i>&nbsp; Arrange parts
+                <i class="fa fa-cog fa-spin"></i>&nbsp; Arrange parts
             </div>
             <div class="card-body">
                 <form class="row" method="post" asp-page-handler="ArrangePart">
                     <div class="col-md-9">
                         <div class="row align-items-center">
-                            <div class="form-group">
-                                <label class="control-label">Part</label>
-                                <select id="arrangePartList" class="form-select form-select-sm"
-                                        required="required"
-                                        asp-items="@(new SelectList(Model.Part,nameof(Part.Id),nameof(Part.Name)))">
-                                    <option value="">Select Category</option>
-                                </select>
-                            </div>
-                            <div class="col-md-1">
-                                <button type="button" class="button-row btn btn-primary" id="searchPartBtn">Search</button>
-                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Part</label>
+                                    <select id="arrangePartList" class="form-select form-select-sm"
+                                            required="required"
+                                            asp-items="@(new SelectList(Model.Part,nameof(Part.Id),nameof(Part.Name)))">
+                                        <option value="">Select Category</option>
+                                    </select>
+                                    <label class="control-label">Section</label>
+                                    <select id="arrangePartList" class="form-select form-select-sm"
+                                            required="required"
+                                            asp-items="@(new SelectList(Model.Part,nameof(Part.Id),nameof(Part.Name)))">
+                                        <option value="">Select Category</option>
+                                    </select>
+                                    <label class="control-label">Coordinate (X,Y)</label>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <input type="number" name="section-width" class="form-control input-sharp" min="1" value="1" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="number" name="section-width" class="form-control input-sharp" min="1" value="1" />
+                                        </div>
+                                    </div>
+                                    
+                                    <label class="control-label">Subsection</label>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <input type="number" name="subsection" class="form-control input-sharp" min="1" value="1" />
+                                        </div>               
+                                    </div>
+
+                                    <label class="control-label">Group</label>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <input type="text" name="subsection" class="form-control input-sharp" min="1" value="1" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button type="button" class="button-row btn btn-primary" id="arrangePartBtn" style="margin-top: 20px;">Search</button>
+                                    </div>
+                                </div>
+                            </div>                            
+
                         </div>
                     </div>
                 </form>
                 <form class="well form-horizontal" style="margin-top: 20px;">
-                    <legend><h2>Attributes</h2></legend>
+                    <legend><h2>List</h2></legend>
                     <hr />
                     <fieldset>
                         <div style="margin-bottom: 20px;"></div>
                         <table class="table" id="searchedProductSpecTable">
                             <thead>
                                 <tr>
-                                    <th>Product Attribute</th>
-                                    <th>Attribute Value</th>
+                                    <th>Part Name</th>
+                                    <th>Section</th>
+                                    <th>Coordinate (X)</th>
+                                    <th>Coordinate (Y)</th>
+                                    <th>Subsection</th>
+                                    <th>Group</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -289,10 +324,10 @@
                         </table>
                     </fieldset>
                 </form>
-                <div class="button-row align-items-start">
+@*                 <div class="button-row align-items-start">
                     <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="searchedProductSpecTable" style="height:30px">Add Row</button>
                     <button class="btn btn-primary me-2 ms-2" id="updateAttribute" target-table="searchedProductSpecTable" style="height:30px">Update</button>
-                </div>
+                </div> *@
             </div>
         </div>
     </div>
