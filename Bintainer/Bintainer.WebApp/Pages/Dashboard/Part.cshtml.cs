@@ -23,6 +23,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public List<PartPackage> Packages { get; set; } = new List<PartPackage>();
 
         public List<PartCategory> Category { get; set; } = new List<PartCategory>();
+        public List<Part> Part { get; set; } = new List<Part>();
         
         public List<PartGroup> Group { get; set; } = new List<PartGroup>();
         public Dictionary<int, string> AttributeTemplatesTable { get; set; } = new Dictionary<int, string>();
@@ -37,6 +38,8 @@ namespace Bintainer.WebApp.Pages.Dashboard
             Packages = _dbcontext.PartPackages.ToList();
             Category = _dbcontext.PartCategories.ToList();
             Group = _dbcontext.PartGroups.ToList();
+            Part = _dbcontext.Parts.Include(p => p.Package).ToList();
+
 
         }
 

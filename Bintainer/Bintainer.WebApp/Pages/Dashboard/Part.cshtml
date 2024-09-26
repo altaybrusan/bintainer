@@ -66,167 +66,165 @@
         <a class="nav-link" id="update-tab" data-bs-toggle="tab" data-bs-target="#update-part" href="#">Update</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" id="arrange-part" data-bs-toggle="tab" data-bs-target="#arrange-part" href="#">Arrange</a>
+        <a class="nav-link" id="arrange-tab" data-bs-toggle="tab" data-bs-target="#arrange-part" href="#">Arrange</a>
     </li>
 </ul>
 
 <div class="tab-content">
     <div id="create-part" class="tab-pane fade show active" role="tabpanel" aria-labelledby="create-tab">
         <div class="container">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-8" style="margin-left: 10px;">                     
-                        <form id="myForm" class="well form-horizontal" method="post">
-                            <fieldset>
-                                <legend><h2>Part</h2></legend>
-                                <hr />
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="control-label">Part Name</label>
-                                            <input id="partName" name="partName" placeholder="e.g., 2N2222A" class="form-control  input-sharp" required="required" type="text">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label">Description</label>
-                                            <input id="description" name="description" placeholder="e.g., TRANSISTOR DIS.800mA 50V NPN TO-18" class="form-control  input-sharp" required="required" type="text">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label">Supplier</label>
-                                            <input id="supplier" name="supplier" placeholder="e.g., Digikey" class="form-control  input-sharp" type="text">
-                                        </div>
+            <div class="row">
+                <div class="col-md-8" style="margin-left: 10px;">
+                    <form id="myForm" class="well form-horizontal" method="post">
+                        <fieldset>
+                            <legend><h2>Part</h2></legend>
+                            <hr />
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Part Name</label>
+                                        <input id="partName" name="partName" placeholder="e.g., 2N2222A" class="form-control  input-sharp" required="required" type="text">
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="control-label">Package/Footprint</label>
-                                            <input type="text" class="form-control  input-sharp autocomplete" id="packageInput" placeholder="e.g., SOIC" />
+                                    <div class="form-group">
+                                        <label class="control-label">Description</label>
+                                        <input id="description" name="description" placeholder="e.g., TRANSISTOR DIS.800mA 50V NPN TO-18" class="form-control  input-sharp" required="required" type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Supplier</label>
+                                        <input id="supplier" name="supplier" placeholder="e.g., Digikey" class="form-control  input-sharp" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Package/Footprint</label>
+                                        <input type="text" class="form-control  input-sharp autocomplete" id="packageInput" placeholder="e.g., SOIC" />
 
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label">Category</label>
-                                            <select id="categorySelect" class="form-select form-select-sm"
-                                                    required="required"
-                                                    asp-items="@(new SelectList(Model.Category,nameof(PartCategory.Id),nameof(PartCategory.Name)))">
-                                                <option value="">Select Category</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label">Group</label>
-                                            <input type="text" class="form-control  input-sharp autocomplete" id="groupInput" placeholder="e.g., Usb" />
-                                        </div>
                                     </div>
-                                </div>
-                            </fieldset>
-                            <div class="mb-4"></div>
-                            <fieldset>
-                                <legend><h2>Attributes</h2></legend>
-                                <hr />
-                                <div class="button-row align-items-start">                      
-                                    <div class="col-4">
-                                        <select id="templateList" class="form-select form-select-lg mb-3 w-100" 
-                                                aria-label=".form-select-lg example" 
-                                                asp-items="@(new SelectList(Model.AttributeTemplatesTable,"Key","Value"))"
-                                                target-table="attributeTable">
-                                            <option selected value="">Templates</option>
+                                    <div class="form-group">
+                                        <label class="control-label">Category</label>
+                                        <select id="categorySelect" class="form-select form-select-sm"
+                                                required="required"
+                                                asp-items="@(new SelectList(Model.Category,nameof(PartCategory.Id),nameof(PartCategory.Name)))">
+                                            <option value="">Select Category</option>
                                         </select>
-                                    </div>                                    
-                                </div>
-                                <div style="margin-bottom: 20px;"></div>
-                                <table class="table" id="attributeTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Product Attribute</th>
-                                            <th>Attribute Value</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="productSpecTable"></tbody>
-                                </table>
-                            </fieldset>
-                            <div class="mb-4"></div>
-                            <fieldset>
-                                <legend><h2>Suppliers</h2></legend>
-                                <hr />
-                                <table class="table" id="supplierTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Supplier</th>
-                                            <th>Part Number</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="supplierPartNumberTable">  
-                                        <tr>
-                                            <td class="dtable-col1">
-                                                <span>
-                                                 Digikey
-                                                </span>
-                                            </td>
-                                            <td class="dtable-col2">
-                                                <input type="text" class="form-control input-sharp" id="digikeyPartNumber" placeholder="Digikey part number">
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-success button-row" id="fetchDigikey" target-table="attributeTable">Fetch </button>
-                                            </td>                                            
-                                        </tr>
-                                        <tr>
-                                            <td class="dtable-col1">
-                                                <span>
-                                                    Mouser
-                                                </span>
-                                            </td>
-                                            <td class="dtable-col2">
-                                                <input type="text" class="form-control input-sharp" placeholder="Mouser part number">
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-success button-row">Fetch </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </fieldset>
-  @*                           <fieldset>
-                                <legend><h2>Order</h2></legend>
-                                <hr />
-                                <div class="form-group">
-                                    <div class="row">
-                                        <label class="col-md-2 control-label align-items-start">Order Number</label>
-                                        <div class="col-md-4">
-                                            <div class=" inputGroupContainer">
-                                                <div class="input-group"><input id="order" name="order" placeholder="Order number" class="form-control  input-sharp" value="" type="text"></div>
-                                            </div>
-                                        </div>
-                                        <label class="col-md-2 control-label align-items-start">Quantity</label>
-                                        <div class="col-md-4">
-                                            <div class=" inputGroupContainer">
-                                                <div class="input-group"><input id="orderQuantity" name="ordarQuantity" placeholder="Quantity" class="form-control  input-sharp" value="" type="text"></div>
-                                            </div>
-                                        </div>
                                     </div>
-                                    <div class="row">
-                                        <label class="col-md-2 control-label align-items-start">Order date</label>
-                                        <div class="col-md-4">
-                                            <div class=" inputGroupContainer">
-                                                <div class="input-group"><input id="orderDate" name="orderDate" placeholder="Order date" class="form-control  input-sharp" value="" type="date"></div>
-                                            </div>
-                                        </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Group</label>
+                                        <input type="text" class="form-control  input-sharp autocomplete" id="groupInput" placeholder="e.g., Usb" />
                                     </div>
                                 </div>
-                            </fieldset> *@
-                            <div class="button-row align-items-end justify-content-end mt-5">
-                                @* <button type="button" class="btn btn-danger">Cancel</button> *@
-                                <button type="submit" class="btn btn-success" id="createPartBtn">Create</button>
                             </div>
-                        </form>
+                        </fieldset>
+                        <div class="mb-4"></div>
+                        <fieldset>
+                            <legend><h2>Attributes</h2></legend>
+                            <hr />
+                            <div class="button-row align-items-start">
+                                <div class="col-4">
+                                    <select id="templateList" class="form-select form-select-lg mb-3 w-100"
+                                            aria-label=".form-select-lg example"
+                                            asp-items="@(new SelectList(Model.AttributeTemplatesTable,"Key","Value"))"
+                                            target-table="attributeTable">
+                                        <option selected value="">Templates</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 20px;"></div>
+                            <table class="table" id="attributeTable">
+                                <thead>
+                                    <tr>
+                                        <th>Product Attribute</th>
+                                        <th>Attribute Value</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productSpecTable"></tbody>
+                            </table>
+                        </fieldset>
+                        <div class="mb-4"></div>
+                        <fieldset>
+                            <legend><h2>Suppliers</h2></legend>
+                            <hr />
+                            <table class="table" id="supplierTable">
+                                <thead>
+                                    <tr>
+                                        <th>Supplier</th>
+                                        <th>Part Number</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="supplierPartNumberTable">
+                                    <tr>
+                                        <td class="dtable-col1">
+                                            <span>
+                                                Digikey
+                                            </span>
+                                        </td>
+                                        <td class="dtable-col2">
+                                            <input type="text" class="form-control input-sharp" id="digikeyPartNumber" placeholder="Digikey part number">
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-success button-row" id="fetchDigikey" target-table="attributeTable">Fetch </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="dtable-col1">
+                                            <span>
+                                                Mouser
+                                            </span>
+                                        </td>
+                                        <td class="dtable-col2">
+                                            <input type="text" class="form-control input-sharp" placeholder="Mouser part number">
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-success button-row">Fetch </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </fieldset>
+                        @*                           <fieldset>
+                        <legend><h2>Order</h2></legend>
+                        <hr />
+                        <div class="form-group">
+                        <div class="row">
+                        <label class="col-md-2 control-label align-items-start">Order Number</label>
+                        <div class="col-md-4">
+                        <div class=" inputGroupContainer">
+                        <div class="input-group"><input id="order" name="order" placeholder="Order number" class="form-control  input-sharp" value="" type="text"></div>
+                        </div>
+                        </div>
+                        <label class="col-md-2 control-label align-items-start">Quantity</label>
+                        <div class="col-md-4">
+                        <div class=" inputGroupContainer">
+                        <div class="input-group"><input id="orderQuantity" name="ordarQuantity" placeholder="Quantity" class="form-control  input-sharp" value="" type="text"></div>
+                        </div>
+                        </div>
+                        </div>
+                        <div class="row">
+                        <label class="col-md-2 control-label align-items-start">Order date</label>
+                        <div class="col-md-4">
+                        <div class=" inputGroupContainer">
+                        <div class="input-group"><input id="orderDate" name="orderDate" placeholder="Order date" class="form-control  input-sharp" value="" type="date"></div>
+                        </div>
+                        </div>
+                        </div>
+                        </div>
+                        </fieldset> *@
+                        <div class="button-row align-items-end justify-content-end mt-5">
+                            @* <button type="button" class="btn btn-danger">Cancel</button> *@
+                            <button type="submit" class="btn btn-success" id="createPartBtn">Create</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-2">
+                    <div class="card card-custom">
+                        <button type="button" class="btn btn-secondary load-button-sharp">Part</button>
+                        <img src="~/image/microchip.png" id="partImage" class="img-fluid" alt="part image" />
                     </div>
-                    <div class="col-md-2">
-                        <div class="card card-custom">
-                            <button type="button" class="btn btn-secondary load-button-sharp">Part</button>
-                            <img src="~/image/microchip.png" id="partImage" class="img-fluid" alt="part image" />
-                        </div>
-                        <div class="card card-custom">
-                            <button type="button" class="btn btn-secondary load-button-sharp">Footprint</button>
-                            <img src="~/image/pinout.png" class="img-fluid" alt="footpring" />
-                        </div>
+                    <div class="card card-custom">
+                        <button type="button" class="btn btn-secondary load-button-sharp">Footprint</button>
+                        <img src="~/image/pinout.png" class="img-fluid" alt="footpring" />
                     </div>
                 </div>
             </div>
@@ -278,12 +276,52 @@
                 </div>
             </div>
         </div>
-
     </div>
-    <div id="arrange-part" class="tab-pane fade" role="tabpanel" aria-labelledby="Arrange">
-        <div class="form-group">
-            <label class="control-label">Bin Label</label>
-            <input id="label" name="label" placeholder="e.g., 2N2222" class="form-control  input-sharp" type="text">
+    <div id="arrange-part" class="tab-pane fade" role="tabpanel" aria-labelledby="arrange-part">
+        <div class="card mt-5">
+            <div class="card-header">
+                <i class="fa fa-search"></i>&nbsp; Arrange parts
+            </div>
+            <div class="card-body">
+                <form class="row" method="post" asp-page-handler="ArrangePart">
+                    <div class="col-md-9">
+                        <div class="row align-items-center">
+                            <div class="form-group">
+                                <label class="control-label">Part</label>
+                                <select id="arrangePartList" class="form-select form-select-sm"
+                                        required="required"
+                                        asp-items="@(new SelectList(Model.Part,nameof(Part.Id),nameof(Part.Name)))">
+                                    <option value="">Select Category</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="button-row btn btn-primary" id="searchPartBtn">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <form class="well form-horizontal" style="margin-top: 20px;">
+                    <legend><h2>Attributes</h2></legend>
+                    <hr />
+                    <fieldset>
+                        <div style="margin-bottom: 20px;"></div>
+                        <table class="table" id="searchedProductSpecTable">
+                            <thead>
+                                <tr>
+                                    <th>Product Attribute</th>
+                                    <th>Attribute Value</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="productAttributeTable"></tbody>
+                        </table>
+                    </fieldset>
+                </form>
+                <div class="button-row align-items-start">
+                    <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="searchedProductSpecTable" style="height:30px">Add Row</button>
+                    <button class="btn btn-primary me-2 ms-2" id="updateAttribute" target-table="searchedProductSpecTable" style="height:30px">Update</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

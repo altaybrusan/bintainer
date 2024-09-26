@@ -15,7 +15,7 @@ public partial class PartPackage
 
     public string UserId { get; set; } = null!;
 
-    public virtual Part? Part { get; set; }
+    public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
 
     public virtual AspNetUser User { get; set; } = null!;
 }

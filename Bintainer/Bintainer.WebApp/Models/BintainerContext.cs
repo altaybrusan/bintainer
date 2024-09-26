@@ -226,8 +226,6 @@ public partial class BintainerContext : DbContext
 
             entity.ToTable("Part");
 
-            entity.HasIndex(e => e.PackageId, "IX_Part_PackageId").IsUnique();
-
             entity.Property(e => e.DatasheetUri)
                 .HasMaxLength(150)
                 .IsFixedLength();
@@ -253,8 +251,8 @@ public partial class BintainerContext : DbContext
                 .HasForeignKey(d => d.CategoryId)
                 .HasConstraintName("FK_Part_PartCategory");
 
-            entity.HasOne(d => d.Package).WithOne(p => p.Part)
-                .HasForeignKey<Part>(d => d.PackageId)
+            entity.HasOne(d => d.Package).WithMany(p => p.Parts)
+                .HasForeignKey(d => d.PackageId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Part_PartPackage");
 
