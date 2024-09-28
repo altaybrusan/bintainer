@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[BinSubspace]
 (
-	[Id] INT NOT NULL PRIMARY KEY, 
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY(2000,1), 
     [Capacity] INT NULL DEFAULT 0, 
     [BinId] INT NULL, 
     [Label] NCHAR(100) NULL, 
