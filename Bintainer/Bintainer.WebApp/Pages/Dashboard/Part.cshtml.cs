@@ -17,6 +17,15 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
         public string PartName { get; set; } = string.Empty;
     }
+    public class ArrangePartRequest 
+    {
+        public int PartId { get; set; }
+        public int SectionId { get; set; }
+        public int CoordinateX { get; set; }
+        public int CoordinateY { get; set; }
+        public int SubSection { get; set; }
+        public string? Group { get; set; }
+    }
 
     public class PartModel : PageModel
     {
@@ -242,6 +251,46 @@ namespace Bintainer.WebApp.Pages.Dashboard
             return new JsonResult(new { errors = errorList }) { StatusCode = 400 };
 
         }
+
+        public IActionResult OnPostArrangePart([FromBody] ArrangePartRequest updatedRequest) 
+        {
+            if (ModelState.IsValid) 
+            {
+                try
+                {
+                    Part part = _dbcontext.Parts.Where(p => p.Id == updatedRequest.PartId).FirstOrDefault();
+                    InventorySection inventorySection = _dbcontext.InventorySections.Where(i => i.Id == updatedRequest.SectionId).FirstOrDefault();
+                    Bin bin = new Bin()
+                    {
+                        CoordinateX = updatedRequest.CoordinateX,
+                        CoordinateY = updatedRequest.CoordinateY,
+                        SectionId = updatedRequest.SectionId,
+                        IsFilled = true
+                    };
+                    BinSubspace subspace = new BinSubspace()
+                    {
+                        Capacity = 1000,
+                        Label = "default",
+                    };                   
+                    
+                    bin.BinSubspaces.Add(subspace);
+                    bin.Parts.Add(part);
+                    inventorySection.Bins.Add(bin);
+
+                    
+                    _dbcontext.SaveChanges(true);
+                }
+                catch (Exception e)
+                {
+
+                    throw;
+                }
+
+            }
+
+            return new OkResult();
+        }
+
 
         private void LoadTemplate(string userId)
         {

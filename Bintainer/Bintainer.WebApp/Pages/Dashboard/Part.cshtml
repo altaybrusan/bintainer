@@ -263,12 +263,12 @@
                                     <select id="arrangePartList" class="form-select form-select-sm"
                                             required="required"
                                             asp-items="@(new SelectList(Model.Part,nameof(Part.Id),nameof(Part.Name)))">
-                                        <option value="">Select Category</option>
+                                        <option value="">Select Part</option>
                                     </select>
                                     <label class="control-label">Section</label>
                                     <select id="sectionSelect" class="form-select form-select-sm" required="required">
                                         <option value="">Select Section</option>
-                                        @foreach (var invSection in Model.Inventory.InventorySections)
+                                        @foreach (var invSection in Model.Inventory?.InventorySections)
                                         {
                                             <option value="@invSection.Id" data-width="@invSection.Width" data-height="@invSection.Height" data-subsection="@invSection.Subsection">
                                                 @invSection.SectionName
@@ -702,6 +702,67 @@
             }
         });
         
+        $('#arrangePartBtn').on('click', function (event) {
+            event.preventDefault();
+
+            // Read the selected part ID
+            var partId = $('#arrangePartList').val();
+
+            // Read the selected section ID and associated data
+            var sectionId = $('#sectionSelect').val();
+            var width = $('#sectionSelect option:selected').data('width');
+            var height = $('#sectionSelect option:selected').data('height');
+            var subsection = $('#sectionSelect option:selected').data('subsection');
+
+            // Read the coordinate values (X, Y) and subsection value
+            var xPosition = $('input[name="x-position"]').val();
+            var yPosition = $('input[name="y-position"]').val();
+            var subsectionValue = $('input[name="subsection"]').val();
+
+            // Read the group input
+            var group = $('#partGroup').val();
+
+            // Prepare the data to be sent
+            var data = {
+                PartId: partId,
+                SectionId: sectionId,
+                CoordinateX: xPosition,
+                CoordinateY: yPosition,
+                Subsection: subsectionValue,
+                Group: group
+            };
+
+            // Check if the required fields are filled
+            if (!partId || !sectionId || !xPosition || !yPosition || !subsectionValue ) {
+                alert("Please fill all the required fields.");
+                return;
+            }
+
+            // Send the data using Ajax to the OnPostArrangePart handler in PartController
+            $.ajax({
+                url: '/dashboard/Part?handler=ArrangePart',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                beforeSend: function (xhr) {
+                    // Add CSRF token to the request header if required
+                    xhr.setRequestHeader("XSRF-TOKEN", $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                success: function (response) {
+                    // Handle the success case (e.g., show a success message, clear form)
+                    alert('Part arranged successfully!');
+                    // Optionally clear the form after submission
+                    $('form').trigger("reset");
+                },
+                error: function (xhr, status, error) {
+                    // Handle the error case (e.g., show an error message)
+                    alert('Error: Unable to arrange part. Please try again.');
+                    console.error(error);
+                }
+            });
+        });
+
+
         
         function searchPart() {
             var number = $('#searchPartName').val().trim();
