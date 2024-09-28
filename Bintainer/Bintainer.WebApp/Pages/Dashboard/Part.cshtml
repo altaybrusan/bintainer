@@ -53,7 +53,7 @@
             width: max-content; /* Fit width to content */
     }
 
-    form .error {
+     form .error {
         color: #ff0000;
     }
 </style>
@@ -266,36 +266,39 @@
                                         <option value="">Select Category</option>
                                     </select>
                                     <label class="control-label">Section</label>
-                                    <select id="arrangePartList" class="form-select form-select-sm"
-                                            required="required"
-                                            asp-items="@(new SelectList(Model.Part,nameof(Part.Id),nameof(Part.Name)))">
-                                        <option value="">Select Category</option>
+                                    <select id="sectionSelect" class="form-select form-select-sm" required="required">
+                                        <option value="">Select Section</option>
+                                        @foreach (var invSection in Model.Inventory.InventorySections)
+                                        {
+                                            <option value="@invSection.Id" data-width="@invSection.Width" data-height="@invSection.Height" data-subsection="@invSection.Subsection">
+                                                @invSection.SectionName
+                                            </option>
+                                        }
                                     </select>
                                     <label class="control-label">Coordinate (X,Y)</label>
                                     <div class="row align-items-center">
                                         <div class="col-md-6">
-                                            <input type="number" name="section-width" class="form-control input-sharp" min="1" value="1" />
+                                            <input type="number" name="x-position" class="form-control input-sharp" min="1" value="1"  />
                                         </div>
                                         <div class="col-md-6">
-                                            <input type="number" name="section-width" class="form-control input-sharp" min="1" value="1" />
+                                            <input type="number" name="y-position" class="form-control input-sharp" min="1" value="1" />
                                         </div>
-                                    </div>
-                                    
+                                    </div>                                    
                                     <label class="control-label">Subsection</label>
                                     <div class="row align-items-center">
                                         <div class="col-md-6">
-                                            <input type="number" name="subsection" class="form-control input-sharp" min="1" value="1" />
+                                            <input type="number" name="subsection" class="form-control input-sharp" min="1" value="1"/>
                                         </div>               
                                     </div>
 
                                     <label class="control-label">Group</label>
                                     <div class="row align-items-center">
                                         <div class="col-md-6">
-                                            <input type="text" name="subsection" class="form-control input-sharp" min="1" value="1" />
+                                            <input type="text" id="partGroup" class="form-control input-sharp autocomplete" placeholder="e.g., USB" />
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <button type="button" class="button-row btn btn-primary" id="arrangePartBtn" style="margin-top: 20px;">Search</button>
+                                        <button type="button" class="button-row btn btn-primary" id="arrangePartBtn" style="margin-top: 20px;">Submit</button>
                                     </div>
                                 </div>
                             </div>                            
@@ -654,6 +657,52 @@
             
         });
 
+        $('#sectionSelect').on('change', function () {
+            // Get the selected option
+            var selectedOption = $(this).find('option:selected');
+
+            // Get width and height from data attributes
+            var width = selectedOption.data('width');
+            var height = selectedOption.data('height');
+            var subsection = selectedOption.data('subsection');
+
+            // Set the maximum values for x and y input fields
+            if (width && height && subsection) {
+                $('input[name="x-position"]').attr('max', width);
+                //$('input[name="x-position"]').val(width); // Optionally, set the value
+
+                $('input[name="y-position"]').attr('max', height);
+                //$('input[name="y-position"]').val(height); // Optionally, set the value
+
+                $('input[name="subsection"]').attr('max', subsection);
+
+            } else {
+                // Clear the max values if no valid section is selected
+                $('input[name="x-position"]').removeAttr('max').val(1);
+                $('input[name="y-position"]').removeAttr('max').val(1);
+                $('input[name="subsection"]').removeAttr('max').val(1);
+            }
+        });
+        // Listen to the 'input' event on x-position, y-position, and subsection fields
+        $('input[name="x-position"], input[name="y-position"], input[name="subsection"]').on('input', function () {
+            // Get the current value of the input
+            var value = parseInt($(this).val());
+
+            // Get the max value from the respective max attribute
+            var maxVal = parseInt($(this).attr('max'));
+
+            // Check if the value exceeds the max, if yes, set it to the max
+            if (!isNaN(maxVal) && value > maxVal) {
+                $(this).val(maxVal);
+            }
+
+            // Prevent negative or zero values
+            if (value < 1 || isNaN(value)) {
+                $(this).val(1);
+            }
+        });
+        
+        
         function searchPart() {
             var number = $('#searchPartName').val().trim();
             var token = $('input[name="__RequestVerificationToken"]').val(); // Extract CSRF token

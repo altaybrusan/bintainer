@@ -28,6 +28,8 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public List<PartGroup> Group { get; set; } = new List<PartGroup>();
         public Dictionary<int, string> AttributeTemplatesTable { get; set; } = new Dictionary<int, string>();
 
+        public List<InventorySection> Sections { get; set; } = new();
+        public Inventory Inventory { get; set; } = new();
 
         BintainerContext _dbcontext;
         DigikeyService _digikeyService;
@@ -39,6 +41,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
             Category = _dbcontext.PartCategories.ToList();
             Group = _dbcontext.PartGroups.ToList();
             Part = _dbcontext.Parts.Include(p => p.Package).ToList();
+            Inventory = _dbcontext.Inventories.Include(i => i.InventorySections).FirstOrDefault();
 
 
         }
