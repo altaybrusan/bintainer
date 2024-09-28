@@ -53,7 +53,7 @@ public partial class BintainerContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-FL9KCPH;Database=Bintainer;Integrated Security=True;Trust Server Certificate=True");
+        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-FL9KCPH;Integrated Security=True;Connect Timeout=60;Encrypt=False;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False;Initial Catalog=Bintainer");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -119,11 +119,9 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<Bin>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Bin__3214EC075A80A5FD");
+            entity.HasKey(e => e.Id).HasName("PK__Bin__3214EC07624941B5");
 
             entity.ToTable("Bin", tb => tb.HasTrigger("CheckBinCoordinates"));
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
 
             entity.HasOne(d => d.Section).WithMany(p => p.Bins)
                 .HasForeignKey(d => d.SectionId)
@@ -132,11 +130,10 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<BinSubspace>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__BinSubsp__3214EC077C001786");
+            entity.HasKey(e => e.Id).HasName("PK__BinSubsp__3214EC07FC5CA27E");
 
             entity.ToTable("BinSubspace");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Capacity).HasDefaultValueSql("((0))");
             entity.Property(e => e.Label)
                 .HasMaxLength(100)
@@ -179,7 +176,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC074961FD62");
+            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC07B9FE1796");
 
             entity.ToTable("Order");
 
@@ -222,7 +219,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<Part>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC075D626835");
+            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC07688DCF10");
 
             entity.ToTable("Part");
 
@@ -381,7 +378,7 @@ public partial class BintainerContext : DbContext
 
         modelBuilder.Entity<PartLabel>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC078476DBEA");
+            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC0754267636");
 
             entity.ToTable("PartLabel");
 
