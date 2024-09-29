@@ -48,7 +48,7 @@
                             <th style="width:300px">Section name</th>
                             <th style="width:150px;">Width</th>
                             <th style="width:150px;">Hight</th>
-                            <th style="width:150px;">Sub-sections</th>
+                            <th style="width:150px;">Bin subspace</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -118,7 +118,7 @@
                     SectionName: row.find("input[name^='section-name']").val(),
                     Width: parseInt(row.find("input[name^='section-width']").val(), 10),
                     Height: parseInt(row.find("input[name^='section-height']").val(), 10),
-                    Subsection: parseInt(row.find("input[name^='bin-section']").val(), 10)
+                    SubspaceCount: parseInt(row.find("input[name^='bin-section']").val(), 10)
                 };
                 sectionList.push(rowData);
             });
