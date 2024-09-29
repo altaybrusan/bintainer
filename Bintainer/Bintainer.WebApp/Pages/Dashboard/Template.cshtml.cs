@@ -88,7 +88,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
 	public class TemplateModel : PageModel
     {
-		BintainerContext _dbcontext;
+		BintainerDbContext _dbcontext;
 
         public Dictionary<int,string> AttributeTables { get; set; } = new Dictionary<int, string>();
 		public List<CategoryView> Categories { get; set; } = new();
@@ -105,7 +105,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 							 }).ToList();
 		}
 
-		public TemplateModel(BintainerContext dbContext )
+		public TemplateModel(BintainerDbContext dbContext )
 		{
 			_dbcontext = dbContext;
 

@@ -11,6 +11,8 @@ public partial class BinSubspace
 
     public int? BinId { get; set; }
 
+    public int? SubspaceIndex { get; set; }
+
     public string? Label { get; set; }
 
     public virtual Bin? Bin { get; set; }

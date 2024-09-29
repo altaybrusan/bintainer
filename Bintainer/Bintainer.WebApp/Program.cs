@@ -33,7 +33,7 @@ builder.Services.Configure<DigikeySettings>(builder.Configuration.GetSection("Di
 
 builder.Services.AddScoped<DigikeyService>();
 
-builder.Services.AddDbContext<BintainerContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<BintainerDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IEmailSender, SESEmailSender>();
 builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");

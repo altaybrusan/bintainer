@@ -40,9 +40,9 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public List<InventorySection> Sections { get; set; } = new();
         public Inventory Inventory { get; set; } = new();
 
-        BintainerContext _dbcontext;
+        BintainerDbContext _dbcontext;
         DigikeyService _digikeyService;
-        public PartModel(BintainerContext dbContext, DigikeyService digikeyServices)
+        public PartModel(BintainerDbContext dbContext, DigikeyService digikeyServices)
         {
 			_dbcontext = dbContext;
             _digikeyService = digikeyServices;

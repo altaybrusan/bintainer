@@ -11,12 +11,12 @@ namespace Bintainer.WebApp.Pages.Dashboard
     public class InventoryModel : PageModel
     {
         SignInManager<IdentityUser> _SignInManager;
-        BintainerContext _dbContext;
+        BintainerDbContext _dbContext;
 
         public List<InventorySection> Sections { get; set; } = new();
         public string InventoryName { get; set; } = string.Empty;
 
-        public InventoryModel(SignInManager<IdentityUser> signInManager, BintainerContext dbContext)
+        public InventoryModel(SignInManager<IdentityUser> signInManager, BintainerDbContext dbContext)
         {
             _SignInManager = signInManager;
             _dbContext = dbContext;
