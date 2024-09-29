@@ -268,12 +268,15 @@
                                     <label class="control-label">Section</label>
                                     <select id="sectionSelect" class="form-select form-select-sm" required="required">
                                         <option value="">Select Section</option>
-                                        @foreach (var invSection in Model.Inventory?.InventorySections)
+                                        @if(Model.Inventory?.InventorySections is not null)
                                         {
-                                            <option value="@invSection.Id" data-width="@invSection.Width" data-height="@invSection.Height" data-subspace="@invSection.SubspaceCount">
-                                                @invSection.SectionName
-                                            </option>
-                                        }
+                                            @foreach (var invSection in Model.Inventory?.InventorySections)
+                                            {
+                                                <option value="@invSection.Id" data-width="@invSection.Width" data-height="@invSection.Height" data-subspace="@invSection.SubspaceCount">
+                                                    @invSection.SectionName
+                                                </option>
+                                            }                                            
+                                        }                                        
                                     </select>
                                     <label class="control-label">Coordinate (X,Y)</label>
                                     <div class="row align-items-center">
