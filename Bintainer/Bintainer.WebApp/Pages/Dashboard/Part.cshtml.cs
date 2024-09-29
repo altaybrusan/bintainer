@@ -252,7 +252,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         }
 
-        public IActionResult OnPostArrangePart([FromBody] ArrangePartRequest updatedRequest) 
+        public IActionResult OnPostArrangePart([FromBody] ArrangePartRequest arrangeRequest) 
         {
             if (ModelState.IsValid) 
             {
@@ -260,30 +260,25 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 {
                     var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
 
-                    Part part = _dbcontext.Parts.Where(p => p.Id == updatedRequest.PartId).FirstOrDefault();
-                    InventorySection inventorySection = _dbcontext.InventorySections.Where(i => i.Id == updatedRequest.SectionId).FirstOrDefault();
+                    Part part = _dbcontext.Parts.Where(p => p.Id == arrangeRequest.PartId).FirstOrDefault();
+                    InventorySection inventorySection = _dbcontext.InventorySections.Where(i => i.Id == arrangeRequest.SectionId).FirstOrDefault();
                     
-                    if(updatedRequest.Group is not null) 
+                    if(arrangeRequest.Group is not null) 
                     {
                         PartGroup partGroup = new PartGroup()
                         {
                             UserId = UserId,
-                            Name = updatedRequest.Group
+                            Name = arrangeRequest.Group
                         };
                         partGroup.Parts.Add(part);
                         _dbcontext.PartGroups.Add(partGroup);
                         _dbcontext.SaveChanges(true);
-
-
-
                     }
-
-
                     Bin bin = new Bin()
                     {
-                        CoordinateX = updatedRequest.CoordinateX,
-                        CoordinateY = updatedRequest.CoordinateY,
-                        SectionId = updatedRequest.SectionId,
+                        CoordinateX = arrangeRequest.CoordinateX,
+                        CoordinateY = arrangeRequest.CoordinateY,
+                        SectionId = arrangeRequest.SectionId,
                         IsFilled = true
                     };
                     BinSubspace subspace = new BinSubspace()
@@ -294,10 +289,9 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     
                     bin.BinSubspaces.Add(subspace);
                     bin.Parts.Add(part);
-                    inventorySection.Bins.Add(bin);
-
-                    
+                    inventorySection.Bins.Add(bin);           
                     _dbcontext.SaveChanges(true);
+
                 }
                 catch (Exception e)
                 {
