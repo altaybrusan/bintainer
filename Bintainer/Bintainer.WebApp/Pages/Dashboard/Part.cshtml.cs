@@ -23,7 +23,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public int SectionId { get; set; }
         public int CoordinateX { get; set; }
         public int CoordinateY { get; set; }
-        public int SubSection { get; set; }
+        public int Subspace { get; set; }
         public string? Group { get; set; }
     }
 
@@ -51,8 +51,6 @@ namespace Bintainer.WebApp.Pages.Dashboard
             Group = _dbcontext.PartGroups.ToList();
             Part = _dbcontext.Parts.Include(p => p.Package).ToList();
             Inventory = _dbcontext.Inventories.Include(i => i.InventorySections).FirstOrDefault();
-
-
         }
 
         public async Task<IActionResult> OnGetDigikeyParameters(string partNumber) 
@@ -284,6 +282,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     BinSubspace subspace = new BinSubspace()
                     {
                         Capacity = 1000,
+                        SubspaceIndex= arrangeRequest.Subspace,
                         Label = "default",
                     };                   
                     

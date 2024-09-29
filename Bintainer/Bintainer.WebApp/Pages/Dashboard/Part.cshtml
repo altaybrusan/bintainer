@@ -284,10 +284,10 @@
                                             <input type="number" name="y-position" class="form-control input-sharp" min="1" value="1" />
                                         </div>
                                     </div>                                    
-                                    <label class="control-label">Subsection</label>
+                                    <label class="control-label">Subspace</label>
                                     <div class="row align-items-center">
                                         <div class="col-md-6">
-                                            <input type="number" name="subsection" class="form-control input-sharp" min="1" value="1"/>
+                                            <input type="number" name="subspace" class="form-control input-sharp" min="1" value="1"/>
                                         </div>               
                                     </div>
 
@@ -320,7 +320,7 @@
                                         <th>Section</th>
                                         <th>Coordinate (X)</th>
                                         <th>Coordinate (Y)</th>
-                                        <th>Subsection</th>
+                                        <th>Subspace</th>
                                         <th>Group</th>
                                         <th>Action</th>
                                         <th></th>
@@ -669,27 +669,27 @@
             // Get width and height from data attributes
             var width = selectedOption.data('width');
             var height = selectedOption.data('height');
-            var subsection = selectedOption.data('subsection');
+            var subspace = selectedOption.data('subspace');
 
             // Set the maximum values for x and y input fields
-            if (width && height && subsection) {
+            if (width && height && subspace) {
                 $('input[name="x-position"]').attr('max', width);
                 //$('input[name="x-position"]').val(width); // Optionally, set the value
 
                 $('input[name="y-position"]').attr('max', height);
                 //$('input[name="y-position"]').val(height); // Optionally, set the value
 
-                $('input[name="subsection"]').attr('max', subsection);
+                $('input[name="subspace"]').attr('max', subspace);
 
             } else {
                 // Clear the max values if no valid section is selected
                 $('input[name="x-position"]').removeAttr('max').val(1);
                 $('input[name="y-position"]').removeAttr('max').val(1);
-                $('input[name="subsection"]').removeAttr('max').val(1);
+                $('input[name="subspace"]').removeAttr('max').val(1);
             }
         });
-        // Listen to the 'input' event on x-position, y-position, and subsection fields
-        $('input[name="x-position"], input[name="y-position"], input[name="subsection"]').on('input', function () {
+        // Listen to the 'input' event on x-position, y-position, and subspace fields
+        $('input[name="x-position"], input[name="y-position"], input[name="subspace"]').on('input', function () {
             // Get the current value of the input
             var value = parseInt($(this).val());
 
@@ -717,12 +717,12 @@
             var sectionId = $('#sectionSelect').val();
             var width = $('#sectionSelect option:selected').data('width');
             var height = $('#sectionSelect option:selected').data('height');
-            var subsection = $('#sectionSelect option:selected').data('subsection');
+            var supspace = $('#sectionSelect option:selected').data('subspace');
 
-            // Read the coordinate values (X, Y) and subsection value
+            // Read the coordinate values (X, Y) and subspace value
             var xPosition = $('input[name="x-position"]').val();
             var yPosition = $('input[name="y-position"]').val();
-            var subsectionValue = $('input[name="subsection"]').val();
+            var subspaceValue = $('input[name="subspace"]').val();
 
             // Read the group input
             var group = $('#partGroup').val();
@@ -733,12 +733,12 @@
                 SectionId: sectionId,
                 CoordinateX: xPosition,
                 CoordinateY: yPosition,
-                Subsection: subsectionValue,
+                Subspace: subspaceValue,
                 Group: group
             };
 
             // Check if the required fields are filled
-            if (!partId || !sectionId || !xPosition || !yPosition || !subsectionValue ) {
+            if (!partId || !sectionId || !xPosition || !yPosition || !subspaceValue ) {
                 alert("Please fill all the required fields.");
                 return;
             }
@@ -760,7 +760,7 @@
                         '<td>' + $.trim($('#sectionSelect option:selected').text()) + '</td>' +
                         '<td>' + data.CoordinateX + '</td>' +
                         '<td>' + data.CoordinateY + '</td>' +
-                        '<td>' + data.SubSection + '</td>' +
+                        '<td>' + data.Subspace + '</td>' +
                         '<td>' + data.Group + '</td>' +
                         '<td><button type="button" class="btn btn-danger btn-sm remove-row-btn">Remove</button></td>' +
                         '</tr>';
@@ -771,7 +771,7 @@
                     $('#sectionSelect').val('');
                     $('input[name="x-position"]').val(1);
                     $('input[name="y-position"]').val(1);
-                    $('input[name="subsection"]').val(1);
+                    $('input[name="subspace"]').val(1);
                     $('#partGroup').val('');
                     // // Handle the success case (e.g., show a success message, clear form)
                     // alert('Part arranged successfully!');
