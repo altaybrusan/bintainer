@@ -297,7 +297,7 @@
                                         <div class="col-md-6 align-items-center">
                                             <label class="control-label">Label</label>
                                             <div class="col-md-12">
-                                                <input type="text" name="subspaceLabel" class="form-control input-sharp" placeholder="cabinate label" />
+                                                <input type="text" name="subspaceLabel" id="subspaceLabel" class="form-control input-sharp" placeholder="cabinate label" />
                                             </div>
                                         </div>                                        
                                     </div>
@@ -781,6 +781,7 @@
                         '<td>' + data.CoordinateX + '</td>' +
                         '<td>' + data.CoordinateY + '</td>' +
                         '<td>' + data.Subspace + '</td>' +
+                        '<td>' + data.Label + '</td>' +
                         '<td>' + data.Group + '</td>' +
                         '<td><button type="button" class="btn btn-danger btn-sm remove-row-btn">Remove</button></td>' +
                         '</tr>';
@@ -793,6 +794,7 @@
                     $('input[name="y-position"]').val(1);
                     $('input[name="subspace"]').val(1);
                     $('#partGroup').val('');
+                    $('#subspaceLabel').val('');
                     // // Handle the success case (e.g., show a success message, clear form)
                     // alert('Part arranged successfully!');
                     // // Optionally clear the form after submission
