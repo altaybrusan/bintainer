@@ -26,6 +26,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public int Subspace { get; set; }
         public string? Label { get; set; }
         public string? Group { get; set; }
+        public bool IsFilled { get; set; }
     }
 
     public class PartModel : PageModel
@@ -258,10 +259,9 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 try
                 {
                     var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-
-                    Part part = _dbcontext.Parts.Where(p => p.Id == arrangeRequest.PartId).FirstOrDefault();
-                    InventorySection inventorySection = _dbcontext.InventorySections.Where(i => i.Id == arrangeRequest.SectionId).FirstOrDefault();
-                    
+                                        
+                    Part? part = _dbcontext.Parts.Where(p => p.Id == arrangeRequest.PartId).FirstOrDefault();
+                    InventorySection? inventorySection = _dbcontext.InventorySections.Where(i => i.Id == arrangeRequest.SectionId).FirstOrDefault();                   
                     if(arrangeRequest.Group is not null) 
                     {
                         PartGroup partGroup = new PartGroup()
@@ -278,7 +278,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                         CoordinateX = arrangeRequest.CoordinateX,
                         CoordinateY = arrangeRequest.CoordinateY,
                         SectionId = arrangeRequest.SectionId,
-                        IsFilled = true
+                        IsFilled = arrangeRequest.IsFilled
                     };
                     BinSubspace subspace = new BinSubspace()
                     {

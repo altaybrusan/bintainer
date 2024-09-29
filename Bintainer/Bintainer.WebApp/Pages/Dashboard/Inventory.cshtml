@@ -65,7 +65,7 @@
                                     <input type="number" name="section-height" class="form-control input-sharp" min="1" value="@Model.Sections[i].Height" />
                                 </td>
                                 <td>
-                                    <input type="number" name="bin-section" class="form-control input-sharp" min="1" value="@((Model.Sections[i].Subsection == null) ? 1 : Model.Sections[i].Subsection)" />
+                                    <input type="number" name="bin-section" class="form-control input-sharp" min="1" value="@((Model.Sections[i].SubspaceCount == null) ? 1 : Model.Sections[i].SubspaceCount)" />
                                 </td>
                                 <td>
                                     @if (i == 0)

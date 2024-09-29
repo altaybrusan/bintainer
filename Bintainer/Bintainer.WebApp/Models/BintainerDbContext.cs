@@ -119,7 +119,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<Bin>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Bin__3214EC07624941B5");
+            entity.HasKey(e => e.Id).HasName("PK__Bin__3214EC07F9AF8311");
 
             entity.ToTable("Bin", tb => tb.HasTrigger("CheckBinCoordinates"));
 
@@ -130,7 +130,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<BinSubspace>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__BinSubsp__3214EC074152ED12");
+            entity.HasKey(e => e.Id).HasName("PK__BinSubsp__3214EC07C5125E62");
 
             entity.ToTable("BinSubspace");
 
@@ -176,7 +176,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC07B9FE1796");
+            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC074AD86B9F");
 
             entity.ToTable("Order");
 
@@ -219,7 +219,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<Part>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC07688DCF10");
+            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC0703D4E70A");
 
             entity.ToTable("Part");
 
@@ -378,7 +378,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<PartLabel>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC0754267636");
+            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC078C135092");
 
             entity.ToTable("PartLabel");
 

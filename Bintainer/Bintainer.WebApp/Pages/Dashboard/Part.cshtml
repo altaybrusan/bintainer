@@ -270,7 +270,7 @@
                                         <option value="">Select Section</option>
                                         @foreach (var invSection in Model.Inventory?.InventorySections)
                                         {
-                                            <option value="@invSection.Id" data-width="@invSection.Width" data-height="@invSection.Height" data-subsection="@invSection.Subsection">
+                                            <option value="@invSection.Id" data-width="@invSection.Width" data-height="@invSection.Height" data-subspace="@invSection.SubspaceCount">
                                                 @invSection.SectionName
                                             </option>
                                         }
@@ -298,7 +298,12 @@
                                             </div>
                                         </div>                                        
                                     </div>
-
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <input type="checkbox" id="isFilledCheckbox" name="isFilled"/>
+                                            <label class="control-label" for="isFilledCheckbox">All subspaces used.</label>
+                                        </div>
+                                    </div>
                                     <label class="control-label">Group</label>
                                     <div class="row align-items-center">
                                         <div class="col-md-6">
@@ -726,14 +731,13 @@
             var sectionId = $('#sectionSelect').val();
             var width = $('#sectionSelect option:selected').data('width');
             var height = $('#sectionSelect option:selected').data('height');
-            //var supspace = $('#sectionSelect option:selected').data('subspace');
-            //var label = $('#sectionSelect option:selected').data('subspaceLabel');
 
             // Read the coordinate values (X, Y) and subspace value
             var xPosition = $('input[name="x-position"]').val();
             var yPosition = $('input[name="y-position"]').val();
             var subspaceValue = $('input[name="subspace"]').val();
             var subspaceLabel = $('input[name="subspaceLabel"]').val();
+            var isFilled = $('input[name="isFilled"]').prop('checked');
 
             // Read the group input
             var group = $('#partGroup').val();
@@ -746,7 +750,8 @@
                 CoordinateY: yPosition,
                 Subspace: subspaceValue,
                 Label: subspaceLabel,
-                Group: group
+                Group: group,
+                IsFilled: isFilled
             };
 
             // Check if the required fields are filled
