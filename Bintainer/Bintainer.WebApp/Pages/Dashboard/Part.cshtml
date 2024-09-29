@@ -311,22 +311,26 @@
                     <hr />
                     <fieldset>
                         <div style="margin-bottom: 20px;"></div>
-                        <table class="table" id="searchedProductSpecTable">
-                            <thead>
-                                <tr>
-                                    <th>Part Name</th>
-                                    <th>Section</th>
-                                    <th>Coordinate (X)</th>
-                                    <th>Coordinate (Y)</th>
-                                    <th>Subsection</th>
-                                    <th>Group</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="productAttributeTable"></tbody>
-                        </table>
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            <!-- Add scrollable container -->
+                            <table class="table" id="searchedProductSpecTable">
+                                <thead>
+                                    <tr>
+                                        <th>Part Name</th>
+                                        <th>Section</th>
+                                        <th>Coordinate (X)</th>
+                                        <th>Coordinate (Y)</th>
+                                        <th>Subsection</th>
+                                        <th>Group</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="partBinAssignmentTableBody"></tbody>
+                            </table>
+                        </div>
                     </fieldset>
                 </form>
+
 @*                 <div class="button-row align-items-start">
                     <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="searchedProductSpecTable" style="height:30px">Add Row</button>
                     <button class="btn btn-primary me-2 ms-2" id="updateAttribute" target-table="searchedProductSpecTable" style="height:30px">Update</button>
@@ -749,10 +753,28 @@
                     xhr.setRequestHeader("XSRF-TOKEN", $('input:hidden[name="__RequestVerificationToken"]').val());
                 },
                 success: function (response) {
-                    // Handle the success case (e.g., show a success message, clear form)
-                    alert('Part arranged successfully!');
-                    // Optionally clear the form after submission
-                    $('form').trigger("reset");
+                    // Append new row with cleaned up format
+                    var newRow = '<tr>' +
+                        '<td>' + $.trim($('#arrangePartList option:selected').text()) + '</td>' +
+                        '<td>' + $.trim($('#sectionSelect option:selected').text()) + '</td>' +
+                        '<td>' + data.CoordinateX + '</td>' +
+                        '<td>' + data.CoordinateY + '</td>' +
+                        '<td>' + data.SubSection + '</td>' +
+                        '<td>' + data.Group + '</td>' +                       
+                        '</tr>';
+                    $('#partBinAssignmentTableBody').append(newRow);
+
+                    // Optionally reset the form after submission
+                    $('#arrangePartList').val('');
+                    $('#sectionSelect').val('');
+                    $('input[name="x-position"]').val(1);
+                    $('input[name="y-position"]').val(1);
+                    $('input[name="subsection"]').val(1);
+                    $('#partGroup').val('');
+                    // // Handle the success case (e.g., show a success message, clear form)
+                    // alert('Part arranged successfully!');
+                    // // Optionally clear the form after submission
+                    // $('form').trigger("reset");
                 },
                 error: function (xhr, status, error) {
                     // Handle the error case (e.g., show an error message)
