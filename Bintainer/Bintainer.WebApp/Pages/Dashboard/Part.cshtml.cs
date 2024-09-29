@@ -289,7 +289,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     
                     bin.BinSubspaces.Add(subspace);
                     bin.Parts.Add(part);
-                    inventorySection.Bins.Add(bin);           
+                    inventorySection.Bins.Add(bin);
                     _dbcontext.SaveChanges(true);
 
                 }
