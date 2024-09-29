@@ -24,6 +24,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public int CoordinateX { get; set; }
         public int CoordinateY { get; set; }
         public int Subspace { get; set; }
+        public string? Label { get; set; }
         public string? Group { get; set; }
     }
 
@@ -283,7 +284,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     {
                         Capacity = 1000,
                         SubspaceIndex= arrangeRequest.Subspace,
-                        Label = "default",
+                        Label = arrangeRequest.Label,
                     };                   
                     
                     bin.BinSubspaces.Add(subspace);

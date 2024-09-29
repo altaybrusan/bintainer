@@ -294,7 +294,7 @@
                                         <div class="col-md-6 align-items-center">
                                             <label class="control-label">Label</label>
                                             <div class="col-md-12">
-                                                <input type="text" name="label" class="form-control input-sharp" min="1" placeholder="label on cabinate" />
+                                                <input type="text" name="subspaceLabel" class="form-control input-sharp" placeholder="cabinate label" />
                                             </div>
                                         </div>                                        
                                     </div>
@@ -329,6 +329,7 @@
                                         <th>Coordinate (X)</th>
                                         <th>Coordinate (Y)</th>
                                         <th>Subspace</th>
+                                        <th>Label</th>
                                         <th>Group</th>
                                         <th>Action</th>
                                         <th></th>
@@ -725,12 +726,14 @@
             var sectionId = $('#sectionSelect').val();
             var width = $('#sectionSelect option:selected').data('width');
             var height = $('#sectionSelect option:selected').data('height');
-            var supspace = $('#sectionSelect option:selected').data('subspace');
+            //var supspace = $('#sectionSelect option:selected').data('subspace');
+            //var label = $('#sectionSelect option:selected').data('subspaceLabel');
 
             // Read the coordinate values (X, Y) and subspace value
             var xPosition = $('input[name="x-position"]').val();
             var yPosition = $('input[name="y-position"]').val();
             var subspaceValue = $('input[name="subspace"]').val();
+            var subspaceLabel = $('input[name="subspaceLabel"]').val();
 
             // Read the group input
             var group = $('#partGroup').val();
@@ -742,6 +745,7 @@
                 CoordinateX: xPosition,
                 CoordinateY: yPosition,
                 Subspace: subspaceValue,
+                Label: subspaceLabel,
                 Group: group
             };
 
