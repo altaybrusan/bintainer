@@ -258,8 +258,27 @@ namespace Bintainer.WebApp.Pages.Dashboard
             {
                 try
                 {
+                    var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+
                     Part part = _dbcontext.Parts.Where(p => p.Id == updatedRequest.PartId).FirstOrDefault();
                     InventorySection inventorySection = _dbcontext.InventorySections.Where(i => i.Id == updatedRequest.SectionId).FirstOrDefault();
+                    
+                    if(updatedRequest.Group is not null) 
+                    {
+                        PartGroup partGroup = new PartGroup()
+                        {
+                            UserId = UserId,
+                            Name = updatedRequest.Group
+                        };
+                        partGroup.Parts.Add(part);
+                        _dbcontext.PartGroups.Add(partGroup);
+                        _dbcontext.SaveChanges(true);
+
+
+
+                    }
+
+
                     Bin bin = new Bin()
                     {
                         CoordinateX = updatedRequest.CoordinateX,
