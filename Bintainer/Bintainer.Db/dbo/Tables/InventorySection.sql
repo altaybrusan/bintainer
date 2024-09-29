@@ -5,6 +5,6 @@
     [Width] INT NULL, 
     [Height] INT NULL, 
     [InventoryId] INT NOT NULL,
-    [Subsection] INT NULL, 
+    [SubspaceCount] INT NULL, 
     CONSTRAINT [FK_InventorySection_Inventory] FOREIGN KEY ([InventoryId]) REFERENCES [Inventory]([Id]),
 )
