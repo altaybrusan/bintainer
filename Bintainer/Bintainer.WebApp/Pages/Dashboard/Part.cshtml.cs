@@ -259,9 +259,16 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 try
                 {
                     var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-                                        
-                    Part? part = _dbcontext.Parts.Where(p => p.Id == arrangeRequest.PartId).FirstOrDefault();
-                    InventorySection? inventorySection = _dbcontext.InventorySections.Where(i => i.Id == arrangeRequest.SectionId).FirstOrDefault();                   
+
+
+                    InventorySection? inventorySection = _dbcontext.InventorySections.Where(i => i.Inventory.UserId == UserId && i.Id == arrangeRequest.SectionId)
+                                                                                     .Include(i=>i.Bins)
+                                                                                     .ThenInclude(b=>b.Parts)
+                                                                                     .ThenInclude(b=>b.Groups)
+                                                                                     .FirstOrDefault();
+                   
+                    
+                    
                     if(arrangeRequest.Group is not null) 
                     {
                         PartGroup partGroup = new PartGroup()
@@ -269,7 +276,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                             UserId = UserId,
                             Name = arrangeRequest.Group
                         };
-                        partGroup.Parts.Add(part);
+                        //partGroup.Parts.Add(part);
                         _dbcontext.PartGroups.Add(partGroup);
                         _dbcontext.SaveChanges(true);
                     }
@@ -288,7 +295,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     };                   
                     
                     bin.BinSubspaces.Add(subspace);
-                    bin.Parts.Add(part);
+                    //bin.Parts.Add(part);
                     inventorySection.Bins.Add(bin);
                     _dbcontext.SaveChanges(true);
 
