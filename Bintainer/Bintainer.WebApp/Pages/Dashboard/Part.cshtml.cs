@@ -267,7 +267,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     if (inventorySection == null)
                     {
                         // Return an appropriate response, such as NotFound
-                        return NotFound();
+                        return NotFound(new { message = "Inventory section not found." });
                     }
 
                     Bin? bin = inventorySection?.Bins.FirstOrDefault(b => b.CoordinateX == arrangeRequest.CoordinateX &&
@@ -314,7 +314,11 @@ namespace Bintainer.WebApp.Pages.Dashboard
                                                      .Include(p => p.Groups)
                                                      .Include(p => p.Category)
                                                      .FirstOrDefault();
-                        if(!part.Groups.Any(g=>g.Name.Trim()==arrangeRequest.Group))
+                        if (part == null)
+                        {
+                            return NotFound(new { message = "Part not found." });
+                        }
+                        if (!part.Groups.Any(g=>g.Name.Trim()==arrangeRequest.Group))
                         {
                             part.Groups.Add(newPartGroup);
                         }
@@ -325,20 +329,17 @@ namespace Bintainer.WebApp.Pages.Dashboard
                         _dbcontext.SaveChanges(true);
 
                     }
-                    //List<Bin> includingBins = inventorySection.Bins.Where(b => b.Parts.Any(p => p.Id == arrangeRequest.PartId)).ToList();
-                    //var isRepetitiveRequest = includingBins.Any(b => b.CoordinateX == arrangeRequest.CoordinateX && 
-                    //                                            b.CoordinateY == arrangeRequest.CoordinateY);
-
+                    return new OkResult();
                 }
                 catch (Exception e)
                 {
 
-                    throw;
+                    return StatusCode(500, new { message = "An error occurred while processing your request." });
                 }
 
             }
 
-            return new OkResult();
+            return BadRequest(new { message = "Invalid request." });
         }
 
 
