@@ -259,45 +259,75 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 try
                 {
                     var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-
-
                     InventorySection? inventorySection = _dbcontext.InventorySections.Where(i => i.Inventory.UserId == UserId && i.Id == arrangeRequest.SectionId)
                                                                                      .Include(i=>i.Bins)
                                                                                      .ThenInclude(b=>b.Parts)
                                                                                      .ThenInclude(b=>b.Groups)
                                                                                      .FirstOrDefault();
-                   
-                    
-                    
-                    if(arrangeRequest.Group is not null) 
+                    if (inventorySection == null)
                     {
-                        PartGroup partGroup = new PartGroup()
+                        // Return an appropriate response, such as NotFound
+                        return NotFound();
+                    }
+
+                    Bin? bin = inventorySection?.Bins.FirstOrDefault(b => b.CoordinateX == arrangeRequest.CoordinateX &&
+                                                                          b.CoordinateY == arrangeRequest.CoordinateY &&
+                                                                          b.Parts.Any(p => p.Id == arrangeRequest.PartId));
+
+                    if (bin is not null) 
+                    {
+                        Part? part = bin.Parts.Where(p => p.Id == arrangeRequest.PartId).FirstOrDefault();
+                        if (!part.Groups.Any(g => g.Name.Trim() == arrangeRequest.Group))
+                            part.Groups.Add(new PartGroup() { Name = arrangeRequest.Group, UserId = UserId });
+                        if (!bin.BinSubspaces.Any(s => s.Id == arrangeRequest.Subspace))
+                            bin.BinSubspaces.Add(new BinSubspace() { SubspaceIndex = arrangeRequest.Subspace, Label = arrangeRequest.Label });
+                        else
+                        {
+                            var registeredSubspace = bin.BinSubspaces.Where(s => s.SubspaceIndex == arrangeRequest.Subspace).FirstOrDefault();
+                            registeredSubspace.Label= arrangeRequest.Label;
+                        }
+                        bin.IsFilled = arrangeRequest.IsFilled;
+                        _dbcontext.Parts.Update(part);
+                        _dbcontext.Bins.Update(bin);
+                        _dbcontext.SaveChanges(true);
+                    }
+                    else 
+                    {
+                        Bin newBin = new Bin()
+                        {
+                            CoordinateX = arrangeRequest.CoordinateX,
+                            CoordinateY = arrangeRequest.CoordinateY,
+                            SectionId = arrangeRequest.SectionId,
+                            IsFilled = arrangeRequest.IsFilled
+                        };
+                        BinSubspace newSubspace = new BinSubspace()
+                        {
+                            SubspaceIndex = arrangeRequest.Subspace,
+                            Label = arrangeRequest.Label,
+                        };                        
+                        PartGroup newPartGroup = new PartGroup()
                         {
                             UserId = UserId,
                             Name = arrangeRequest.Group
                         };
-                        //partGroup.Parts.Add(part);
-                        _dbcontext.PartGroups.Add(partGroup);
+                        Part? part = _dbcontext.Parts.Where(p => p.Id == arrangeRequest.PartId)
+                                                     .Include(p => p.Groups)
+                                                     .Include(p => p.Category)
+                                                     .FirstOrDefault();
+                        if(!part.Groups.Any(g=>g.Name.Trim()==arrangeRequest.Group))
+                        {
+                            part.Groups.Add(newPartGroup);
+                        }
+                        
+                        newBin.Parts.Add(part);
+                        newBin.BinSubspaces.Add(newSubspace);
+                        inventorySection.Bins.Add(newBin);
                         _dbcontext.SaveChanges(true);
+
                     }
-                    Bin bin = new Bin()
-                    {
-                        CoordinateX = arrangeRequest.CoordinateX,
-                        CoordinateY = arrangeRequest.CoordinateY,
-                        SectionId = arrangeRequest.SectionId,
-                        IsFilled = arrangeRequest.IsFilled
-                    };
-                    BinSubspace subspace = new BinSubspace()
-                    {
-                        Capacity = 1000,
-                        SubspaceIndex= arrangeRequest.Subspace,
-                        Label = arrangeRequest.Label,
-                    };                   
-                    
-                    bin.BinSubspaces.Add(subspace);
-                    //bin.Parts.Add(part);
-                    inventorySection.Bins.Add(bin);
-                    _dbcontext.SaveChanges(true);
+                    //List<Bin> includingBins = inventorySection.Bins.Where(b => b.Parts.Any(p => p.Id == arrangeRequest.PartId)).ToList();
+                    //var isRepetitiveRequest = includingBins.Any(b => b.CoordinateX == arrangeRequest.CoordinateX && 
+                    //                                            b.CoordinateY == arrangeRequest.CoordinateY);
 
                 }
                 catch (Exception e)
