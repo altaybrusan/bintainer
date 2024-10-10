@@ -42,4 +42,6 @@ public partial class Part
     public virtual ICollection<PartGroup> Groups { get; set; } = new List<PartGroup>();
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+
+    public virtual ICollection<PartTemplate> Templates { get; set; } = new List<PartTemplate>();
 }
