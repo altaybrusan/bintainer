@@ -1,4 +1,5 @@
 ﻿@page "/dashboard/order"
+@using Bintainer.WebApp.Models
 @model OrderModel
 @{
 }
@@ -85,8 +86,7 @@
                                 <input type="date" id="orderDate" name="orderDate" class="form-control input-sharp">
                                 <input type="date" id="handoverDate" name="handoverDate" class="form-control input-sharp">
                             </div>
-                        </div>
-                        <button class="button-row btn btn-primary mt-3">Search</button>
+                        </div>                        
                     </div>
                 </form>
             </div>
@@ -105,11 +105,10 @@
                             <tbody>
                                 <tr class="inventory-subsection-list">
                                     <td>
-                                        <select id='standard' name='standard' class='custom-select'>
-                                            <option value=''>Part name</option>
-                                            <option value='1'>2N2222</option>
-                                            <option value='2'>BC547</option>
-                                            <option value='3'>BS576</option>
+                                        <select id="partSelect" class="form-select form-select-sm"
+                                                required="required"
+                                                asp-items="@(new SelectList(Model.Part,nameof(Part.Id),nameof(Part.Name)))">
+                                            <option value="">Select Part</option>
                                         </select>
                                     </td>
                                     <td>
@@ -208,21 +207,33 @@
 
     
     $(document).ready(function () {
-        $(document).on("click", ".classAdd", function () { //
+        $(document).on("click", ".classAdd", function () {
             var rowCount = $('.inventory-subsection-list').length + 1;
-            var contactdiv = '<tr class="inventory-subsection-list">' +
-                '<td><select name= "standard" id="standard" class="custom-select"><option value="">Part name</option><option value="1">2N222</option> </select></td>' +
-                '<td><input type="text" name="section-name' + rowCount + '" class="form-control input-sharp" /></td>' +
-                '<td><input type="number" name="section-width' + rowCount + '" class="form-control min="0" placeholder="quantity"/></td>' +
+
+            // Clone the select dropdown from the first row
+            var selectDropdown = $('#partSelect').clone();
+            selectDropdown.attr('id', 'partSelect' + rowCount); // Update the id to keep it unique
+
+            // Create a new row and append the cloned select and other inputs
+            var newRow = '<tr class="inventory-subsection-list">' +
+                '<td></td>' + // Placeholder for the select
+                '<td><input type="number" name="section-width' + rowCount + '" class="form-control input-sharp" min="0" placeholder="quantity"></td>' +
                 '<td><div class ="button-row"><button type="button" id="btnAdd" class="button-row btn btn-xs btn-primary classAdd">Add</button>' +
                 '<button type="button" id="btnDelete" class="button-row btn deleteContact btn btn-danger btn-xs btnDelete">Remove</button></div></td>' +
                 '</tr>';
-            $('#sectionlist').append(contactdiv); // Adding these controls to Main table class
+
+            // Append the new row to the table
+            $('#sectionlist tbody').append(newRow);
+
+            // Append the cloned select dropdown into the new row
+            $('#sectionlist tbody tr:last-child td:first-child').append(selectDropdown);
         });
 
+        // Handle row deletion
         $(document).on("click", ".btnDelete", function () {
             $(this).closest("tr").remove();
         });
+
     });
 </script>
 
