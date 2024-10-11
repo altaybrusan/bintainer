@@ -1,4 +1,6 @@
+using Bintainer.WebApp.Data.DTOs;
 using Bintainer.WebApp.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -19,5 +21,15 @@ namespace Bintainer.WebApp.Pages.Dashboard
         {
 
         }
+
+        public IActionResult OnPostRegisterNewOrder([FromBody]RegisterOrderRequestModel request)
+        {
+            Order order = new Order();
+
+
+            // Return a success response
+            return new OkResult();
+        }
+
     }
 }

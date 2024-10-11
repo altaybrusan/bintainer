@@ -656,7 +656,6 @@
             // Send data to the server
             $.ajax({
                 url: '/dashboard/Part?handler=CreatePart',
-                dataType: "json",
                 type: 'Post',
                 contentType: 'application/json; charset=utf-8',
                 data: JSON.stringify(partData),

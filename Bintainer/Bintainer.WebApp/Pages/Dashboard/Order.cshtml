@@ -3,6 +3,7 @@
 @model OrderModel
 @{
 }
+@Html.AntiForgeryToken();
 <link rel="stylesheet" href="~/css/hierarchy-select.min.css">
 <link rel="stylesheet" href="~/css/autocomplete.css">
 <script src="~/js/jquery-customselect.js"></script>
@@ -99,27 +100,27 @@
                             <thead>
                                 <tr>
                                     <th style="width:300px">Part name</th>
-                                    <th style="width:150px;">Quantity</th>                                    
+                                    <th style="width:150px;">Quantity</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr class="inventory-subsection-list">
                                     <td>
-                                        <select id="partSelect" class="form-select form-select-sm"
-                                                required="required"
+                                        <select class="form-select form-select-sm partSelect" required="required"
                                                 asp-items="@(new SelectList(Model.Part,nameof(Part.Id),nameof(Part.Name)))">
                                             <option value="">Select Part</option>
                                         </select>
                                     </td>
                                     <td>
                                         <input type="number" name="section-width" class="form-control input-sharp" min="0" placeholder="quantity">
-                                    </td>                                    
+                                    </td>
                                     <td>
-                                        <button type="button" id="btnAdd" class="button-row btn btn-xs btn-primary classAdd ">Add More</button>
+                                        <button type="button" id="btnAdd" class="button-row btn btn-xs btn-primary classAdd">Add More</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+
                         <div class="button-row align-items-end justify-content-end mt-5">
                             <button type="button" id="btnSubmit" class="button-row btn btn-primary btn-md pull-right btn-sm">Submit</button>
                         </div>
@@ -204,22 +205,65 @@
 </script>
 
 <script type="text/javascript">
-
-    
     $(document).ready(function () {
+
+        // Function to update the available options in all select dropdowns
+        function updateSelectOptions() {
+            // Collect all selected values from every dropdown
+            var selectedItems = [];
+            $('.partSelect').each(function () {
+                var selectedValue = $(this).val();
+                if (selectedValue) {
+                    selectedItems.push(selectedValue);
+                }
+            });
+
+            // Loop through each dropdown and update its options
+            $('.partSelect').each(function () {
+                var dropdown = $(this);
+                dropdown.find('option').each(function () {
+                    var optionValue = $(this).val();
+                    // Disable or hide the option if it is selected in another dropdown
+                    if (selectedItems.includes(optionValue) && dropdown.val() !== optionValue) {
+                        $(this).prop('disabled', true); // Disable the option
+                    } else {
+                        $(this).prop('disabled', false); // Enable the option if not selected
+                    }
+                });
+            });
+
+            // Check if the "Add" button should be disabled
+            checkIfAddButtonShouldBeDisabled();
+        }
+
+        // Function to check if the "Add" button should be disabled
+        function checkIfAddButtonShouldBeDisabled() {
+            var totalOptions = $('.partSelect:first option').length - 1; // Exclude the first empty option
+            var selectedCount = $('.partSelect').length;
+
+            // Disable the add button if all items are selected
+            if (selectedCount >= totalOptions) {
+                $('.classAdd').prop('disabled', true);
+            } else {
+                $('.classAdd').prop('disabled', false);
+            }
+        }
+
+        // Handle adding a new row
         $(document).on("click", ".classAdd", function () {
             var rowCount = $('.inventory-subsection-list').length + 1;
 
-            // Clone the select dropdown from the first row
-            var selectDropdown = $('#partSelect').clone();
-            selectDropdown.attr('id', 'partSelect' + rowCount); // Update the id to keep it unique
+            // Clone the first row's select dropdown
+            var selectDropdown = $('.partSelect').first().clone();
+            selectDropdown.removeAttr('id'); // Remove id to avoid duplicates
+            selectDropdown.val(''); // Clear the selected value in the cloned select
 
-            // Create a new row and append the cloned select and other inputs
+            // Create a new row and append the cloned select and inputs
             var newRow = '<tr class="inventory-subsection-list">' +
                 '<td></td>' + // Placeholder for the select
                 '<td><input type="number" name="section-width' + rowCount + '" class="form-control input-sharp" min="0" placeholder="quantity"></td>' +
-                '<td><div class ="button-row"><button type="button" id="btnAdd" class="button-row btn btn-xs btn-primary classAdd">Add</button>' +
-                '<button type="button" id="btnDelete" class="button-row btn deleteContact btn btn-danger btn-xs btnDelete">Remove</button></div></td>' +
+                '<td><div class="button-row"><button type="button" class="button-row btn btn-xs btn-primary classAdd">Add</button>' +
+                '<button type="button" class="button-row btn deleteContact btn btn-danger btn-xs btnDelete">Remove</button></div></td>' +
                 '</tr>';
 
             // Append the new row to the table
@@ -227,15 +271,89 @@
 
             // Append the cloned select dropdown into the new row
             $('#sectionlist tbody tr:last-child td:first-child').append(selectDropdown);
+
+            // Update options in all select dropdowns
+            updateSelectOptions();
         });
 
-        // Handle row deletion
+        // Handle removing a row
         $(document).on("click", ".btnDelete", function () {
-            $(this).closest("tr").remove();
+            $(this).closest('tr').remove();
+            updateSelectOptions(); // Recheck and update available options when a row is removed
         });
 
+        // Handle when a select option is changed
+        $(document).on("change", ".partSelect", function () {
+            updateSelectOptions(); // Update available options when a new item is selected
+        });
+
+        // Initial check to disable the Add button if necessary
+        checkIfAddButtonShouldBeDisabled();
+
+        $('#btnSubmit').on('click', function (e) {
+            e.preventDefault(); // Prevent form from submitting normally
+
+            var orderNumber = $('#orderNumber').val();
+            var supplier = $('#orderSupplier').val();
+            var orderDate = $('#orderDate').val();
+            var handoverDate = $('#handoverDate').val();
+
+            // Prepare an array to store parts data
+            var parts = [];
+
+            // Loop through each row of the table to collect part data
+            $('#sectionlist tbody tr').each(function () {
+                var partId = $(this).find('.partSelect option:selected').val(); // Get PartId
+                var partName = $(this).find('.partSelect option:selected').text(); // Get PartName
+                var quantity = $(this).find('input[name^="section-width"]').val(); // Get Quantity
+
+                // Only push if both PartId and quantity are valid
+                if (partId && quantity) {
+                    parts.push({
+                        PartId: parseInt(partId),
+                        PartName: partName.trim(),
+                        Quantity: parseInt(quantity)
+                    });
+                }
+            });
+
+            // Debugging output to check data
+            console.log(parts); // Check if parts array is filled correctly
+
+            // Create the request model
+            var requestData = {
+                OrderNumber: orderNumber,
+                Supplier: supplier,
+                OrderDate: orderDate,
+                HandoverDate: handoverDate,
+                Parts: parts
+            };
+
+            // Send the AJAX request to the controller
+            $.ajax({
+                url: '/dashboard/Order?handler=RegisterNewOrder', // Assuming this is your actual handler URL
+                type: 'POST',
+                data: JSON.stringify(requestData), // Send the request data as JSON
+                contentType: 'application/json; charset=utf-8', // Specify content type as JSON
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                success: function (response) {
+                    alert('Order submitted successfully!'); // Success callback
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText); // Log error message for debugging
+                    alert('Failed to submit order: ' + xhr.responseText); // Show error alert
+                }
+            });
+        });
     });
 </script>
+
+
+
+
 
 
 
