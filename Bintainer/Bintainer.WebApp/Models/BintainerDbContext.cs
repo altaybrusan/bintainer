@@ -55,8 +55,14 @@ public partial class BintainerDbContext : DbContext
 
     public virtual DbSet<PartTemplate> PartTemplates { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Data Source=MACSSD01;Integrated Security=True;Trust Server Certificate=True;Initial Catalog=Bintainer");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AS");
+
         modelBuilder.Entity<AspNetRole>(entity =>
         {
             entity.Property(e => e.Name).HasMaxLength(256);
@@ -119,7 +125,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<Bin>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC07F0733FD6");
+            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC077A9924F3");
 
             entity.ToTable("Bin", tb => tb.HasTrigger("CheckBinCoordinates"));
 
@@ -130,7 +136,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<BinSubspace>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC0797F471A6");
+            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC0712B7AC3E");
 
             entity.ToTable("BinSubspace");
 
@@ -176,11 +182,10 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC0778A9409F");
+            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC07EEC1C4E3");
 
             entity.ToTable("Order");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.HandOverDate).HasColumnType("datetime");
             entity.Property(e => e.OrderDate).HasColumnType("datetime");
             entity.Property(e => e.OrderNumber)
@@ -219,7 +224,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<Part>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC07F65F80B3");
+            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC070502EF6D");
 
             entity.ToTable("Part");
 
@@ -315,14 +320,14 @@ public partial class BintainerDbContext : DbContext
                     r => r.HasOne<PartTemplate>().WithMany()
                         .HasForeignKey("TemplateId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__PartTempl__Templ__68487DD7"),
+                        .HasConstraintName("FK__PartTempl__Templ__7B5B524B"),
                     l => l.HasOne<Part>().WithMany()
                         .HasForeignKey("PartId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__PartTempl__PartI__6754599E"),
+                        .HasConstraintName("FK__PartTempl__PartI__7A672E12"),
                     j =>
                     {
-                        j.HasKey("PartId", "TemplateId").HasName("PK__PartTemp__13B8A082E15331BB");
+                        j.HasKey("PartId", "TemplateId").HasName("PK__PartTemp__13B8A0820A2DB78F");
                         j.ToTable("PartTemplateAssignment");
                     });
         });
@@ -380,7 +385,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<PartFootprint>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartFoot__3214EC0776B81E95");
+            entity.HasKey(e => e.Id).HasName("PK__PartFoot__3214EC07B4D73D5D");
 
             entity.ToTable("PartFootprint");
 
@@ -407,7 +412,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<PartLabel>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC0710DAD731");
+            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC0741178668");
 
             entity.ToTable("PartLabel");
 
@@ -442,7 +447,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<PartTemplate>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartTemp__3214EC0729A9F04A");
+            entity.HasKey(e => e.Id).HasName("PK__PartTemp__3214EC078E035FB8");
 
             entity.ToTable("PartTemplate");
 
@@ -472,7 +477,7 @@ public partial class BintainerDbContext : DbContext
                         .HasConstraintName("FK_PartTemplateAttributeAssociation_PartTemplate"),
                     j =>
                     {
-                        j.HasKey("TemplateId", "AttributeTemplateId").HasName("PK__PartTemp__B9F28FD8F54CB1B1");
+                        j.HasKey("TemplateId", "AttributeTemplateId").HasName("PK__PartTemp__B9F28FD8F8738E88");
                         j.ToTable("PartTemplateAttributeAssociation");
                     });
         });
