@@ -24,7 +24,24 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         public IActionResult OnPostRegisterNewOrder([FromBody]RegisterOrderRequestModel request)
         {
-            Order order = new Order();
+            if (ModelState.IsValid) 
+            {
+                var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+                Order order = new Order();
+                order.OrderNumber = request.OrderNumber;
+                order.OrderDate = request.OrderDate;
+                order.HandOverDate = request.HandoverDate;
+                order.Supplier = request.Supplier;
+                order.UserId = UserId;
+                foreach (var item in request.Parts) 
+                {
+                    Part? part = _dbcontext.Parts.FirstOrDefault(c => c.Id == item.PartId);
+                    if (part is not null)
+                        order.Parts.Add(part);
+                }
+                _dbcontext.Orders.Add(order);
+                _dbcontext.SaveChanges(true);
+            }
 
 
             // Return a success response
