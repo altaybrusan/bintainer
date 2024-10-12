@@ -37,6 +37,8 @@ public partial class BintainerDbContext : DbContext
 
     public virtual DbSet<Order> Orders { get; set; }
 
+    public virtual DbSet<OrderPartAssociation> OrderPartAssociations { get; set; }
+
     public virtual DbSet<Part> Parts { get; set; }
 
     public virtual DbSet<PartAttribute> PartAttributes { get; set; }
@@ -182,7 +184,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC07EEC1C4E3");
+            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC07E71EEA0A");
 
             entity.ToTable("Order");
 
@@ -192,7 +194,6 @@ public partial class BintainerDbContext : DbContext
                 .HasMaxLength(100)
                 .HasDefaultValueSql("('default')")
                 .IsFixedLength();
-            entity.Property(e => e.Qunatity).HasDefaultValueSql("((0))");
             entity.Property(e => e.Supplier)
                 .HasMaxLength(100)
                 .HasDefaultValueSql("('default')")
@@ -203,23 +204,25 @@ public partial class BintainerDbContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Order_AspNetUsers");
+        });
 
-            entity.HasMany(d => d.Parts).WithMany(p => p.Orders)
-                .UsingEntity<Dictionary<string, object>>(
-                    "OrderPartAssociation",
-                    r => r.HasOne<Part>().WithMany()
-                        .HasForeignKey("PartId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_OrderPart_Part"),
-                    l => l.HasOne<Order>().WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_OrderPart_Order"),
-                    j =>
-                    {
-                        j.HasKey("OrderId", "PartId").HasName("PK_OrderPart");
-                        j.ToTable("OrderPartAssociation");
-                    });
+        modelBuilder.Entity<OrderPartAssociation>(entity =>
+        {
+            entity.HasKey(e => new { e.OrderId, e.PartId }).HasName("PK_OrderPart");
+
+            entity.ToTable("OrderPartAssociation");
+
+            entity.Property(e => e.Qunatity).HasDefaultValueSql("((0))");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderPartAssociations)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrderPart_Order");
+
+            entity.HasOne(d => d.Part).WithMany(p => p.OrderPartAssociations)
+                .HasForeignKey(d => d.PartId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrderPart_Part");
         });
 
         modelBuilder.Entity<Part>(entity =>

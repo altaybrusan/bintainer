@@ -9,8 +9,6 @@ public partial class Order
 
     public string? OrderNumber { get; set; }
 
-    public int? Qunatity { get; set; }
-
     public string Supplier { get; set; } = null!;
 
     public DateTime? OrderDate { get; set; }
@@ -19,7 +17,7 @@ public partial class Order
 
     public string UserId { get; set; } = null!;
 
-    public virtual AspNetUser User { get; set; } = null!;
+    public virtual ICollection<OrderPartAssociation> OrderPartAssociations { get; set; } = new List<OrderPartAssociation>();
 
-    public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
+    public virtual AspNetUser User { get; set; } = null!;
 }

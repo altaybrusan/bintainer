@@ -29,6 +29,8 @@ public partial class Part
 
     public virtual PartCategory? Category { get; set; }
 
+    public virtual ICollection<OrderPartAssociation> OrderPartAssociations { get; set; } = new List<OrderPartAssociation>();
+
     public virtual PartPackage Package { get; set; } = null!;
 
     public virtual ICollection<PartLabel> PartLabels { get; set; } = new List<PartLabel>();
@@ -40,8 +42,6 @@ public partial class Part
     public virtual ICollection<Bin> Bins { get; set; } = new List<Bin>();
 
     public virtual ICollection<PartGroup> Groups { get; set; } = new List<PartGroup>();
-
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public virtual ICollection<PartTemplate> Templates { get; set; } = new List<PartTemplate>();
 }
