@@ -40,7 +40,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                         order.Parts.Add(part);
                 }
                 _dbcontext.Orders.Add(order);
-                _dbcontext.SaveChanges(true);
+                _dbcontext.SaveChanges(true);                
             }
 
 
