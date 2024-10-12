@@ -3,7 +3,7 @@
 @model OrderModel
 @{
 }
-@Html.AntiForgeryToken();
+@Html.AntiForgeryToken()
 <link rel="stylesheet" href="~/css/hierarchy-select.min.css">
 <link rel="stylesheet" href="~/css/autocomplete.css">
 <script src="~/js/jquery-customselect.js"></script>
@@ -127,17 +127,13 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-            
-            <br/>
-            <script>
-                $(function () {
-                    $("#standard").customselect();
-                });
-            </script>
-
-
+        </div>          
+        <br/>
+        <script>
+            $(function () {
+                $("#standard").customselect();
+             });
+         </script>
     </div>
     <div id="search-order" class="tab-pane fade" role="tabpanel" aria-labelledby="update-tab">
         <div class="card mt-3">
@@ -149,12 +145,12 @@
                     <div class="col-md-6">
                         <div class="row align-items-center">
                             <div class="col-md-3">
-                                <label for="orderNumber" class="form-label">Order number</label>
-                                <label for="supplier" class="form-label">Supplier</label>
+                                <label for="searchOrderNumber" class="form-label">Order number</label>
+                                <label for="searchSupplier" class="form-label">Supplier</label>
                             </div>
                             <div class="col-md-5">
-                                <input type="text" class="form-control input-sharp " id="orderNumber" placeholder="Order number">
-                                <input type="text" class="form-control input-sharp" id="supplier" placeholder="e.g., Digikey">
+                                <input type="text" class="form-control input-sharp " id="searchOrderNumber" placeholder="Order number">
+                                <input type="text" class="form-control input-sharp" id="searchSupplier" placeholder="e.g., Digikey">
                             </div>
                         </div>
                         <div class="row align-items-center mt-3">
@@ -171,10 +167,42 @@
                                 <input type="date" id="toDate" name="toDate" class="form-control input-sharp">
                             </div>
                         </div>
-                        <button class="button-row btn btn-primary mt-3">Search</button>
+                        <button type="button" id="searchOrderBtn" class="button-row btn btn-primary mt-3">Search</button>
                     </div>
                 </form>
             </div>
+        </div>
+        <!-- HTML container to hold the search results -->
+        <div id="order-results">
+            <!-- Orders Table -->
+            <table id="orders-table" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Order Number</th>
+                        <th>Supplier</th>
+                        <th>Order Date</th>
+                        <th>Handover Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Orders will be dynamically populated here -->
+                </tbody>
+            </table>
+
+            <!-- Parts Table -->
+            <table id="parts-table" class="table table-bordered" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Part Name</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Parts will be dynamically populated here -->
+                </tbody>
+            </table>
+
         </div>
     </div>
 </div>
@@ -348,6 +376,102 @@
                 }
             });
         });
+
+        $('#searchOrderBtn').on('click', function (event) {
+            event.preventDefault();
+
+            // Collect search inputs
+            let orderNumber = $('#searchOrderNumber').val();
+            let supplier = $('#searchSupplier').val();
+            let fromDate = $('#fromDate').val();
+            let toDate = $('#toDate').val();
+
+            // Prepare the search request payload
+            let searchRequest = {
+                OrderNumber: orderNumber,
+                Supplier: supplier,
+                FromDate: fromDate === "" ? null : fromDate,
+                ToDate: toDate === "" ? null : toDate
+            };
+
+            // Send the search request to the server
+            $.ajax({
+                url: '/dashboard/Order?handler=SearchOrder', // Backend route
+                type: 'POST',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: JSON.stringify(searchRequest),
+                success: function (response) {
+                    // Handle the success response, e.g., populate order dropdown
+                    if (response.success) {    
+                        populateOrdersTable(response.orders);
+                    } else {
+                        alert("No results found.");
+                    }
+                },
+                error: function () {
+                    alert('Error while searching for orders.');
+                }
+            });
+        });
+
+        // Function to populate the orders table
+        function populateOrdersTable(orders) {
+            let ordersTableBody = $('#orders-table tbody');
+            ordersTableBody.empty(); // Clear previous data
+
+            orders.forEach(order => {
+                let row = `<tr>
+                <td>${order.orderNumber}</td>
+                <td>${order.supplier}</td>
+                <td>${formatDate(order.orderDate)}</td>
+                <td>${formatDate(order.handOverDate)}</td>
+                <td><button class="btn btn-info show-parts-btn" data-order-number="${order.orderNumber}">Show Details</button></td>
+            </tr>`;
+                ordersTableBody.append(row);
+            });
+
+            // Bind event handler for "Show Details" button
+            $('.show-parts-btn').on('click', function () {
+                let orderNumber = $(this).data('order-number'); // Retrieve the order number
+                showParts(orderNumber, orders);
+            });
+        }
+
+        // Function to show parts for a specific order
+        function showParts(orderNumber, orders) {
+            // Find the selected order using the unique orderNumber
+            let selectedOrder = orders.find(order => order.orderNumber === orderNumber);
+            if (selectedOrder) {
+                let partsTableBody = $('#parts-table tbody');
+                partsTableBody.empty(); // Clear previous parts data
+
+                selectedOrder.parts.forEach(part => {
+                    let partRow = `<tr>
+                    <td>${part.name}</td>
+                    <td>${part.qunatity}</td>
+                </tr>`;
+                    partsTableBody.append(partRow);
+                });
+
+                // Show the parts table
+                $('#parts-table').show();
+            }
+        }
+
+        // Utility function to format dates (adjust as needed)
+        function formatDate(dateString) {
+            if (dateString) {
+                let date = new Date(dateString);
+                return date.toLocaleDateString(); // Adjust format as needed
+            }
+            return 'N/A';
+        }
+
+
     });
 </script>
 

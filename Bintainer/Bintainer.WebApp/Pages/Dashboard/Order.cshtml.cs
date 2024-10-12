@@ -7,6 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bintainer.WebApp.Pages.Dashboard
 {
+    public class SearchOrderRequestModel
+    {
+        public string? OrderNumber { get; set; }
+        public string? Supplier { get; set; }
+        public DateTime? FromDate { get; set; } = null;
+        public DateTime? ToDate { get; set; } = null;
+    }
     public class OrderModel : PageModel
     {
         BintainerDbContext _dbcontext;
@@ -73,5 +80,62 @@ namespace Bintainer.WebApp.Pages.Dashboard
             return new OkResult();
         }
 
+        public IActionResult OnPostSearchOrder([FromBody] SearchOrderRequestModel request)
+        {
+            if (ModelState.IsValid)
+            {
+                // Build the query with optional search parameters
+                var ordersQuery = _dbcontext.Orders.AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(request.OrderNumber))
+                {
+                    ordersQuery = ordersQuery.Where(o => o.OrderNumber.Contains(request.OrderNumber));
+                }
+
+                if (!string.IsNullOrWhiteSpace(request.Supplier))
+                {
+                    ordersQuery = ordersQuery.Where(o => o.Supplier.Contains(request.Supplier));
+                }
+
+                if (request.FromDate.HasValue)
+                {
+                    ordersQuery = ordersQuery.Where(o => o.OrderDate >= request.FromDate.Value);
+                }
+
+                if (request.ToDate.HasValue)
+                {
+                    ordersQuery = ordersQuery.Where(o => o.OrderDate <= request.ToDate.Value);
+                }
+
+                // Fetch the orders and associated parts (join with OrderPartAssociations)
+                var orders = ordersQuery
+                    .Select(o => new
+                    {
+                        o.OrderNumber,
+                        o.Supplier,
+                        o.OrderDate,
+                        o.HandOverDate,
+                        Parts = _dbcontext.OrderPartAssociations
+                                    .Where(opa => opa.OrderId == o.Id)
+                                    .Select(opa => new
+                                    {
+                                        opa.Part.Name,
+                                        opa.Qunatity
+                                    }).ToList()
+                    })
+                    .ToList();
+
+                if (orders.Any())
+                {
+                    return new JsonResult(new { success = true, orders });
+                }
+                else
+                {
+                    return new JsonResult(new { success = false, message = "No results found." });
+                }
+            }
+
+            return BadRequest("Invalid search parameters.");
+        }
     }
 }
