@@ -2,7 +2,6 @@
 (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY(2000,1), 
     [OrderNumber] NCHAR(100) NULL DEFAULT ('default'), 
-    [Qunatity] INT NULL DEFAULT 0,
     [Supplier] NCHAR(100) NOT NULL DEFAULT ('default'),
     [OrderDate] DATETIME NULL, 
     [HandOverDate] DATETIME NULL, 
