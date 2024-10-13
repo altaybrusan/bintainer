@@ -170,8 +170,6 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     Console.WriteLine(  ex.Message);
                     throw;
                 }
-
-
                 if (!string.IsNullOrEmpty(request.OrderNumber))                 
                 {
                     Order _order = _dbcontext.Orders.Where(o => o.OrderNumber == request.OrderNumber && o.UserId == UserId).FirstOrDefault();                    
