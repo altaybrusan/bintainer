@@ -84,6 +84,8 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public IActionResult OnPostSearchForPart(string partNumber) 
         {
             var _part = _dbcontext.Parts.Include(p => p.AttributeTemplates).FirstOrDefault(p => p.Name == partNumber);
+            if (_part is null)
+                return new OkResult();
             var attributes = _dbcontext.PartAttributes.Where(a => a.TemplateId == _part.AttributeTemplates.FirstOrDefault().Id)
                 .Select(a => new
                 {
