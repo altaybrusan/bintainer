@@ -216,7 +216,16 @@
                                 </div>      
                             </div>
                             <div class="col-md-4">
-                                <input type="text" class="form-control input-sharp " id="searchPartName" placeholder="partName">                                
+                                <!-- Attach the datalist to the input field -->
+                                <input type="text" class="form-control input-sharp" id="searchPartName" placeholder="Part Name" list="partNames">
+
+                                <!-- Generate options using the Name property from the Part list -->
+                                <datalist id="partNames">
+                                    @foreach (var part in Model.Part)
+                                    {
+                                        <option value="@part.Name.Trim()"></option>
+                                    }
+                                </datalist>
                             </div>
                             <div class="col-md-1">
                                 <button type="button" class="button-row btn btn-primary" id="searchPartBtn">Search</button>
