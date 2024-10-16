@@ -29,6 +29,19 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public bool IsFilled { get; set; }
     }
 
+    public class PartUsageResponse 
+    {
+        public int PartId { get; set; }
+        public string? PartName { get; set; }
+        public string? Section { get; set; }
+        public int CoordinateX { get; set; }
+        public int CoordinateY { get; set; }
+        public int? Subspace { get; set; }
+        public int Quantity { get; set; }
+        public string? Label { get; set; }
+        public bool? IsFilled { get; set; }
+    }
+
     public class PartModel : PageModel
     {
         public List<PartPackage> Packages { get; set; } = new List<PartPackage>();
@@ -342,6 +355,48 @@ namespace Bintainer.WebApp.Pages.Dashboard
             return BadRequest(new { message = "Invalid request." });
         }
 
+        public IActionResult OnPostUsePart(string partName) 
+        {
+            Part? part = _dbcontext.Parts.Include(p=> p.Bins)
+                                         .ThenInclude(b=>b.BinSubspaces)
+                                         .Include(p=>p.OrderPartAssociations)
+                                         .Where(p => p.Name.Contains(partName)).FirstOrDefault();
+            if(part is not null) 
+            {
+                int? quantity = part.OrderPartAssociations.Where(op => op.PartId == part.Id).Select(op => op.Qunatity).Sum();
+
+                List<PartUsageResponse> results = new List<PartUsageResponse>();
+                
+                foreach (Bin bin in part.Bins) 
+                {
+                    if (bin.IsFilled == true) 
+                    {
+                        results.Add(new PartUsageResponse
+                        {
+                            PartId = part.Id,
+                            PartName = part.Name,
+                            CoordinateX = bin.CoordinateX,
+                            CoordinateY = bin.CoordinateY,
+                            Subspace = bin.BinSubspaces.FirstOrDefault()?.SubspaceIndex,
+                            Label = bin.BinSubspaces.FirstOrDefault()?.Label,
+                            IsFilled = true
+                        });
+                    }
+                    else 
+                    {
+                        foreach (BinSubspace subSpace in bin.BinSubspaces)
+                        {
+
+                        }
+
+                    }
+
+                }
+
+
+            }
+            return new OkResult();
+        }
 
         private void LoadTemplate(string userId)
         {
