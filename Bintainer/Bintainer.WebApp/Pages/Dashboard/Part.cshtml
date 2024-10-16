@@ -219,14 +219,12 @@
                                 </div>      
                             </div>
                             <div class="col-md-4">
-                                <!-- Attach the datalist to the input field -->
-                                <input type="text" class="form-control input-sharp" id="searchPartName" placeholder="Part Name" list="partNames">                                                           
-                                <datalist id="partNames">
-                                    @foreach (var part in Model.Part)
-                                    {
-                                        <option value="@part.Name.Trim()"></option>
-                                    }
-                                </datalist>
+                                <div class="autocomplete">
+                                    <input type="text" class="form-control input-sharp" id="searchPartName" placeholder="Part Name" data-autocomplete-options="searchPartNameData">
+                                    <div id="searchPartNameData" style="display:none;">
+                                        @Html.Raw(Json.Serialize(Model.Part.Select(p => p.Name.Trim())))
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-1">
                                 <button type="button" class="button-row btn btn-primary" id="searchPartBtn">Search</button>
@@ -269,26 +267,31 @@
                         <div class="row align-items-center">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="control-label">Part</label>
-                                    <select id="arrangePartList" class="form-select form-select-sm"
-                                            required="required"
-                                            asp-items="@(new SelectList(Model.Part,nameof(Part.Id),nameof(Part.Name)))">
-                                        <option value="">Select Part</option>
-                                    </select>
-                                    <label class="control-label">Section</label>
-                                    <select id="sectionSelect" class="form-select form-select-sm" required="required">
-                                        <option value="">Select Section</option>
-                                        @if(Model.Inventory?.InventorySections is not null)
-                                        {
-                                            @foreach (var invSection in Model.Inventory?.InventorySections)
+                                    <div class="row align-items-center">
+                                        <label class="control-label">Part</label>
+                                        <div class="autocomplete">
+                                            <input type="text" class="form-control input-sharp" id="arrangePartList" placeholder="Part Name" data-autocomplete-options="arrangePartListData" required="required">
+                                            <div id="arrangePartListData" style="display:none;">
+                                                @Html.Raw(Json.Serialize(Model.Part.Select(p => p.Name.Trim())))
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <label class="control-label">Section</label>
+                                        <select id="sectionSelect" class="form-select form-select-sm" required="required">
+                                            <option value="">Select Section</option>
+                                            @if (Model.Inventory?.InventorySections is not null)
                                             {
-                                                <option value="@invSection.Id" data-width="@invSection.Width" data-height="@invSection.Height" data-subspace="@invSection.SubspaceCount">
-                                                    @invSection.SectionName
-                                                </option>
-                                            }                                            
-                                        }                                        
-                                    </select>
-                                    <label class="control-label">Coordinate (X,Y)</label>
+                                                @foreach (var invSection in Model.Inventory?.InventorySections)
+                                                {
+                                                    <option value="@invSection.Id" data-width="@invSection.Width" data-height="@invSection.Height" data-subspace="@invSection.SubspaceCount">
+                                                        @invSection.SectionName
+                                                    </option>
+                                                }
+                                            }
+                                        </select>
+                                        <label class="control-label">Coordinate (X,Y)</label>
+                                    </div>
                                     <div class="row align-items-center">
                                         <div class="col-md-6">
                                             <input type="number" name="x-position" class="form-control input-sharp" min="1" value="1"  />
