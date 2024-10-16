@@ -68,6 +68,9 @@
     <li class="nav-item">
         <a class="nav-link" id="arrange-tab" data-bs-toggle="tab" data-bs-target="#arrange-part" href="#">Arrange</a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link" id="usage-tab" data-bs-toggle="tab" data-bs-target="#usage-part" href="#">Usage</a>
+    </li>
 </ul>
 
 <div class="tab-content">
@@ -217,9 +220,7 @@
                             </div>
                             <div class="col-md-4">
                                 <!-- Attach the datalist to the input field -->
-                                <input type="text" class="form-control input-sharp" id="searchPartName" placeholder="Part Name" list="partNames">
-
-                                <!-- Generate options using the Name property from the Part list -->
+                                <input type="text" class="form-control input-sharp" id="searchPartName" placeholder="Part Name" list="partNames">                                                           
                                 <datalist id="partNames">
                                     @foreach (var part in Model.Part)
                                     {
@@ -362,6 +363,35 @@
                     <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="searchedProductSpecTable" style="height:30px">Add Row</button>
                     <button class="btn btn-primary me-2 ms-2" id="updateAttribute" target-table="searchedProductSpecTable" style="height:30px">Update</button>
                 </div> *@
+            </div>
+        </div>
+    </div>
+    <div id="usage-part" class="tab-pane fade" role="tabpanel" aria-labelledby="usage-part">
+        <div class="card mt-5">
+            <div class="card-header">
+                <i class="fa fa-ravelry" aria-hidden="true"></i>&nbsp; Part usage
+            </div>
+            <div class="card-body">
+                <form class="row" method="post" asp-page-handler="UsePart">
+                    <div class="col-md-9">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Part</label>
+                                    <div class="autocomplete" style="width:300px;">
+                                        <input type="text" class="form-control input-sharp" id="searchPartName" placeholder="Part Name" data-autocomplete-options="partNamesData">
+                                        <div id="partNamesData" style="display:none;">
+                                            @Html.Raw(Json.Serialize(Model.Part.Select(p => p.Name.Trim())))
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="button-row btn btn-primary" id="usePartBtn">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
