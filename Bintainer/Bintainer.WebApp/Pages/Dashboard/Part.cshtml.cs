@@ -19,13 +19,14 @@ namespace Bintainer.WebApp.Pages.Dashboard
     }
     public class ArrangePartRequest 
     {
-        public int PartId { get; set; }
+        public string? PartName { get; set; }
         public int SectionId { get; set; }
         public int CoordinateX { get; set; }
         public int CoordinateY { get; set; }
         public int Subspace { get; set; }
         public string? Label { get; set; }
         public string? Group { get; set; }
+        public List<string>? Subspaces { get; set; }
         public bool IsFilled { get; set; }
     }
 
@@ -269,86 +270,86 @@ namespace Bintainer.WebApp.Pages.Dashboard
         {
             if (ModelState.IsValid) 
             {
-                try
-                {
-                    var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-                    InventorySection? inventorySection = _dbcontext.InventorySections.Where(i => i.Inventory.UserId == UserId && i.Id == arrangeRequest.SectionId)
-                                                                                     .Include(i=>i.Bins)
-                                                                                     .ThenInclude(b=>b.Parts)
-                                                                                     .ThenInclude(b=>b.Groups)
-                                                                                     .FirstOrDefault();
-                    if (inventorySection == null)
-                    {
-                        // Return an appropriate response, such as NotFound
-                        return NotFound(new { message = "Inventory section not found." });
-                    }
+                //try
+                //{
+                //    var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+                //    InventorySection? inventorySection = _dbcontext.InventorySections.Where(i => i.Inventory.UserId == UserId && i.Id == arrangeRequest.SectionId)
+                //                                                                     .Include(i=>i.Bins)
+                //                                                                     .ThenInclude(b=>b.Parts)
+                //                                                                     .ThenInclude(b=>b.Groups)
+                //                                                                     .FirstOrDefault();
+                //    if (inventorySection == null)
+                //    {
+                //        // Return an appropriate response, such as NotFound
+                //        return NotFound(new { message = "Inventory section not found." });
+                //    }
 
-                    Bin? bin = inventorySection?.Bins.FirstOrDefault(b => b.CoordinateX == arrangeRequest.CoordinateX &&
-                                                                          b.CoordinateY == arrangeRequest.CoordinateY &&
-                                                                          b.Parts.Any(p => p.Id == arrangeRequest.PartId));
+                //    Bin? bin = inventorySection?.Bins.FirstOrDefault(b => b.CoordinateX == arrangeRequest.CoordinateX &&
+                //                                                          b.CoordinateY == arrangeRequest.CoordinateY &&
+                //                                                          b.Parts.Any(p => p.Id == arrangeRequest.PartId));
 
-                    if (bin is not null) 
-                    {
-                        Part? part = bin.Parts.Where(p => p.Id == arrangeRequest.PartId).FirstOrDefault();
-                        if (!part.Groups.Any(g => g.Name.Trim() == arrangeRequest.Group))
-                            part.Groups.Add(new PartGroup() { Name = arrangeRequest.Group, UserId = UserId });
-                        if (!bin.BinSubspaces.Any(s => s.Id == arrangeRequest.Subspace))
-                            bin.BinSubspaces.Add(new BinSubspace() { SubspaceIndex = arrangeRequest.Subspace, Label = arrangeRequest.Label });
-                        else
-                        {
-                            var registeredSubspace = bin.BinSubspaces.Where(s => s.SubspaceIndex == arrangeRequest.Subspace).FirstOrDefault();
-                            registeredSubspace.Label= arrangeRequest.Label;
-                        }
-                        bin.IsFilled = arrangeRequest.IsFilled;
-                        _dbcontext.Parts.Update(part);
-                        _dbcontext.Bins.Update(bin);
-                        _dbcontext.SaveChanges(true);
-                    }
-                    else 
-                    {
-                        Bin newBin = new Bin()
-                        {
-                            CoordinateX = arrangeRequest.CoordinateX,
-                            CoordinateY = arrangeRequest.CoordinateY,
-                            SectionId = arrangeRequest.SectionId,
-                            IsFilled = arrangeRequest.IsFilled
-                        };
-                        BinSubspace newSubspace = new BinSubspace()
-                        {
-                            SubspaceIndex = arrangeRequest.Subspace,
-                            Label = arrangeRequest.Label,
-                        };                        
-                        PartGroup newPartGroup = new PartGroup()
-                        {
-                            UserId = UserId,
-                            Name = arrangeRequest.Group
-                        };
-                        Part? part = _dbcontext.Parts.Where(p => p.Id == arrangeRequest.PartId)
-                                                     .Include(p => p.Groups)
-                                                     .Include(p => p.Category)
-                                                     .FirstOrDefault();
-                        if (part == null)
-                        {
-                            return NotFound(new { message = "Part not found." });
-                        }
-                        if (!part.Groups.Any(g=>g.Name.Trim()==arrangeRequest.Group))
-                        {
-                            part.Groups.Add(newPartGroup);
-                        }
+                //    if (bin is not null) 
+                //    {
+                //        Part? part = bin.Parts.Where(p => p.Id == arrangeRequest.PartId).FirstOrDefault();
+                //        if (!part.Groups.Any(g => g.Name.Trim() == arrangeRequest.Group))
+                //            part.Groups.Add(new PartGroup() { Name = arrangeRequest.Group, UserId = UserId });
+                //        if (!bin.BinSubspaces.Any(s => s.Id == arrangeRequest.Subspace))
+                //            bin.BinSubspaces.Add(new BinSubspace() { SubspaceIndex = arrangeRequest.Subspace, Label = arrangeRequest.Label });
+                //        else
+                //        {
+                //            var registeredSubspace = bin.BinSubspaces.Where(s => s.SubspaceIndex == arrangeRequest.Subspace).FirstOrDefault();
+                //            registeredSubspace.Label= arrangeRequest.Label;
+                //        }
+                //        bin.IsFilled = arrangeRequest.IsFilled;
+                //        _dbcontext.Parts.Update(part);
+                //        _dbcontext.Bins.Update(bin);
+                //        _dbcontext.SaveChanges(true);
+                //    }
+                //    else 
+                //    {
+                //        Bin newBin = new Bin()
+                //        {
+                //            CoordinateX = arrangeRequest.CoordinateX,
+                //            CoordinateY = arrangeRequest.CoordinateY,
+                //            SectionId = arrangeRequest.SectionId,
+                //            IsFilled = arrangeRequest.IsFilled
+                //        };
+                //        BinSubspace newSubspace = new BinSubspace()
+                //        {
+                //            SubspaceIndex = arrangeRequest.Subspace,
+                //            Label = arrangeRequest.Label,
+                //        };                        
+                //        PartGroup newPartGroup = new PartGroup()
+                //        {
+                //            UserId = UserId,
+                //            Name = arrangeRequest.Group
+                //        };
+                //        Part? part = _dbcontext.Parts.Where(p => p.Id == arrangeRequest.PartId)
+                //                                     .Include(p => p.Groups)
+                //                                     .Include(p => p.Category)
+                //                                     .FirstOrDefault();
+                //        if (part == null)
+                //        {
+                //            return NotFound(new { message = "Part not found." });
+                //        }
+                //        if (!part.Groups.Any(g=>g.Name.Trim()==arrangeRequest.Group))
+                //        {
+                //            part.Groups.Add(newPartGroup);
+                //        }
                         
-                        newBin.Parts.Add(part);
-                        newBin.BinSubspaces.Add(newSubspace);
-                        inventorySection.Bins.Add(newBin);
-                        _dbcontext.SaveChanges(true);
+                //        newBin.Parts.Add(part);
+                //        newBin.BinSubspaces.Add(newSubspace);
+                //        inventorySection.Bins.Add(newBin);
+                //        _dbcontext.SaveChanges(true);
 
-                    }
-                    return new OkResult();
-                }
-                catch (Exception e)
-                {
+                //    }
+                //    return new OkResult();
+                //}
+                //catch (Exception e)
+                //{
 
-                    return StatusCode(500, new { message = "An error occurred while processing your request." });
-                }
+                //    return StatusCode(500, new { message = "An error occurred while processing your request." });
+                //}
 
             }
 

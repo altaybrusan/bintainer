@@ -304,7 +304,7 @@
                                         <div class="col-md-6 align-items-center">
                                             <label class="control-label">Subspace</label>
                                             <div class="col-md-12">
-                                                <input type="number" name="subspace" class="form-control input-sharp" min="1" value="1" />
+                                                <div id="subspaceCheckboxes"></div>
                                             </div>
                                         </div>
                                         <div class="col-md-6 align-items-center">
@@ -316,8 +316,8 @@
                                     </div>
                                     <div class="row align-items-center">
                                         <div class="col-md-6">
-                                            <input type="checkbox" id="isFilledCheckbox" name="isFilled"/>
-                                            <label class="control-label" for="isFilledCheckbox">All subspaces used.</label>
+                                            <input type="checkbox" id="fillAll" />
+                                            <label for="fillAll">Fill All</label>
                                         </div>
                                     </div>
                                     <label class="control-label">Group</label>
@@ -742,28 +742,63 @@
             // Get the selected option
             var selectedOption = $(this).find('option:selected');
 
-            // Get width and height from data attributes
+            // Get width, height, and subspace from data attributes
             var width = selectedOption.data('width');
             var height = selectedOption.data('height');
             var subspace = selectedOption.data('subspace');
 
             // Set the maximum values for x and y input fields
-            if (width && height && subspace) {
+            if (width && height) {
                 $('input[name="x-position"]').attr('max', width);
-                //$('input[name="x-position"]').val(width); // Optionally, set the value
-
                 $('input[name="y-position"]').attr('max', height);
-                //$('input[name="y-position"]').val(height); // Optionally, set the value
-
-                $('input[name="subspace"]').attr('max', subspace);
-
             } else {
                 // Clear the max values if no valid section is selected
                 $('input[name="x-position"]').removeAttr('max').val(1);
                 $('input[name="y-position"]').removeAttr('max').val(1);
-                $('input[name="subspace"]').removeAttr('max').val(1);
+            }
+
+            // Clear the previous checkboxes
+            $('#subspaceCheckboxes').empty();
+            $('#fillAll').prop('checked', false); // Uncheck the 'Fill All' checkbox
+
+            // If valid subspace is selected, create checkboxes
+            if (subspace && subspace > 0) {
+                for (var i = 1; i <= subspace; i++) {
+                    var checkbox = $('<input />', {
+                        type: 'checkbox',
+                        class: 'subspace-checkbox',
+                        id: 'subspace-' + i,
+                        name: 'subspace[]',
+                        value: i
+                    });
+                    var label = $('<label />', {
+                        'for': 'subspace-' + i,
+                        text: i
+                    });
+
+                    // Append checkbox and label to the container
+                    $('#subspaceCheckboxes').append(checkbox).append(label).append(' ');
+                }
+
+                // Bind event to individual checkboxes
+                $('.subspace-checkbox').on('change', function () {
+                    // Check if all checkboxes are selected
+                    var allChecked = $('.subspace-checkbox').length === $('.subspace-checkbox:checked').length;
+                    $('#fillAll').prop('checked', allChecked); // Check/uncheck "Fill All" based on individual selections
+                });
             }
         });
+
+        // When "Fill All" is checked or unchecked
+        $('#fillAll').on('change', function () {
+            var isChecked = $(this).is(':checked');
+
+            // Check/uncheck all subspace checkboxes
+            $('.subspace-checkbox').prop('checked', isChecked);
+        });
+
+
+
         // Listen to the 'input' event on x-position, y-position, and subspace fields
         $('input[name="x-position"], input[name="y-position"], input[name="subspace"]').on('input', function () {
             // Get the current value of the input
@@ -782,42 +817,49 @@
                 $(this).val(1);
             }
         });
-        
+
         $('#arrangePartBtn').on('click', function (event) {
             event.preventDefault();
 
             // Read the selected part ID
-            var partId = $('#arrangePartList').val();
+            var partName = $('#arrangePartList').val();
 
             // Read the selected section ID and associated data
             var sectionId = $('#sectionSelect').val();
             var width = $('#sectionSelect option:selected').data('width');
             var height = $('#sectionSelect option:selected').data('height');
 
-            // Read the coordinate values (X, Y) and subspace value
+            // Read the coordinate values (X, Y)
             var xPosition = $('input[name="x-position"]').val();
             var yPosition = $('input[name="y-position"]').val();
-            var subspaceValue = $('input[name="subspace"]').val();
-            var subspaceLabel = $('input[name="subspaceLabel"]').val();
-            var isFilled = $('input[name="isFilled"]').prop('checked');
 
-            // Read the group input
+            // Read all checked subspaces
+            var selectedSubspaces = [];
+            $('.subspace-checkbox:checked').each(function () {
+                selectedSubspaces.push($(this).val());
+            });
+
+            // Read the group input and label
             var group = $('#partGroup').val();
+            var subspaceLabel = $('input[name="subspaceLabel"]').val();
+
+            // Check if 'Fill All' is selected
+            var isFilled = $('input[name="fillAll"]').prop('checked');
 
             // Prepare the data to be sent
             var data = {
-                PartId: partId,
+                PartName: partName,
                 SectionId: sectionId,
                 CoordinateX: xPosition,
                 CoordinateY: yPosition,
-                Subspace: subspaceValue,
+                Subspaces: selectedSubspaces, // Send selected subspaces as a list
                 Label: subspaceLabel,
                 Group: group,
-                IsFilled: isFilled
+                IsFilled: isFilled // Indicate if all subspaces were selected
             };
 
-            // Check if the required fields are filled
-            if (!partId || !sectionId || !xPosition || !yPosition || !subspaceValue ) {
+            // Check if required fields are filled
+            if (!partName || !sectionId || !xPosition || !yPosition || selectedSubspaces.length === 0) {
                 alert("Please fill all the required fields.");
                 return;
             }
@@ -839,7 +881,7 @@
                         '<td>' + $.trim($('#sectionSelect option:selected').text()) + '</td>' +
                         '<td>' + data.CoordinateX + '</td>' +
                         '<td>' + data.CoordinateY + '</td>' +
-                        '<td>' + data.Subspace + '</td>' +
+                        '<td>' + data.Subspaces.join(', ') + '</td>' +
                         '<td>' + data.Label + '</td>' +
                         '<td>' + data.Group + '</td>' +
                         '<td><button type="button" class="btn btn-danger btn-sm remove-row-btn">Remove</button></td>' +
@@ -851,21 +893,19 @@
                     $('#sectionSelect').val('');
                     $('input[name="x-position"]').val(1);
                     $('input[name="y-position"]').val(1);
-                    $('input[name="subspace"]').val(1);
                     $('#partGroup').val('');
                     $('#subspaceLabel').val('');
-                    // // Handle the success case (e.g., show a success message, clear form)
-                    // alert('Part arranged successfully!');
-                    // // Optionally clear the form after submission
-                    // $('form').trigger("reset");
+                    $('.subspace-checkbox').prop('checked', false); // Reset subspace checkboxes
+                    $('#fillAll').prop('checked', false); // Reset 'Fill All' checkbox
                 },
                 error: function (xhr, status, error) {
-                    // Handle the error case (e.g., show an error message)
+                    // Handle the error case
                     alert('Error: Unable to arrange part. Please try again.');
                     console.error(error);
                 }
             });
         });
+
                 
         function searchPart() {
             var number = $('#searchPartName').val().trim();
