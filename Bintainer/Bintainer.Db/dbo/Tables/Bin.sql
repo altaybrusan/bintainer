@@ -1,10 +1,9 @@
 ﻿CREATE TABLE [dbo].[Bin]
 (
-	[Id] INT NOT NULL PRIMARY KEY IDENTITY(6000,1),    
-    [SectionId] INT NULL,    
-    [CoordinateX] INT NOT NULL, 
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY(6000,1),
+    [SectionId] INT NULL,
+    [CoordinateX] INT NOT NULL,
     [CoordinateY] INT NOT NULL,
-    [IsFilled] BIT NULL, 
     CONSTRAINT [FK_Bin_InventorySection] FOREIGN KEY ([SectionId]) REFERENCES [InventorySection]([Id])
 )
 

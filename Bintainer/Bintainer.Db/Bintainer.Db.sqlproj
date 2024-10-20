@@ -136,7 +136,7 @@
     <Build Include="dbo\Tables\Inventory.sql" />
     <Build Include="dbo\Tables\Bin.sql" />
     <Build Include="dbo\Tables\PartAttribute.sql" />
-    <Build Include="dbo\Tables\PartBin.sql" />
+    <Build Include="dbo\Tables\PartBinAssociation.sql" />
     <Build Include="dbo\Tables\BinSubspace.sql" />
     <Build Include="dbo\Tables\PartCategory.sql" />
     <Build Include="dbo\Tables\PartGroup.sql" />
