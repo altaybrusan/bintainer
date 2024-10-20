@@ -1,14 +1,18 @@
 using Amazon.Runtime.Internal;
+using Amazon.SimpleEmail.Model.Internal.MarshallTransformations;
 using Azure.Core;
 using Bintainer.WebApp.Data;
 using Bintainer.WebApp.Data.DTOs;
 using Bintainer.WebApp.Models;
 using Bintainer.WebApp.Services;
+using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime;
 
 namespace Bintainer.WebApp.Pages.Dashboard
 {
@@ -23,11 +27,20 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public int SectionId { get; set; }
         public int CoordinateX { get; set; }
         public int CoordinateY { get; set; }
-        public int Subspace { get; set; }
         public string? Label { get; set; }
         public string? Group { get; set; }
-        public List<string>? Subspaces { get; set; }
+        public Dictionary<int,int>? SubspaceQuantities { get; set; }
         public bool IsFilled { get; set; }
+        public int? FillAllQuantity { get; set; }
+    }
+
+    public class AdjustQuantityRequest 
+    {
+        public int QuantityUsed { get; set; }
+        public int BinId { get; set; }
+        public string? PartName { get; set; }
+        public int Quantity { get; set; }
+        public string? SubspaceIndices { get; set; }
     }
 
     public class PartUsageResponse 
@@ -37,10 +50,10 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public string? Section { get; set; }
         public int CoordinateX { get; set; }
         public int CoordinateY { get; set; }
-        public int? Subspace { get; set; }
+        public string? SubspaceIndices { get; set; }
         public int Quantity { get; set; }
         public string? Label { get; set; }
-        public bool? IsFilled { get; set; }
+        public int BinId { get; set; }
     }
 
     public class PartModel : PageModel
@@ -266,137 +279,149 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         }
 
-        public IActionResult OnPostArrangePart([FromBody] ArrangePartRequest arrangeRequest) 
+        public IActionResult OnPostArrangePart([FromBody] ArrangePartRequest arrangeRequest)
         {
-            if (ModelState.IsValid) 
+            if (ModelState.IsValid)
             {
-                //try
-                //{
-                //    var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-                //    InventorySection? inventorySection = _dbcontext.InventorySections.Where(i => i.Inventory.UserId == UserId && i.Id == arrangeRequest.SectionId)
-                //                                                                     .Include(i=>i.Bins)
-                //                                                                     .ThenInclude(b=>b.Parts)
-                //                                                                     .ThenInclude(b=>b.Groups)
-                //                                                                     .FirstOrDefault();
-                //    if (inventorySection == null)
-                //    {
-                //        // Return an appropriate response, such as NotFound
-                //        return NotFound(new { message = "Inventory section not found." });
-                //    }
+                try
+                {
+                    var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+                    InventorySection? inventorySection = _dbcontext.InventorySections.Where(i => i.Inventory.UserId == UserId && i.Id == arrangeRequest.SectionId)
+                                                                                     .FirstOrDefault();
+                    Part? part = _dbcontext.Parts.Where(p => p.Name.Trim() == arrangeRequest.PartName).FirstOrDefault();
 
-                //    Bin? bin = inventorySection?.Bins.FirstOrDefault(b => b.CoordinateX == arrangeRequest.CoordinateX &&
-                //                                                          b.CoordinateY == arrangeRequest.CoordinateY &&
-                //                                                          b.Parts.Any(p => p.Id == arrangeRequest.PartId));
+                    if (inventorySection == null)
+                    {
+                        return NotFound(new { message = "Inventory section not found." });
+                    }
 
-                //    if (bin is not null) 
-                //    {
-                //        Part? part = bin.Parts.Where(p => p.Id == arrangeRequest.PartId).FirstOrDefault();
-                //        if (!part.Groups.Any(g => g.Name.Trim() == arrangeRequest.Group))
-                //            part.Groups.Add(new PartGroup() { Name = arrangeRequest.Group, UserId = UserId });
-                //        if (!bin.BinSubspaces.Any(s => s.Id == arrangeRequest.Subspace))
-                //            bin.BinSubspaces.Add(new BinSubspace() { SubspaceIndex = arrangeRequest.Subspace, Label = arrangeRequest.Label });
-                //        else
-                //        {
-                //            var registeredSubspace = bin.BinSubspaces.Where(s => s.SubspaceIndex == arrangeRequest.Subspace).FirstOrDefault();
-                //            registeredSubspace.Label= arrangeRequest.Label;
-                //        }
-                //        bin.IsFilled = arrangeRequest.IsFilled;
-                //        _dbcontext.Parts.Update(part);
-                //        _dbcontext.Bins.Update(bin);
-                //        _dbcontext.SaveChanges(true);
-                //    }
-                //    else 
-                //    {
-                //        Bin newBin = new Bin()
-                //        {
-                //            CoordinateX = arrangeRequest.CoordinateX,
-                //            CoordinateY = arrangeRequest.CoordinateY,
-                //            SectionId = arrangeRequest.SectionId,
-                //            IsFilled = arrangeRequest.IsFilled
-                //        };
-                //        BinSubspace newSubspace = new BinSubspace()
-                //        {
-                //            SubspaceIndex = arrangeRequest.Subspace,
-                //            Label = arrangeRequest.Label,
-                //        };                        
-                //        PartGroup newPartGroup = new PartGroup()
-                //        {
-                //            UserId = UserId,
-                //            Name = arrangeRequest.Group
-                //        };
-                //        Part? part = _dbcontext.Parts.Where(p => p.Id == arrangeRequest.PartId)
-                //                                     .Include(p => p.Groups)
-                //                                     .Include(p => p.Category)
-                //                                     .FirstOrDefault();
-                //        if (part == null)
-                //        {
-                //            return NotFound(new { message = "Part not found." });
-                //        }
-                //        if (!part.Groups.Any(g=>g.Name.Trim()==arrangeRequest.Group))
-                //        {
-                //            part.Groups.Add(newPartGroup);
-                //        }
-                        
-                //        newBin.Parts.Add(part);
-                //        newBin.BinSubspaces.Add(newSubspace);
-                //        inventorySection.Bins.Add(newBin);
-                //        _dbcontext.SaveChanges(true);
+                    Bin? bin = inventorySection?.Bins.FirstOrDefault(b => b.CoordinateX == arrangeRequest.CoordinateX &&
+                                                                         b.CoordinateY == arrangeRequest.CoordinateY);
 
-                //    }
-                //    return new OkResult();
-                //}
-                //catch (Exception e)
-                //{
+                    if (bin is not null && part is not null)
+                    {
+                        ProcessArrangePartRequest(bin, part, arrangeRequest, UserId);
+                    }
 
-                //    return StatusCode(500, new { message = "An error occurred while processing your request." });
-                //}
+                    if (bin is null && part is not null)
+                    {
+                        bin = CreateBin(arrangeRequest.CoordinateX, arrangeRequest.CoordinateY, inventorySection);
+                        ProcessArrangePartRequest(bin, part, arrangeRequest, UserId);
+                    }
+
+                    if (part is null)
+                    {
+                        // TODO: log
+                        throw new Exception("The part you are trying to arrange is not valid!");
+                    }
+
+                    return new OkResult();
+                }
+                catch (Exception e)
+                {
+
+                    return StatusCode(500, new { message = "An error occurred while processing your request." });
+                }
 
             }
 
             return BadRequest(new { message = "Invalid request." });
         }
 
-        public IActionResult OnPostUsePart(string partName) 
+        public IActionResult OnPostUsePart(string partName)
         {
-            Part? part = _dbcontext.Parts.Include(p=> p.Bins)
-                                         .ThenInclude(b=>b.BinSubspaces)
-                                         .Include(p=>p.OrderPartAssociations)
-                                         .Where(p => p.Name.Contains(partName)).FirstOrDefault();
-            if(part is not null) 
+            if (ModelState.IsValid) 
             {
-                int? quantity = part.OrderPartAssociations.Where(op => op.PartId == part.Id).Select(op => op.Qunatity).Sum();
+                Part? part = GetPartByName(partName);
 
-                List<PartUsageResponse> results = new List<PartUsageResponse>();
-                
-                foreach (Bin bin in part.Bins) 
+                if (part is not null)
                 {
-                    if (bin.IsFilled == true) 
-                    {
-                        results.Add(new PartUsageResponse
-                        {
-                            PartId = part.Id,
-                            PartName = part.Name,
-                            CoordinateX = bin.CoordinateX,
-                            CoordinateY = bin.CoordinateY,
-                            Subspace = bin.BinSubspaces.FirstOrDefault()?.SubspaceIndex,
-                            Label = bin.BinSubspaces.FirstOrDefault()?.Label,
-                            IsFilled = true
-                        });
-                    }
-                    else 
-                    {
-                        foreach (BinSubspace subSpace in bin.BinSubspaces)
-                        {
+                    var response = GetPartUsageResponse(part);
+                    return new JsonResult(response);
+                }
+            }            
+            return new OkResult();
+        }
 
-                        }
-
-                    }
-
+        public IActionResult OnPostAdjustQuantity([FromBody] AdjustQuantityRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                if (request.QuantityUsed > request.Quantity)
+                {
+                    return BadRequest(new { message = "The number of used items should be less than available ones." });
                 }
 
+                List<int> subSpaces = ParseSubspaceIndices(request.SubspaceIndices);
+                int takeOut = request.QuantityUsed;
 
+                // Get the part by its name
+                Part? part = GetPartByName(request.PartName);
+
+                if (part == null)
+                {
+                    return NotFound(new { message = "Part not found." });
+                }
+
+                // Fetch relevant part-bin associations
+                var associations = part.PartBinAssociations
+                                       .Where(a => a.BinId == request.BinId && subSpaces.Contains(a.Subspace.SubspaceIndex!.Value))
+                                       .OrderBy(a => a.SubspaceId) // Ensure a consistent order for processing
+                                       .ToList();
+
+                foreach (var assoc in associations)
+                {
+                    if (takeOut <= 0) break; 
+
+                    if (assoc.Quantity >= takeOut)
+                    {
+                        assoc.Quantity -= takeOut;
+                        takeOut = 0; 
+                    }
+                    else
+                    {
+                        takeOut -= assoc.Quantity;
+                        assoc.Quantity = 0;
+                    }
+                }
+
+                _dbcontext.PartBinAssociations.UpdateRange(associations);
+                _dbcontext.SaveChanges();
+
+                return new OkResult();
             }
-            return new OkResult();
+
+            return BadRequest(ModelState);
+        }
+
+        private List<PartUsageResponse> GetPartUsageResponse(Part part) 
+        {
+            var response = part.PartBinAssociations
+                               .GroupBy(a => a.BinId)
+                               .Select(g => new PartUsageResponse
+                               {
+                                 BinId = g.Key,
+                                 Label = g.First().Bin.BinSubspaces.FirstOrDefault()?.Label?.Trim(),                                
+                                 PartName = g.First().Part.Name?.Trim(),
+                                 CoordinateX = g.First().Bin.CoordinateX,
+                                 CoordinateY = g.First().Bin.CoordinateY,
+                                 Section = g.First().Bin.Section?.SectionName?.Trim(),
+                                 Quantity = g.Sum(a => a.Quantity),
+                                 SubspaceIndices = string.Join(", ", g.First().Bin.BinSubspaces.Select(s => s.SubspaceIndex))
+                               })
+                               .ToList();
+            return response;
+        }
+
+        private Part? GetPartByName(string partName) 
+        {
+            Part? part = _dbcontext.Parts.Include(p => p.PartBinAssociations)
+                                         .ThenInclude(b=>b.Bin)
+                                         .ThenInclude(b => b.BinSubspaces)
+                                         .Include(p => p.OrderPartAssociations)
+                                         .Where(p => p.Name.Contains(partName))
+                                         .FirstOrDefault();
+            return part;        
         }
 
         private void LoadTemplate(string userId)
@@ -407,5 +432,231 @@ namespace Bintainer.WebApp.Pages.Dashboard
 					AttributeTemplatesTable[item.Id] = item.TemplateName;
 			}
 		}
+
+        private bool TryInsertPartIntoBin(List<int> targetIndices,string label,ref Part part, ref Bin bin)
+        {
+            foreach (int subSpaceIndex in targetIndices)
+            {
+                var targetSubspace = bin.BinSubspaces.Where(s => s.SubspaceIndex == subSpaceIndex).FirstOrDefault();
+                if(targetSubspace is null)
+                {
+                    // the bin's subspace is not already used
+                    targetSubspace = new BinSubspace()
+                    {
+                        SubspaceIndex = subSpaceIndex,
+                        Label = label
+                    };
+                    bin.BinSubspaces.Add(targetSubspace);                    
+                }
+                else 
+                {
+                    int partId = part.Id;
+                    int binId = bin.Id;
+                    int subspaceId = targetSubspace.Id;                    
+                    if (_dbcontext.PartBinAssociations.Where(a => a.PartId == partId && a.SubspaceId == subspaceId && a.BinId== binId).Any()) 
+                    {
+                        // the incomming part is same as already on
+                    }
+                    else 
+                    {
+
+                    }
+                }
+            }
+            return true;
+
+        }
+
+        private bool IsSubspaceAvailableForPart(in Bin bin, in Part part, List<int> subSpaceIndices)
+        {
+            var existingSubspaces = bin.BinSubspaces.Where(s => subSpaceIndices.Contains(s.SubspaceIndex.Value)).ToList();
+            if (existingSubspaces is null || existingSubspaces.Count() == 0)
+                return true;
+
+            int binId = bin.Id;
+            int partId = part.Id;
+            return existingSubspaces.TrueForAll(s => s.PartBinAssociations.Where(a => a.BinId == binId && a.PartId == partId).FirstOrDefault() != null);
+        }  
+
+        private BinSubspace MakeSubspaceInsideBin(Bin bin,int subspaceIndex,string? label) 
+        {
+            BinSubspace? subspace = bin.BinSubspaces.Where(b => b.SubspaceIndex == subspaceIndex).FirstOrDefault();
+            if (subspace is null)
+            {
+                subspace = new BinSubspace()
+                {
+                    BinId = bin.Id,
+                    SubspaceIndex = subspaceIndex,
+                    Label = label
+                };
+                bin.BinSubspaces.Add(subspace);
+                subspace.Bin = bin;
+            }
+            return subspace;
+        }        
+        private void UpdatePartQuantityInsideSubspace(BinSubspace subspace, int partId, int partQuantity) 
+        {
+            var assoc = subspace.PartBinAssociations.Where(a => a.PartId == partId).FirstOrDefault();
+            if (assoc is not null) 
+            {
+                int updatedValue = assoc.Quantity + partQuantity;
+                if (updatedValue < 0) { updatedValue = 0; }
+                assoc.Quantity = updatedValue;
+                _dbcontext.PartBinAssociations.Update(assoc);
+                _dbcontext.SaveChanges();
+            }
+
+            return;
+        }
+        private Bin InsertPartIntoBin(Bin bin,in Part part, Dictionary<int,int>? subspaceQuantity,string label) 
+        {
+            int binId = bin.Id;
+            int partId = part.Id;
+            if (!IsSubspaceAvailableForPart(bin, part, subspaceQuantity.Keys.ToList())) 
+            {
+                // TODO : log event
+                throw new Exception("Can not insert element into subspace");
+
+            }
+            foreach (var subspaceIndex in subspaceQuantity.Keys)
+            {
+                BinSubspace subspace = MakeSubspaceInsideBin(bin, subspaceIndex, label);
+                InsertPartIntoSubspace(subspace, part);
+                UpdatePartQuantityInsideSubspace(subspace, partId, subspaceQuantity[subspaceIndex]);                                
+            }
+            return bin;            
+        }
+
+        private BinSubspace InsertPartIntoSubspace(BinSubspace subSpace,Part part) 
+        {
+            if(subSpace.Bin is null)
+            {
+                // TODO: log
+                throw new Exception("the bin can not be null while trying to insert a part inside the subspace");
+            }
+            var assoc = new PartBinAssociation 
+            {
+                PartId= part.Id,
+                BinId = subSpace.Bin!.Id,
+                SubspaceId= subSpace.Id
+            };
+            subSpace.PartBinAssociations.Add(assoc);
+
+            return subSpace;
+        }
+        public List<int> ParseSubspaceIndices(string commaSeparatedIndices)
+        {
+            if (string.IsNullOrWhiteSpace(commaSeparatedIndices))
+            {
+                return new List<int>(); 
+            }
+
+            return commaSeparatedIndices
+                .Split(',')
+                .Select(int.Parse)
+                .ToList();
+        }
+
+        private Dictionary<int, int> DistributeQuantityAcrossSubspaces(in Bin bin, int totalQuantity)
+        {
+            int subspaceCount = bin.Section.SubspaceCount.Value;
+            int[] quantities = DividePartsEvenly(totalQuantity, subspaceCount);
+            Dictionary<int, int> subspaceQuantity = new Dictionary<int, int>();
+
+            for (int i = 1; i <= quantities.Length; i++)
+            {
+                subspaceQuantity.Add(i, quantities[i-1]);
+            }
+
+            return subspaceQuantity;
+        }
+        private Bin CreateBin(int coordinateX, int coordinateY,InventorySection section) 
+        {
+            Bin bin = new  Bin() { CoordinateX = coordinateX, CoordinateY = coordinateY, SectionId = section.Id };
+            SaveBin(bin);
+            section.Bins.Add(bin);
+            return bin;
+        }
+        private void SaveBin(Bin bin) 
+        {
+            _dbcontext.Bins.Add(bin);
+            _dbcontext.SaveChanges();
+            
+        }
+        private void UpdateBin(Bin bin) 
+        {
+            _dbcontext.Bins.Update(bin);
+            _dbcontext.SaveChanges(true);
+        }
+        private int[] DividePartsEvenly(int totalParts, int totalSubspaces)
+        {
+            int[] result = new int[totalSubspaces];
+            int baseDivision = totalParts / totalSubspaces;
+            int remainder = totalParts % totalSubspaces;
+            
+            for (int i = 0; i < totalSubspaces; i++)
+            {
+                result[i] = baseDivision;
+            }
+
+            for (int i = 0; i < remainder; i++)
+            {
+                result[i]++;
+            }
+
+            return result;
+        }
+        
+        private void ProcessArrangePartRequest(Bin bin, Part part, ArrangePartRequest arrangeRequest, string UserId) 
+        {
+            Dictionary<int, int>? subspaceQuantity = new Dictionary<int, int>();
+            if (arrangeRequest.IsFilled)
+            {
+                subspaceQuantity = DistributeQuantityAcrossSubspaces(bin, arrangeRequest.FillAllQuantity.Value);
+            }
+            else
+            {
+                subspaceQuantity = arrangeRequest.SubspaceQuantities;
+            }
+
+            var updatedBin = InsertPartIntoBin(bin, part, subspaceQuantity, arrangeRequest.Label);
+            UpdateBin(updatedBin);
+
+            if (arrangeRequest.Group is not null)
+            {
+                var partGroup = AddPartIntoGroup(part, arrangeRequest.Group, UserId);
+                part.Groups.Add(partGroup);
+            }
+
+            _dbcontext.Parts.Update(part);
+            _dbcontext.Bins.Update(bin);
+            _dbcontext.SaveChanges(true);
+        }
+        private PartGroup? GetPartGroup(string name, string userId) 
+        {
+            return _dbcontext.PartGroups.Where(g => g.Name == name && g.UserId== userId).FirstOrDefault();
+        }
+
+        public PartGroup AddPartIntoGroup(Part part, string groupName, string userId)
+        {
+           var group = GetPartGroup(groupName, userId);  
+            
+           if(group is not null && group.Parts.Contains(part)) 
+            {
+                return group;
+            }
+           if(group is not null && !group.Parts.Contains(part)) 
+            {
+                group.Parts.Add(part);
+            }
+           if(group is null) 
+            {
+                group = new PartGroup() {Name = groupName, UserId = userId };
+                group.Parts.Add(part);
+            }                     
+           
+           return group;
+        }
+
     }
 }

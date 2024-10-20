@@ -1,0 +1,20 @@
+﻿.subspace-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.subspace-checkbox {
+    margin-right: 5px;
+}
+
+.subspace-quantity {
+    width: 100px;
+    margin-left: 10px;
+}
+
+#fillAllContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
