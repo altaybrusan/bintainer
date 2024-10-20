@@ -1086,7 +1086,46 @@
             });
         });
 
+        function searchPart() {
+            var number = $('#searchPartName').val().trim();
+            var token = $('input[name="__RequestVerificationToken"]').val(); // Extract CSRF token
+            var table = $('#searchedProductSpecTable'); // Select the table
+            table.find('tbody').empty(); // Clear previous table rows
 
+            if (number.length === 0) {
+                alert('Please enter a valid part number.');
+                return;
+            }
+
+            $.ajax({
+                url: '/dashboard/Part?handler=SearchForPart&partNumber=' + number,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN", token);
+                },
+                contentType: "application/json; charset=utf-8",
+                type: 'Post',
+                success: function (response) {
+                    if (table.length) { // Check if the table exists
+                        if (response.length > 0) {
+                            $.each(response, function (index, item) {
+                                appendRowToTable(table, item.name, item.value);
+                            });
+                            // Enable buttons if data is successfully fetched
+                            $('#addAttribute').prop('disabled', false);
+                            $('#updateAttribute').prop('disabled', false);
+                        } else {
+                            alert('No attributes found for the given part number.');
+                        }
+                    } else {
+                        console.error('Table not found.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('The part number is not valid.');
+                    console.error('Error:', error);
+                }
+            });
+        }
         $('#searchPartBtn').on('click', function (event) {
             event.preventDefault();
             var number = $('#usePartName').val().trim();
