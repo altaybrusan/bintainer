@@ -33,15 +33,13 @@ public partial class Part
 
     public virtual PartPackage Package { get; set; } = null!;
 
+    public virtual ICollection<PartBinAssociation> PartBinAssociations { get; set; } = new List<PartBinAssociation>();
+
     public virtual ICollection<PartLabel> PartLabels { get; set; } = new List<PartLabel>();
 
     public virtual AspNetUser User { get; set; } = null!;
 
     public virtual ICollection<PartAttributeTemplate> AttributeTemplates { get; set; } = new List<PartAttributeTemplate>();
 
-    public virtual ICollection<Bin> Bins { get; set; } = new List<Bin>();
-
     public virtual ICollection<PartGroup> Groups { get; set; } = new List<PartGroup>();
-
-    public virtual ICollection<PartTemplate> Templates { get; set; } = new List<PartTemplate>();
 }

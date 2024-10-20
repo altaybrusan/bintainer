@@ -13,11 +13,9 @@ public partial class Bin
 
     public int CoordinateY { get; set; }
 
-    public bool? IsFilled { get; set; }
-
     public virtual ICollection<BinSubspace> BinSubspaces { get; set; } = new List<BinSubspace>();
 
-    public virtual InventorySection? Section { get; set; }
+    public virtual ICollection<PartBinAssociation> PartBinAssociations { get; set; } = new List<PartBinAssociation>();
 
-    public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
+    public virtual InventorySection? Section { get; set; }
 }
