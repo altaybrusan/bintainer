@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Bintainer.WebApp.Models;
+namespace Bintainer.Model;
 
 public partial class PartAttribute
 {

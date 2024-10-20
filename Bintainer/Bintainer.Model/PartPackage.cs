@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Bintainer.WebApp.Models;
+namespace Bintainer.Model;
 
-public partial class Inventory
+public partial class PartPackage
 {
     public int Id { get; set; }
 
-    public string Admin { get; set; } = null!;
-
     public string? Name { get; set; }
+
+    public string? Url { get; set; }
+
+    public string? FullFileName { get; set; }
 
     public string UserId { get; set; } = null!;
 
-    public virtual ICollection<InventorySection> InventorySections { get; set; } = new List<InventorySection>();
+    public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
 
     public virtual AspNetUser User { get; set; } = null!;
 }

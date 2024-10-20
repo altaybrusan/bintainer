@@ -1,9 +1,9 @@
 using Amazon.Runtime.Internal;
 using Amazon.SimpleEmail.Model.Internal.MarshallTransformations;
 using Azure.Core;
+using Bintainer.Model;
 using Bintainer.WebApp.Data;
 using Bintainer.WebApp.Data.DTOs;
-using Bintainer.WebApp.Models;
 using Bintainer.WebApp.Services;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;

@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Bintainer.WebApp;
 using Bintainer.WebApp.Data;
-using Bintainer.WebApp.Models;
 using Bintainer.WebApp.Services;
+using Bintainer.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 

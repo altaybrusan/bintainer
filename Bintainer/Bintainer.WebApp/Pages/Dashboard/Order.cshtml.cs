@@ -1,5 +1,5 @@
+using Bintainer.Model;
 using Bintainer.WebApp.Data.DTOs;
-using Bintainer.WebApp.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bintainer.WebApp.Models;
+namespace Bintainer.Model;
 
 public partial class BintainerDbContext : DbContext
 {

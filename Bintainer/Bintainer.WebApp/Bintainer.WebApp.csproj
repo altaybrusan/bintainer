@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -21,6 +21,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bintainer.Model\Bintainer.Model.csproj" />
+    <ProjectReference Include="..\Bintainer.Repository\Bintainer.Repository.csproj" />
+    <ProjectReference Include="..\Bintainer.Service\Bintainer.Service.csproj" />
   </ItemGroup>
 
 </Project>

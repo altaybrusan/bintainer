@@ -6,6 +6,22 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Bintainer.Db", "Bintainer.Db\Bintainer.Db.sqlproj", "{3853D19A-B86D-43A1-BD09-DE0129B7134D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bintainer.WebApp", "Bintainer.WebApp\Bintainer.WebApp.csproj", "{1E8DFB9A-60F9-4592-B0AB-2ECE500CB1F9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4322B8CF-1003-4F3B-A08C-EAAD335F7A07} = {4322B8CF-1003-4F3B-A08C-EAAD335F7A07}
+		{E8D2BF47-23F4-412E-AE74-545EBFFE479F} = {E8D2BF47-23F4-412E-AE74-545EBFFE479F}
+		{F70CC01D-7927-4B41-B97E-C7A7F28A02E8} = {F70CC01D-7927-4B41-B97E-C7A7F28A02E8}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bintainer.Service", "Bintainer.Service\Bintainer.Service.csproj", "{E8D2BF47-23F4-412E-AE74-545EBFFE479F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bintainer.Repository", "Bintainer.Repository\Bintainer.Repository.csproj", "{F70CC01D-7927-4B41-B97E-C7A7F28A02E8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4322B8CF-1003-4F3B-A08C-EAAD335F7A07} = {4322B8CF-1003-4F3B-A08C-EAAD335F7A07}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bintainer.Test", "Bintainer.Test\Bintainer.Test.csproj", "{0F098F5F-30A1-4AE9-8F2F-3E431999DF56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bintainer.Model", "Bintainer.Model\Bintainer.Model.csproj", "{4322B8CF-1003-4F3B-A08C-EAAD335F7A07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +39,22 @@ Global
 		{1E8DFB9A-60F9-4592-B0AB-2ECE500CB1F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E8DFB9A-60F9-4592-B0AB-2ECE500CB1F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E8DFB9A-60F9-4592-B0AB-2ECE500CB1F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8D2BF47-23F4-412E-AE74-545EBFFE479F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8D2BF47-23F4-412E-AE74-545EBFFE479F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8D2BF47-23F4-412E-AE74-545EBFFE479F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8D2BF47-23F4-412E-AE74-545EBFFE479F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F70CC01D-7927-4B41-B97E-C7A7F28A02E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F70CC01D-7927-4B41-B97E-C7A7F28A02E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F70CC01D-7927-4B41-B97E-C7A7F28A02E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F70CC01D-7927-4B41-B97E-C7A7F28A02E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F098F5F-30A1-4AE9-8F2F-3E431999DF56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F098F5F-30A1-4AE9-8F2F-3E431999DF56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F098F5F-30A1-4AE9-8F2F-3E431999DF56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F098F5F-30A1-4AE9-8F2F-3E431999DF56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4322B8CF-1003-4F3B-A08C-EAAD335F7A07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4322B8CF-1003-4F3B-A08C-EAAD335F7A07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4322B8CF-1003-4F3B-A08C-EAAD335F7A07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4322B8CF-1003-4F3B-A08C-EAAD335F7A07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
