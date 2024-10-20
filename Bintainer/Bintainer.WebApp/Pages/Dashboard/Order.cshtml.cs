@@ -1,5 +1,6 @@
 using Bintainer.Model;
-using Bintainer.WebApp.Data.DTOs;
+using Bintainer.Model.DTO;
+using Bintainer.Model.Entity;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,13 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bintainer.WebApp.Pages.Dashboard
 {
-    public class SearchOrderRequestModel
-    {
-        public string? OrderNumber { get; set; }
-        public string? Supplier { get; set; }
-        public DateTime? FromDate { get; set; } = null;
-        public DateTime? ToDate { get; set; } = null;
-    }
     public class OrderModel : PageModel
     {
         BintainerDbContext _dbcontext;
@@ -30,7 +24,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         }
 
-        public IActionResult OnPostRegisterNewOrder([FromBody]RegisterOrderRequestModel request)
+        public IActionResult OnPostRegisterNewOrder([FromBody]RegisterOrderRequest request)
         {
             if (ModelState.IsValid) 
             {

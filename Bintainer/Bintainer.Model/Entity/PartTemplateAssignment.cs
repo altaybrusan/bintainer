@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Bintainer.Model;
+namespace Bintainer.Model.Entity;
 
 public partial class PartTemplateAssignment
 {

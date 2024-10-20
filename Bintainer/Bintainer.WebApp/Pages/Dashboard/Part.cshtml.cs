@@ -2,8 +2,9 @@ using Amazon.Runtime.Internal;
 using Amazon.SimpleEmail.Model.Internal.MarshallTransformations;
 using Azure.Core;
 using Bintainer.Model;
+using Bintainer.Model.DTO;
+using Bintainer.Model.Entity;
 using Bintainer.WebApp.Data;
-using Bintainer.WebApp.Data.DTOs;
 using Bintainer.WebApp.Services;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
@@ -16,46 +17,6 @@ using System.Runtime;
 
 namespace Bintainer.WebApp.Pages.Dashboard
 {
-    public class UpdateAttributeTableRequest
-    {
-        public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
-        public string PartName { get; set; } = string.Empty;
-    }
-    public class ArrangePartRequest 
-    {
-        public string? PartName { get; set; }
-        public int SectionId { get; set; }
-        public int CoordinateX { get; set; }
-        public int CoordinateY { get; set; }
-        public string? Label { get; set; }
-        public string? Group { get; set; }
-        public Dictionary<int,int>? SubspaceQuantities { get; set; }
-        public bool IsFilled { get; set; }
-        public int? FillAllQuantity { get; set; }
-    }
-
-    public class AdjustQuantityRequest 
-    {
-        public int QuantityUsed { get; set; }
-        public int BinId { get; set; }
-        public string? PartName { get; set; }
-        public int Quantity { get; set; }
-        public string? SubspaceIndices { get; set; }
-    }
-
-    public class PartUsageResponse 
-    {
-        public int PartId { get; set; }
-        public string? PartName { get; set; }
-        public string? Section { get; set; }
-        public int CoordinateX { get; set; }
-        public int CoordinateY { get; set; }
-        public string? SubspaceIndices { get; set; }
-        public int Quantity { get; set; }
-        public string? Label { get; set; }
-        public int BinId { get; set; }
-    }
-
     public class PartModel : PageModel
     {
         public List<PartPackage> Packages { get; set; } = new List<PartPackage>();
@@ -128,7 +89,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			var result = await _digikeyService.GetProductDetailsAsync(digiKeyPartNumber);            
 		}
 
-        public IActionResult OnPostCreatePart([FromBody]CreatePartRequestModel request) 
+        public IActionResult OnPostCreatePart([FromBody]CreatePartRequest request) 
         {
             if (ModelState.IsValid) 
             {                

@@ -1,4 +1,5 @@
 using Bintainer.Model;
+using Bintainer.Model.Entity;
 using Bintainer.WebApp.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

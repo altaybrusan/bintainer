@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Bintainer.Model.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bintainer.Model;

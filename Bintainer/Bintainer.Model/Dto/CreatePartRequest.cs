@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Bintainer.WebApp.Data.DTOs
+namespace Bintainer.Model.DTO
 {
-    public class CreatePartRequestModel
+    public class CreatePartRequest
     {
         public string? PartName { get; set; }
         public string? Description { get; set; }

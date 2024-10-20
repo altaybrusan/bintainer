@@ -1,7 +1,8 @@
-﻿namespace Bintainer.WebApp.Data.DTOs
+﻿using Bintainer.Model;
+
+namespace Bintainer.Model.DTO
 {
-    public record OrderItem(string PartName, int Quantity, int PartId);
-    public class RegisterOrderRequestModel
+    public class RegisterOrderRequest
     {
         public string? OrderNumber { get; set; }
         public string? Supplier { get; set; }
