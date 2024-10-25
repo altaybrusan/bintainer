@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Bintainer.Model.DTO;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace Bintainer.WebApp.Services
+namespace Bintainer.Service
 {
     public class DigikeyService
     {
@@ -13,7 +14,7 @@ namespace Bintainer.WebApp.Services
         private readonly string? _clientId;
         private readonly string? _clientSecret;
         private readonly string? _grantType;
-		private readonly string? _tokenEndpoint = "https://api.digikey.com/v1/oauth2/token";
+        private readonly string? _tokenEndpoint = "https://api.digikey.com/v1/oauth2/token";
         private readonly string? _apiEndpointBase = "https://api.digikey.com/products/v4/";
 
         public DigikeyService(HttpClient httpClient, IMemoryCache cache, IOptions<DigikeySettings> settings)
@@ -21,7 +22,7 @@ namespace Bintainer.WebApp.Services
             _httpClient = httpClient;
             _cache = cache;
             _clientId = settings.Value.ClientId;
-			_grantType = settings.Value.GrantType;
+            _grantType = settings.Value.GrantType;
             _clientSecret = settings.Value.ClientSecret;
         }
 
@@ -36,7 +37,7 @@ namespace Bintainer.WebApp.Services
             {
                 { "client_id", _clientId },
                 { "grant_type", _grantType },
-				{ "client_secret", _clientSecret }
+                { "client_secret", _clientSecret }
             };
 
             var requestContent = new FormUrlEncodedContent(requestBody);
@@ -74,8 +75,8 @@ namespace Bintainer.WebApp.Services
 
             return await response.Content.ReadAsStringAsync();
         }
-                
-        public List<Parameter> ExtractParameters(string productDetails) 
+
+        public List<Parameter> ExtractParameters(string productDetails)
         {
             JObject jsonObject = JObject.Parse(productDetails);
             List<Parameter> parameters = new List<Parameter>();
@@ -88,7 +89,7 @@ namespace Bintainer.WebApp.Services
             {
                 parameters.Add(new Parameter
                 {
-                    Category= "Parameter",
+                    Category = "Parameter",
                     Name = item["ParameterText"].ToString(),
                     Value = item["ValueText"].ToString()
                 });

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bintainer.Model.DTO
+namespace Bintainer.Model.Request
 {
-    public class SearchOrderRequestModel
+    public class FilterOrderRequest
     {
         public string? OrderNumber { get; set; }
         public string? Supplier { get; set; }

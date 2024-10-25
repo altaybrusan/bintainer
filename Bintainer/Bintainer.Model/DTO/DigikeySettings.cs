@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Bintainer.WebApp.Services
+namespace Bintainer.Model.DTO
 {
     public class DigikeySettings
     {

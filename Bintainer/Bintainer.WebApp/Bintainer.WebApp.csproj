@@ -25,8 +25,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bintainer.Model\Bintainer.Model.csproj" />
-    <ProjectReference Include="..\Bintainer.Repository\Bintainer.Repository.csproj" />
     <ProjectReference Include="..\Bintainer.Service\Bintainer.Service.csproj" />
+    <ProjectReference Include="..\Bintainer.SharedResources\Bintainer.SharedResources.csproj" />
   </ItemGroup>
 
 </Project>

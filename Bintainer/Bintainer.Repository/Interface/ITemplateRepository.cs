@@ -1,0 +1,19 @@
+﻿using Bintainer.Model.Entity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bintainer.Repository.Interface
+{
+    public interface ITemplateRepository
+    {
+        public Dictionary<int,string?> GetTemplatesOfUser(string userId);
+        public PartAttributeTemplate? GetAttributeTemplateById(int? templateId);
+        public PartAttributeTemplate? GetAttributeTemplateByName(string partName, string userId);
+        public PartAttributeTemplate? CreateAttributeTemplateByName(string partName, string userId);
+        public void SaveAttributes(List<PartAttribute> attributes);
+
+    }
+}

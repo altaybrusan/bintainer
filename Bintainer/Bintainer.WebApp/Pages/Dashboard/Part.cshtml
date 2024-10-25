@@ -211,7 +211,7 @@
                 <i class="fa fa-search"></i>&nbsp; Search part
             </div>
             <div class="card-body">
-                <form class="row" method="post" asp-page-handler="SearchForPart">
+                <form class="row" method="post" asp-page-handler="RetrievePartAttributeDetails">
                     <div class="col-md-9">
                         <div class="row align-items-center">
                             <div class="col-md-2">
@@ -1098,7 +1098,7 @@
             }
 
             $.ajax({
-                url: '/dashboard/Part?handler=SearchForPart&partNumber=' + number,
+                url: '/dashboard/Part?handler=RetrievePartAttributeDetails&partNumber=' + number,
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN", token);
                 },
@@ -1139,7 +1139,7 @@
             }
 
             $.ajax({
-                url: '/dashboard/Part?handler=SearchForPart&partNumber=' + number,
+                url: '/dashboard/Part?handler=RetrievePartAttributeDetails&partNumber=' + number,
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN", token);
                 },

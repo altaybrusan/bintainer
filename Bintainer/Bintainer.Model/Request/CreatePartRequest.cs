@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Bintainer.Model.DTO
+namespace Bintainer.Model.Request
 {
     public class CreatePartRequest
     {
