@@ -1,5 +1,5 @@
-﻿using Azure;
-using Bintainer.Model.Entity;
+﻿using Bintainer.Model.Entity;
+using Bintainer.Model.Template;
 using Bintainer.Model.View;
 using System;
 using System.Collections.Generic;

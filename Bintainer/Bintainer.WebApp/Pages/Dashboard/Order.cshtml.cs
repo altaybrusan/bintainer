@@ -2,8 +2,11 @@ using AutoMapper;
 using Bintainer.Model;
 using Bintainer.Model.Entity;
 using Bintainer.Model.Request;
+using Bintainer.Service;
 using Bintainer.Service.Interface;
+using Bintainer.SharedResources.Interface;
 using Bintainer.SharedResources.Resources;
+using Bintainer.SharedResources.Service;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -20,15 +23,14 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         private readonly IOrderService _orderService;
         private readonly IStringLocalizer<ErrorMessages> _localizer;
-        public OrderModel(IOrderService orderService, IStringLocalizer<ErrorMessages> localizer)
+        private readonly IAppLogger _appLogger;
+        public OrderModel(IOrderService orderService, 
+                          IStringLocalizer<ErrorMessages> localizer,
+                          IAppLogger appLogger)
         {
             _orderService = orderService;
             _localizer = localizer;
-
-            var currentCulture = CultureInfo.CurrentCulture;
-            var currentUICulture = CultureInfo.CurrentUICulture;
-
-
+            _appLogger = appLogger;
 
             //TODO: warning check this out
             //Part= _dbcontext.Parts.ToList();
@@ -36,7 +38,6 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         public void OnGet()
         {
-            var test = _localizer["Test1"];
         }
 
         public IActionResult OnPostRegisterNewOrder([FromBody]RegisterOrderRequest request)
@@ -63,11 +64,8 @@ namespace Bintainer.WebApp.Pages.Dashboard
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-
+                _appLogger.LogModelError(nameof(OnPostSearchOrder), ModelState);
+                
                 return BadRequest(new
                 {
                     success = false,
@@ -77,9 +75,9 @@ namespace Bintainer.WebApp.Pages.Dashboard
             try
             {
                 var ordersViewModel = _orderService.FilterOrder(request);
-                if (ordersViewModel is not null && ordersViewModel.Any())
+                if (ordersViewModel.Result is not null && ordersViewModel.Result.Any())
                 {
-                    return new JsonResult(new { success = true, ordersViewModel });
+                    return new JsonResult(new { success = true, ordersViewModel.Result });
                 }
                 else
                 {

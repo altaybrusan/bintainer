@@ -61,6 +61,15 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bin is required to insert part into subspace..
+        /// </summary>
+        public static string ErrorBinCannotBeNull {
+            get {
+                return ResourceManager.GetString("ErrorBinCannotBeNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A bin must be specified to insert a part into the subspace..
         /// </summary>
         public static string ErrorBinNotSpecified {
@@ -70,11 +79,29 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to distribute quantity across subspaces as the specified bin or its associated section is missing or invalid..
+        /// </summary>
+        public static string ErrorBinOrSectionUnavailable {
+            get {
+                return ResourceManager.GetString("ErrorBinOrSectionUnavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to load part..
         /// </summary>
         public static string ErrorFailedPartLoading {
             get {
                 return ResourceManager.GetString("ErrorFailedPartLoading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified part cannot be arranged due to invalid details..
+        /// </summary>
+        public static string ErrorInvalidPartDetails {
+            get {
+                return ResourceManager.GetString("ErrorInvalidPartDetails", resourceCulture);
             }
         }
         
@@ -93,6 +120,15 @@ namespace Bintainer.SharedResources.Resources {
         public static string ErrorInventorySectionMissing {
             get {
                 return ResourceManager.GetString("ErrorInventorySectionMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Model validation failed at {DateTime} on {Page}. Errors: {Errors}.
+        /// </summary>
+        public static string ErrorModelState {
+            get {
+                return ResourceManager.GetString("ErrorModelState", resourceCulture);
             }
         }
         
@@ -133,6 +169,15 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can not load the part attributes..
+        /// </summary>
+        public static string ErrorRetriveAttributes {
+            get {
+                return ResourceManager.GetString("ErrorRetriveAttributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Can not insert element into subspace..
         /// </summary>
         public static string ErrorSubspaceInsertionFailed {
@@ -142,11 +187,56 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Used items cannot exceed available quantity..
+        /// </summary>
+        public static string ErrorUsedItemsExceedAvailable {
+            get {
+                return ResourceManager.GetString("ErrorUsedItemsExceedAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The subspace count defined for the section &apos;{sectionName}&apos; cannot be zero..
+        /// </summary>
+        public static string ErrorZeroSubspaceCount {
+            get {
+                return ResourceManager.GetString("ErrorZeroSubspaceCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repository creation or update completed successfully..
+        /// </summary>
+        public static string InfoRepositoryCreateOrUpdateSuccess {
+            get {
+                return ResourceManager.GetString("InfoRepositoryCreateOrUpdateSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to identify the signed-in user..
+        /// </summary>
+        public static string WarningInvalidUser {
+            get {
+                return ResourceManager.GetString("WarningInvalidUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No results found.
         /// </summary>
         public static string WarningNotFound {
             get {
                 return ResourceManager.GetString("WarningNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning part not found.
+        /// </summary>
+        public static string WarningPartNotFound {
+            get {
+                return ResourceManager.GetString("WarningPartNotFound", resourceCulture);
             }
         }
     }

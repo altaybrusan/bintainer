@@ -117,17 +117,29 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ErrorBinCannotBeNull" xml:space="preserve">
+    <value>Bin is required to insert part into subspace.</value>
+  </data>
   <data name="ErrorBinNotSpecified" xml:space="preserve">
     <value>A bin must be specified to insert a part into the subspace.</value>
   </data>
+  <data name="ErrorBinOrSectionUnavailable" xml:space="preserve">
+    <value>Unable to distribute quantity across subspaces as the specified bin or its associated section is missing or invalid.</value>
+  </data>
   <data name="ErrorFailedPartLoading" xml:space="preserve">
     <value>Failed to load part.</value>
+  </data>
+  <data name="ErrorInvalidPartDetails" xml:space="preserve">
+    <value>The specified part cannot be arranged due to invalid details.</value>
   </data>
   <data name="ErrorInvalidSearchParameter" xml:space="preserve">
     <value>Invalid search parameters.</value>
   </data>
   <data name="ErrorInventorySectionMissing" xml:space="preserve">
     <value>Inventory section is missing.</value>
+  </data>
+  <data name="ErrorModelState" xml:space="preserve">
+    <value>Model validation failed at {DateTime} on {Page}. Errors: {Errors}</value>
   </data>
   <data name="ErrorModelStateError" xml:space="preserve">
     <value>Some fields contain invalid data.</value>
@@ -141,10 +153,28 @@
   <data name="ErrorQuantityExceedsStock" xml:space="preserve">
     <value>Quantity of items used must be less than the available stock.</value>
   </data>
+  <data name="ErrorRetriveAttributes" xml:space="preserve">
+    <value>Can not load the part attributes.</value>
+  </data>
   <data name="ErrorSubspaceInsertionFailed" xml:space="preserve">
     <value>Can not insert element into subspace.</value>
   </data>
+  <data name="ErrorUsedItemsExceedAvailable" xml:space="preserve">
+    <value>Used items cannot exceed available quantity.</value>
+  </data>
+  <data name="ErrorZeroSubspaceCount" xml:space="preserve">
+    <value>The subspace count defined for the section '{sectionName}' cannot be zero.</value>
+  </data>
+  <data name="InfoRepositoryCreateOrUpdateSuccess" xml:space="preserve">
+    <value>Repository creation or update completed successfully.</value>
+  </data>
+  <data name="WarningInvalidUser" xml:space="preserve">
+    <value>Unable to identify the signed-in user.</value>
+  </data>
   <data name="WarningNotFound" xml:space="preserve">
     <value>No results found</value>
+  </data>
+  <data name="WarningPartNotFound" xml:space="preserve">
+    <value>Warning part not found</value>
   </data>
 </root>

@@ -2,6 +2,7 @@
 using Bintainer.Model.DTO;
 using Bintainer.Model.Entity;
 using Bintainer.Model.Request;
+using Bintainer.Model.Template;
 using Bintainer.Model.View;
 using Bintainer.Repository.Interface;
 using Bintainer.Service.Interface;
@@ -28,7 +29,7 @@ namespace Bintainer.Service
             _mapper = mapper;
         }
 
-        public Order? RegisterOrder(RegisterOrderRequest request, string userId)
+        public Response<Order?> RegisterOrder(RegisterOrderRequest request, string userId)
         {
             Order? registeredOrder = _orderRepository.GetOrderByOrderNumber(request.OrderNumber, userId);
             if (registeredOrder is null)
@@ -39,6 +40,7 @@ namespace Bintainer.Service
                 order.HandOverDate = request.HandoverDate;
                 order.Supplier = request.Supplier;
                 order.UserId = userId;
+               
                 foreach (var item in request.Parts)
                 {
                     Part? part = _partRepository.GetPartById(item.PartId);
@@ -50,8 +52,14 @@ namespace Bintainer.Service
                         order.OrderPartAssociations.Add(association);
                     }
                 }
+                
                 _orderRepository.AddAndSaveOrder(order);
-                return order;
+                
+                return new Response<Order?>() 
+                {
+                    IsSuccess = true,
+                    Result = order 
+                };
             }
             else
             {
@@ -64,17 +72,27 @@ namespace Bintainer.Service
                 }
                 _orderRepository.UpdateOrder(registeredOrder);                
             }
-            return registeredOrder;
+            return new Response<Order?>()
+            {
+                IsSuccess = true,
+                Result = registeredOrder
+            };
         }
 
-        public List<OrderViewModel>? FilterOrder(FilterOrderRequest request) 
+        public Response<List<OrderViewModel>?> FilterOrder(FilterOrderRequest request) 
         {
-
             var requestModel = _mapper.Map<FilterOrderRequestModel>(request);
 
             var order =  _orderRepository.FilterOrder(requestModel);
+            
             if (order == null)
-                return null;
+            {
+                return new Response<List<OrderViewModel>?>() 
+                { 
+                    IsSuccess = true, 
+                    Result = null 
+                };
+            }
 
             var ordersViewModel = order.Select(o => new OrderViewModel
             {
@@ -89,7 +107,11 @@ namespace Bintainer.Service
                 }).ToList()
             }).ToList();
 
-            return ordersViewModel;
+            return new Response<List<OrderViewModel>?>()
+            {
+                IsSuccess = true,
+                Result = ordersViewModel
+            };
         }
     }
 }

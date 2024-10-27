@@ -7,7 +7,9 @@ using Bintainer.Model.View;
 using Bintainer.Repository.Interface;
 using Bintainer.Service.Extention;
 using Bintainer.Service.Interface;
+using Bintainer.SharedResources.Interface;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 
 namespace Bintainer.Service
@@ -19,20 +21,23 @@ namespace Bintainer.Service
         private readonly IInventoryRepository _inventoryRepository;
         private readonly IInventoryService _inventoryService;
         private readonly IBinService _binService;
-        private IStringLocalizer _stringLocalizer;
+        private IStringLocalizer _localizer;
+        private IAppLogger _appLogger;
         public PartService(IPartRepository partRepository,
                            ITemplateRepository templateRepository,
                            IInventoryRepository inventoryRepository,
                            IInventoryService inventoryService,
                            IBinService binService,
-                           IStringLocalizer stringLocalizer)
+                           IStringLocalizer stringLocalizer,
+                           IAppLogger applogger)
         {
             _partRepository = partRepository;
             _templateRepository = templateRepository;
             _inventoryRepository = inventoryRepository;
             _inventoryService = inventoryService;
             _binService = binService;
-            _stringLocalizer = stringLocalizer;
+            _localizer = stringLocalizer;
+            _appLogger = applogger;
         }
 
         public Response<Part?> GetPartByName(string partName, string userId) 
@@ -48,217 +53,283 @@ namespace Bintainer.Service
             }
             catch (Exception ex)
             {
-                                
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
             }
 
             return new Response<Part?>
             {
                 IsSuccess = false,
                 Result = null,
-                Message = _stringLocalizer["ErrorFailedPartLoading"]
+                Message = _localizer["ErrorFailedPartLoading"]
 
             };
 
         }
 
-        public List<PartAttributeViewModel>? MapPartAttributesToViewModel(string partName,string userId) 
+        public Response<List<PartAttributeViewModel>?> MapPartAttributesToViewModel(string partName,string userId) 
         {
-            Part? part = _partRepository.GetPartByName(partName, userId);
-            if (part == null) 
+            try
             {
-                return null;
-            }
-            return part.AttributeTemplates?.FirstOrDefault()?.PartAttributes?
-                                    .Select(attr => new PartAttributeViewModel() 
-                                    { 
-                                        Name = attr.Name != null ? attr.Name.Trim() : null, 
-                                        Value = attr.Value != null ? attr.Value.Trim() : null
-                                    }).ToList();
-        }
-
-        public Part? CreatePartForUser(CreatePartRequest request, string userId) 
-        {
-            PartFilterCriteria filter= new() 
-            { 
-                Name = request.PartName,
-                Supplier = request.Supplier,
-                UserId = userId
-            };
-            var parts = _partRepository.GetPartsByCriteria(filter);
-            if(parts is not null) 
-            {
-                //TODO: log event
-                throw new Exception("The part already exists");
-            }
-
-            Part part = new Part();
-            part.Name = request.PartName!.Trim();
-            part.Description = request.Description!.Trim();
-            part.CategoryId = request.CategoryId;
-            part.UserId = userId;
-            part.Supplier = request.Supplier!.Trim();
-
-            //TODO: links should be fetched here.
-            //TODO: check if undefined is acceptable or not
-            string packageName = string.IsNullOrEmpty(request.Package) ? "undefined" : request.Package.Trim();
-            var package = _partRepository.GetOrCreatePartPackage(packageName, userId);
-            part.Package = package;
-                       
-            var attributeTemplate = _templateRepository.GetAttributeTemplateById(request.AttributeTemplateId);            
-            if (attributeTemplate is null)
-            {
-                var defaultTemplate = _templateRepository.GetAttributeTemplateByName(request.PartName, userId);
-                if (defaultTemplate is null)
+                Part? part = _partRepository.GetPartByName(partName, userId);
+                if (part is null)
                 {
-                    // The part is fetched from external source (e.g., DigiKey)
-                    attributeTemplate = _templateRepository.CreateAttributeTemplateByName(request.PartName, userId);
-                }
-                else
-                {
-                    attributeTemplate = defaultTemplate;
-                }
-            }
-           
-            var attributes = request.Attributes.ToPartAttributeList(attributeTemplate);
-           _templateRepository.SaveAttributes(attributes);
-
-            part.AttributeTemplates.Add(attributeTemplate);
-            _partRepository.UpdatePart(part);
-            
-            PartAttributeTemplate partAttributeTemplate = null;
-
-            //TODO: complete the order in new part registration form.
-            //if (!string.IsNullOrEmpty(request.OrderNumber))
-            //{
-            //    Order _order = _dbcontext.Orders.Where(o => o.OrderNumber == request.OrderNumber && o.UserId == UserId).FirstOrDefault();
-            //}
-
-            return part;
-
-        }
-
-        public List<PartAttribute>? UpdatePartAttributes(UpdateAttributeRequest request, string userId)
-        {
-            // Fetch the part by name and userId
-            var part = _partRepository.GetPartByName(request.PartName, userId);
-            if (part is null)
-                return null;
-
-            // Get existing part attributes from the first AttributeTemplate
-            var existingAttributes = part.AttributeTemplates.FirstOrDefault()?.PartAttributes.ToList();
-            if (existingAttributes == null)
-                existingAttributes = new List<PartAttribute>();
-
-            // Get incoming attribute keys and values from the request
-            var incomingAttributes = request.Attributes;
-
-            // 1. DELETE attributes that are not in the incoming request
-            existingAttributes.RemoveAll(existingAttribute => !incomingAttributes.ContainsKey(existingAttribute.Name?.Trim()));
-
-            // 2. UPDATE existing attributes or add new ones
-            foreach (var incomingAttribute in incomingAttributes)
-            {
-                var existingAttribute = existingAttributes.FirstOrDefault(a => a.Name?.Trim() == incomingAttribute.Key.Trim());
-
-                if (existingAttribute != null)
-                {
-                    // If attribute exists, update its value
-                    existingAttribute.Value = incomingAttribute.Value.Trim();
-                }
-                else
-                {
-                    // If attribute doesn't exist, add it as a new attribute
-                    existingAttributes.Add(new PartAttribute
+                    return new Response<List<PartAttributeViewModel>?>()
                     {
-                        Name = incomingAttribute.Key.Trim(),
-                        Value = incomingAttribute.Value.Trim(),
-                        TemplateId = part.AttributeTemplates.FirstOrDefault()?.Id ?? 0 // Ensure TemplateId is set correctly
-                    });
+                        IsSuccess = true,
+                        Result = null,
+                        Message= _localizer["WarningPartNotFound"]
+                        
+                    };
                 }
+                var result = part.AttributeTemplates?.FirstOrDefault()?.PartAttributes?
+                                        .Select(attr => new PartAttributeViewModel()
+                                        {
+                                            Name = attr.Name != null ? attr.Name.Trim() : null,
+                                            Value = attr.Value != null ? attr.Value.Trim() : null
+                                        }).ToList();
+                return new Response<List<PartAttributeViewModel>?>()
+                {
+                    IsSuccess = true,
+                    Result = result
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message,LogLevel.Error);
             }
 
-            // Save changes to the database (pseudo-code)
-            _partRepository.UpdatePart(part);
+            return new Response<List<PartAttributeViewModel>?>()
+            {
+                IsSuccess = false,
+                Result = null
+            };
 
-            // Return the updated list of part attributes
-            return existingAttributes;
+        }
+
+        public Response<Part?> CreatePartForUser(CreatePartRequest request, string userId) 
+        {
+            try
+            {
+                PartFilterCriteria filter = new()
+                {
+                    Name = request.PartName,
+                    Supplier = request.Supplier,
+                    UserId = userId
+                };
+                var parts = _partRepository.GetPartsByCriteria(filter);
+                if (parts is not null)
+                {
+                    //TODO: log event
+                    _appLogger.LogMessage(_localizer["ErrorPartAlreadyExists"], LogLevel.Warning);
+                    return new Response<Part?>()
+                    {
+                        IsSuccess = false,
+                        Result = null,
+                        Message = _localizer["ErrorPartAlreadyExists"]
+                    };
+
+                }
+
+                Part part = new Part();
+                part.Name = request.PartName!.Trim();
+                part.Description = request.Description!.Trim();
+                part.CategoryId = request.CategoryId;
+                part.UserId = userId;
+                part.Supplier = request.Supplier!.Trim();
+
+                //TODO: links should be fetched here.
+                //TODO: check if undefined is acceptable or not
+                string packageName = string.IsNullOrEmpty(request.Package) ? "undefined" : request.Package.Trim();
+                var package = _partRepository.GetOrCreatePartPackage(packageName, userId);
+                part.Package = package;
+
+                var attributeTemplate = _templateRepository.GetAttributeTemplateById(request.AttributeTemplateId);
+                if (attributeTemplate is null)
+                {
+                    var defaultTemplate = _templateRepository.GetAttributeTemplateByName(request.PartName, userId);
+                    if (defaultTemplate is null)
+                    {
+                        // The part is fetched from external source (e.g., DigiKey)
+                        attributeTemplate = _templateRepository.CreateAttributeTemplateByName(request.PartName, userId);
+                    }
+                    else
+                    {
+                        attributeTemplate = defaultTemplate;
+                    }
+                }
+
+                var attributes = request.Attributes.ToPartAttributeList(attributeTemplate);
+                _templateRepository.SaveAttributes(attributes);
+
+                part.AttributeTemplates.Add(attributeTemplate);
+                _partRepository.UpdatePart(part);
+
+                PartAttributeTemplate partAttributeTemplate = null;
+
+                //TODO: complete the order in new part registration form.
+                //if (!string.IsNullOrEmpty(request.OrderNumber))
+                //{
+                //    Order _order = _dbcontext.Orders.Where(o => o.OrderNumber == request.OrderNumber && o.UserId == UserId).FirstOrDefault();
+                //}
+
+                return new Response<Part?>()
+                {
+                    IsSuccess = true,
+                    Result = part
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message,LogLevel.Error);
+                return new Response<Part?>()
+                {
+                    IsSuccess = false,
+                    Result = null,
+                    Message = ex.Message
+                };
+            }
+        }
+
+        public Response<List<PartAttribute>?> UpdatePartAttributes(UpdateAttributeRequest request, string userId)
+        {
+            try
+            {
+                var part = _partRepository.GetPartByName(request.PartName, userId);
+                if (part is null)
+                {
+                    return new Response<List<PartAttribute>?>()
+                    {
+                        IsSuccess = true,
+                        Result = null,
+                        Message = _localizer["WarningPartNotFound"]
+
+                    };
+                }
+
+                // Get existing part attributes from the first AttributeTemplate
+                var existingAttributes = part.AttributeTemplates.FirstOrDefault()?.PartAttributes.ToList();
+                if (existingAttributes == null)
+                    existingAttributes = new List<PartAttribute>();
+
+                // Get incoming attribute keys and values from the request
+                var incomingAttributes = request.Attributes;
+
+                // 1. DELETE attributes that are not in the incoming request
+                existingAttributes.RemoveAll(existingAttribute => !incomingAttributes.ContainsKey(existingAttribute.Name?.Trim()));
+
+                // 2. UPDATE existing attributes or add new ones
+                foreach (var incomingAttribute in incomingAttributes)
+                {
+                    var existingAttribute = existingAttributes.FirstOrDefault(a => a.Name?.Trim() == incomingAttribute.Key.Trim());
+
+                    if (existingAttribute != null)
+                    {
+                        // If attribute exists, update its value
+                        existingAttribute.Value = incomingAttribute.Value.Trim();
+                    }
+                    else
+                    {
+                        // If attribute doesn't exist, add it as a new attribute
+                        existingAttributes.Add(new PartAttribute
+                        {
+                            Name = incomingAttribute.Key.Trim(),
+                            Value = incomingAttribute.Value.Trim(),
+                            TemplateId = part.AttributeTemplates.FirstOrDefault()?.Id ?? 0 // Ensure TemplateId is set correctly
+                        });
+                    }
+                }
+
+                // Save changes to the database (pseudo-code)
+                _partRepository.UpdatePart(part);
+
+                // Return the updated list of part attributes
+                return new Response<List<PartAttribute>?>()
+                {
+                    IsSuccess = true,
+                    Result = existingAttributes
+                };
+
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                throw;
+            }         
         }
 
         public void ArrangePartRequest(ArrangePartRequest arrangeRequest, string userId)
         {
-            InventorySection? inventorySection = _inventoryRepository.GetSection(userId, arrangeRequest.SectionId);
-            Part? part = _partRepository.GetPartByName(arrangeRequest.PartName, userId);
-
-            if (inventorySection == null)
+            try
             {
-                //TODO: update return type
-                throw new Exception("Inventory section not found.");
+                InventorySection? inventorySection = _inventoryRepository.GetSection(userId, arrangeRequest.SectionId);
+                Part? part = _partRepository.GetPartByName(arrangeRequest.PartName, userId);
+
+                if (inventorySection == null)
+                {
+                    _appLogger.LogMessage("ErrorInventorySectionMissing");
+                    return;                   
+                }
+
+                var response = _inventoryService.GetBinFrom(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY);
+                Bin? bin = response.IsSuccess && string.IsNullOrEmpty(response.Message) ? response.Result : throw new Exception(response.Message);
+                
+                if (bin is not null && part is not null)
+                {
+                    ProcessArrangePartRequest(bin, part, arrangeRequest, userId);
+                }
+
+                if (bin is null && part is not null)
+                {
+                    response = _inventoryService.CreateBin(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY);
+                    bin = response.IsSuccess && string.IsNullOrEmpty(response.Message) ? response.Result : throw new Exception(response.Message);
+                    ProcessArrangePartRequest(bin, part, arrangeRequest, userId);
+                }
+
+                if (part is null)
+                {
+                    _appLogger.LogMessage("ErrorInvalidPartDetails");
+                    return ;
+                }
             }
-
-            Bin? bin = _inventoryService.GetBinFrom(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY);
-
-            if (bin is not null && part is not null)
+            catch (Exception ex)
             {
-                ProcessArrangePartRequest(bin, part, arrangeRequest, userId);
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
             }
-
-            if (bin is null && part is not null)
-            {
-                bin = _inventoryService.CreateBin(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY);
-                ProcessArrangePartRequest(bin, part, arrangeRequest, userId);
-            }
-
-            if (part is null)
-            {
-                // TODO: log
-                throw new Exception("The part you are trying to arrange is not valid!");
-            }
-            return;
         }
 
-        private void ProcessArrangePartRequest(Bin bin, Part part, ArrangePartRequest arrangeRequest, string UserId)
+        public Response<PartGroup> AddPartIntoGroup(Part part, string groupName, string userId)
         {
-            Dictionary<int, int>? subspaceQuantity = new Dictionary<int, int>();
-            if (arrangeRequest.IsFilled)
-            {               
-                subspaceQuantity = _binService.DistributeQuantityAcrossSubspaces(bin, arrangeRequest.FillAllQuantity.Value);
-            }
-            else
+            try
             {
-                subspaceQuantity = arrangeRequest.SubspaceQuantities;
+                var group = _partRepository.GetPartGroup(groupName, userId);
+
+                if (group is not null && group.Parts.Contains(part))
+                {
+                    return new Response<PartGroup>()
+                    {
+                        IsSuccess = true,
+                        Result = group
+                    };
+                }
+                if (group is not null && !group.Parts.Contains(part))
+                {
+                    group.Parts.Add(part);
+                }
+                if (group is null)
+                {
+                    group = new PartGroup() { Name = groupName, UserId = userId };
+                    group.Parts.Add(part);
+                }
+
+                return new Response<PartGroup>() { IsSuccess = true, Result = group };
+
             }
-
-            var updatedBin = InsertPartIntoBin(bin, part, subspaceQuantity, arrangeRequest.Label);
-            _binService.UpdateBin(updatedBin);
-
-            if (arrangeRequest.Group is not null)
+            catch (Exception ex)
             {
-                var partGroup = AddPartIntoGroup(part, arrangeRequest.Group, UserId);
-                part.Groups.Add(partGroup);
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<PartGroup>() { IsSuccess = false, Message = ex.Message };
             }
-            _partRepository.UpdatePart(part);
-            _binService.UpdateBin(bin);
-        }
-
-        public PartGroup AddPartIntoGroup(Part part, string groupName, string userId)
-        {
-            var group = _partRepository.GetPartGroup(groupName, userId);
-
-            if (group is not null && group.Parts.Contains(part))
-            {
-                return group;
-            }
-            if (group is not null && !group.Parts.Contains(part))
-            {
-                group.Parts.Add(part);
-            }
-            if (group is null)
-            {
-                group = new PartGroup() { Name = groupName, UserId = userId };
-                group.Parts.Add(part);
-            }
-
-            return group;
+         
         }
 
         public List<int> ParseSubspaceIndices(string commaSeparatedIndices)
@@ -295,52 +366,105 @@ namespace Bintainer.Service
             throw new NotImplementedException();
         }
 
-
-        public List<PartBinAssociation>? TryAdjustPartQuantity(AdjustQuantityRequest request,string userId) 
+        public Response<List<PartBinAssociation>?> TryAdjustPartQuantity(AdjustQuantityRequest request,string userId) 
         {
             if (request.QuantityUsed > request.Quantity)
             {
-                throw new Exception("The number of used items should be less than available ones.");                
+                _appLogger.LogMessage(_localizer["ErrorUsedItemsExceedAvailable"], LogLevel.Error);
             }
 
-            List<int> subSpaces = ParseSubspaceIndices(request.SubspaceIndices);
-            int takeOut = request.QuantityUsed;
-
-            // Get the part by its name
-            Part? part = _partRepository.GetPartByName(request.PartName,userId);
-
-            if (part == null)
+            try
             {
-                throw new Exception("Part not found.");
+                List<int> subSpaces = ParseSubspaceIndices(request.SubspaceIndices);
+                int takeOut = request.QuantityUsed;
+
+                Part? part = _partRepository.GetPartByName(request.PartName, userId);
+
+                if (part is null)
+                {
+                    return new Response<List<PartBinAssociation>?>()
+                    {
+                        IsSuccess = true,
+                        Result = null,
+                        Message = _localizer["WarningPartNotFound"]
+                    };
+                }
+
+                // Fetch relevant part-bin associations
+                var associations = part.PartBinAssociations
+                                       .Where(a => a.BinId == request.BinId && subSpaces.Contains(a.Subspace.SubspaceIndex!.Value))
+                                       .OrderBy(a => a.SubspaceId) // Ensure a consistent order for processing
+                                       .ToList();
+
+                foreach (var assoc in associations)
+                {
+                    if (takeOut <= 0) break;
+
+                    if (assoc.Quantity >= takeOut)
+                    {
+                        assoc.Quantity -= takeOut;
+                        takeOut = 0;
+                    }
+                    else
+                    {
+                        takeOut -= assoc.Quantity;
+                        assoc.Quantity = 0;
+                    }
+                }
+
+                var result = _partRepository.UpdatePartBinassociations(associations);
+                return new Response<List<PartBinAssociation>?>() 
+                { 
+                    IsSuccess = true, 
+                    Result = result 
+                };
+
             }
-
-            // Fetch relevant part-bin associations
-            var associations = part.PartBinAssociations
-                                   .Where(a => a.BinId == request.BinId && subSpaces.Contains(a.Subspace.SubspaceIndex!.Value))
-                                   .OrderBy(a => a.SubspaceId) // Ensure a consistent order for processing
-                                   .ToList();
-
-            foreach (var assoc in associations)
+            catch (Exception ex)
             {
-                if (takeOut <= 0) break;
-
-                if (assoc.Quantity >= takeOut)
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<List<PartBinAssociation>?>()
                 {
-                    assoc.Quantity -= takeOut;
-                    takeOut = 0;
-                }
-                else
-                {
-                    takeOut -= assoc.Quantity;
-                    assoc.Quantity = 0;
-                }
+                    IsSuccess = false,
+                    Message = ex.Message,
+                    Result = null
+                };
             }
 
-            var result = _partRepository.UpdatePartBinassociations(associations);
-            return result;
+
         }
 
 
+        #region Private
+
+        private void ProcessArrangePartRequest(Bin? bin, Part part, ArrangePartRequest arrangeRequest, string UserId)
+        {
+            Dictionary<int, int>? subspaceQuantity = new Dictionary<int, int>();
+            if (arrangeRequest.IsFilled)
+            {
+                var response = _binService.DistributeQuantityAcrossSubspaces(bin, arrangeRequest.FillAllQuantity.Value); ;
+                if (response.IsSuccess)
+                    subspaceQuantity = response.Result;
+                else
+                    return;
+            }
+            else
+            {
+                subspaceQuantity = arrangeRequest.SubspaceQuantities;
+            }
+
+            var updatedBin = InsertPartIntoBin(bin, part, subspaceQuantity, arrangeRequest.Label);
+            _binService.UpdateBin(updatedBin);
+
+            if (arrangeRequest.Group is not null)
+            {
+                var response = AddPartIntoGroup(part, arrangeRequest.Group, UserId);
+                var partGroup = response.IsSuccess && string.IsNullOrEmpty(response.Message) ? response.Result : throw new Exception(response.Message);
+                part.Groups.Add(partGroup);
+            }
+            _partRepository.UpdatePart(part);
+            _binService.UpdateBin(bin);
+        }
 
         private List<PartUsageResponse> GetPartUsageResponse(Part part)
         {
@@ -361,12 +485,12 @@ namespace Bintainer.Service
             return response;
         }
 
-        private BinSubspace InsertPartIntoSubspace(BinSubspace subSpace, Part part)
+        private BinSubspace? InsertPartIntoSubspace(BinSubspace subSpace, Part part)
         {
             if (subSpace.Bin is null)
             {
-                // TODO: log
-                throw new Exception("the bin can not be null while trying to insert a part inside the subspace");
+                _appLogger.LogMessage(_localizer["ErrorBinCannotBeNull"], LogLevel.Error);
+                return null;
             }
             var assoc = new PartBinAssociation
             {
@@ -379,9 +503,9 @@ namespace Bintainer.Service
             return subSpace;
         }
 
-        private bool IsSubspaceAvailableForPart(in Bin bin, in Part part, List<int> subSpaceIndices)
+        private bool IsSubspaceAvailableForPart(in Bin bin, in Part part, List<int>? subSpaceIndices)
         {
-            var existingSubspaces = bin.BinSubspaces.Where(s => subSpaceIndices.Contains(s.SubspaceIndex.Value)).ToList();
+            var existingSubspaces = bin.BinSubspaces.Where(s => subSpaceIndices!.Contains(s.SubspaceIndex!.Value)).ToList();
             if (existingSubspaces is null || existingSubspaces.Count() == 0)
                 return true;
 
@@ -406,16 +530,14 @@ namespace Bintainer.Service
             }
             return subspace;
         }
-        
+
         private Bin InsertPartIntoBin(Bin bin, in Part part, Dictionary<int, int>? subspaceQuantity, string label)
         {
             int binId = bin.Id;
             int partId = part.Id;
-            if (!IsSubspaceAvailableForPart(bin, part, subspaceQuantity.Keys.ToList()))
+            if (!IsSubspaceAvailableForPart(bin, part, subspaceQuantity?.Keys.ToList()))
             {
-                // TODO : log event
-                throw new Exception("Can not insert element into subspace");
-
+                _appLogger.LogMessage(_localizer["ErrorSubspaceInsertionFailed"], LogLevel.Error);
             }
             foreach (var subspaceIndex in subspaceQuantity.Keys)
             {
@@ -426,6 +548,8 @@ namespace Bintainer.Service
             return bin;
         }
 
-       
+
+        #endregion
+
     }
 }

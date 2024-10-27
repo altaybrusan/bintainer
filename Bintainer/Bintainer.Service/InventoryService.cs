@@ -1,16 +1,14 @@
 ﻿using Bintainer.Model;
 using Bintainer.Model.Entity;
+using Bintainer.Model.Template;
 using Bintainer.Model.View;
 using Bintainer.Repository.Interface;
 using Bintainer.Repository.Service;
 using Bintainer.Service.Interface;
+using Bintainer.SharedResources.Interface;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Collections.Specialized.BitVector32;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace Bintainer.Service
 {
@@ -19,85 +17,204 @@ namespace Bintainer.Service
 
         IInventoryRepository _inventoryRepository;
         IBinService _binService;
-        public InventoryService(IBinService binService, IInventoryRepository inventoryRepository)
+        IStringLocalizer _strLocalizer;
+        IAppLogger _appLogger;
+        public InventoryService(IBinService binService, 
+                                IInventoryRepository inventoryRepository,
+                                IStringLocalizer localizer,
+                                IAppLogger appLogger)
         {
             _binService = binService;
             _inventoryRepository = inventoryRepository;
+            _strLocalizer = localizer;
+            _appLogger = appLogger;
         }
 
-        public InventorySection? GetInventorySection(string? userId, int sectionId)
+        public Response<InventorySection?> GetInventorySection(string? userId, int sectionId)
         {
-            return _inventoryRepository.GetSection(userId, sectionId);
-        }
-        public Bin? GetBinFrom(InventorySection? section, int coordinateX, int coordinateY) 
-        {
-            return section?.Bins.FirstOrDefault(b => b.CoordinateX == coordinateX &&
-                                                     b.CoordinateY == coordinateY);
-        }
-
-        public Bin? CreateBin(InventorySection section, int coordinateX, int coordinateY)
-        {
-            Bin bin = new Bin() { CoordinateX = coordinateX, CoordinateY = coordinateY, SectionId = section.Id };
-            _binService.SaveBin(bin);
-            _inventoryRepository.AddBin(section, bin);
-            return bin;
-        }
-        public List<InventorySection>? GetInventorySectionsOfUser(string admin) 
-        {
-            var inventory = _inventoryRepository.GetUserInventoryByUserName(admin);
-            string? InventoryName = inventory?.Name;
-
-            if (inventory != null)
+            try
             {
-                return _inventoryRepository.GetAllInventorySections(inventory.Id);
-            }
-            var sections = new List<InventorySection>();
-            sections.Add(new InventorySection() { Height = 1, Width = 1 });
-            return sections;
-        }
-        public Inventory CreateOrUpdateInventory(UserViewModel user, string inventoryName) 
-        {
-           
-            var inventory = _inventoryRepository.GetUserInventoryByUserName(user.Name);
-            if (inventory == null)
-            {               
-                inventory = new Inventory() { Admin = user.Name, Name = inventoryName?.Trim(), UserId = user.UserId };
-                inventory = _inventoryRepository.AddAndSaveInventory(inventory);
-            }
-            else
-            {
-                // the user already created an inventory
-                if (inventory.Name != inventoryName)
+                var result = _inventoryRepository.GetSection(userId, sectionId);
+
+                return new Response<InventorySection?>()
                 {
-                    inventory.Name = inventoryName?.Trim();
-                    _inventoryRepository.UpdateInventory(inventory);
+                    IsSuccess = true,
+                    Result = result
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+              
+                return new Response<InventorySection?>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+            }
+        }
+        public Response<Bin?> GetBinFrom(InventorySection? section, int coordinateX, int coordinateY) 
+        {
+            try
+            {
+                var response = section?.Bins.FirstOrDefault(b => b.CoordinateX == coordinateX &&
+                                                                 b.CoordinateY == coordinateY);
+
+                return new Response<Bin?>() 
+                { 
+                    IsSuccess = true, 
+                    Result = response 
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<Bin?>() 
+                { 
+                    IsSuccess = false, 
+                    Message = ex.Message 
+                };
+            }
+        }
+
+        public Response<Bin?> CreateBin(InventorySection section, int coordinateX, int coordinateY)
+        {
+            try
+            {
+                Bin bin = new Bin() { CoordinateX = coordinateX, CoordinateY = coordinateY, SectionId = section.Id };
+                _binService.SaveBin(bin);
+                _inventoryRepository.AddBin(section, bin);
+
+                return new Response<Bin?>() 
+                { 
+                    IsSuccess = true, 
+                    Result = bin 
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<Bin?>() 
+                { 
+                    IsSuccess = false, 
+                    Message = ex.Message 
+                };
+            }
+            
+        }
+        
+        public Response<List<InventorySection>?> GetInventorySectionsOfUser(string admin) 
+        {
+            try
+            {
+                var inventory = _inventoryRepository.GetUserInventoryByUserName(admin);
+                string? InventoryName = inventory?.Name;
+
+                if (inventory is not null)
+                {
+                    var result = _inventoryRepository.GetAllInventorySections(inventory.Id);
+                    return new Response<List<InventorySection>?>()
+                    {
+                        IsSuccess = true,
+                        Result = result
+                    };
                 }
+                var sections = new List<InventorySection>();
+                sections.Add(new InventorySection() { Height = 1, Width = 1 });
+
+                return new Response<List<InventorySection>?> { IsSuccess = true, Result = sections };
             }
-            return inventory;
-        }
-
-        public Inventory? AddSectionsToInventory(List<InventorySection>? sectionList, Inventory inventory) 
-        {
-
-            if (sectionList is null) 
-                return inventory;
-
-            foreach (var section in sectionList)
+            catch (Exception ex)
             {
-                if (section.Id == 0)
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<List<InventorySection>?>() 
+                { 
+                    IsSuccess = false, 
+                    Message = ex.Message 
+                };
+            }           
+        }
+        public Response<Inventory> CreateOrUpdateInventory(UserViewModel user, string inventoryName) 
+        {
+            try
+            {
+                var inventory = _inventoryRepository.GetUserInventoryByUserName(user.Name);
+                if (inventory is null)
                 {
-                    section.InventoryId = inventory.Id;
-                    inventory.InventorySections.Add(section);
-                    
+                    inventory = new Inventory() { Admin = user.Name, Name = inventoryName?.Trim(), UserId = user.UserId };
+                    inventory = _inventoryRepository.AddAndSaveInventory(inventory);
                 }
                 else
                 {
-                    //TODO: test if this section is correct. The updated sections should be stored in  inventory.
-                    section.InventoryId = inventory.Id;
-                    _inventoryRepository.UpdateSection(section);
+                    // the user already created an inventory
+                    if (inventory.Name != inventoryName)
+                    {
+                        inventory.Name = inventoryName?.Trim();
+                        _inventoryRepository.UpdateInventory(inventory);
+                    }
                 }
+                return new Response<Inventory>()
+                {
+                    IsSuccess = true,
+                    Result = inventory
+                };
             }
-            return inventory;
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<Inventory>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+            }
+            
+        }
+
+        public Response<Inventory?> AddSectionsToInventory(List<InventorySection>? sectionList, Inventory inventory) 
+        {
+            try
+            {
+                if (sectionList is null) 
+                {
+                    return new Response<Inventory?>
+                    {
+                        IsSuccess = true,
+                        Result = inventory
+                    };
+                }
+
+                foreach (var section in sectionList)
+                {
+                    if (section.Id == 0)
+                    {
+                        section.InventoryId = inventory.Id;
+                        inventory.InventorySections.Add(section);
+
+                    }
+                    else
+                    {
+                        //TODO: test if this section is correct. The updated sections should be stored in  inventory.
+                        section.InventoryId = inventory.Id;
+                        _inventoryRepository.UpdateSection(section);
+                    }
+                }
+                return new Response<Inventory?>
+                {
+                    IsSuccess = true,
+                    Result = inventory
+                };
+
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<Inventory?>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+            }
+         
         }
     }
 }

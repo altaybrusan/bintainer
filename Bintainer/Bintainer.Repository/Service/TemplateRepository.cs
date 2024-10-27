@@ -1,5 +1,7 @@
 ﻿using Bintainer.Model;
+using Bintainer.Model.DTO;
 using Bintainer.Model.Entity;
+using Bintainer.Model.View;
 using Bintainer.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -55,6 +57,19 @@ namespace Bintainer.Repository.Service
         {
             _dbContext.PartAttributes.AddRange(attributes);
             _dbContext.SaveChanges();
+        }
+        public List<PartCategory>? GetPartCategories(string userId)
+        {
+            return _dbContext.PartCategories.Where(p => p.UserId == userId).ToList();
+        }
+
+        public List<PartAttributeInfo> GetPartAttributeInfo(int tableId)
+        {
+            var resultList = _dbContext.PartAttributes
+                                       .Where(t => t.TemplateId == tableId)
+                                       .Select(attribute => new PartAttributeInfo (){ Name = attribute.Name, Value = attribute.Value })
+                                       .ToList();
+            return resultList;
         }
     }
 }

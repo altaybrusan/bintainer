@@ -1,7 +1,11 @@
 ﻿using Bintainer.Model.Entity;
+using Bintainer.Model.Template;
 using Bintainer.Repository.Interface;
 using Bintainer.Repository.Service;
 using Bintainer.Service.Interface;
+using Bintainer.SharedResources.Interface;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,29 +16,98 @@ namespace Bintainer.Service
 {
     public class BinService : IBinService
     {
-        readonly IBinRepository _binRepository;
-        readonly IInventoryRepository _inventoryRepository;
-        public BinService(IBinRepository binRepository, IInventoryRepository inventoryRepository)
+        private readonly IBinRepository _binRepository;
+        private readonly IInventoryRepository _inventoryRepository;
+        private readonly IStringLocalizer _localizer;
+        private IAppLogger _appLogger;
+        public BinService(IBinRepository binRepository, 
+                          IInventoryRepository inventoryRepository,
+                          IStringLocalizer localizer,
+                          IAppLogger appLooger)
         {
             _binRepository = binRepository;
             _inventoryRepository = inventoryRepository;
+            _localizer = localizer;
+            _appLogger = appLooger;
         }
 
-        public void UpdateBin(Bin bin)
+        public Response<Bin> UpdateBin(Bin bin)
         {
-            _binRepository.UpdateBin(bin);
+            try
+            {
+                _binRepository.UpdateBin(bin);
+
+                return new Response<Bin>() 
+                {
+                    IsSuccess = true,
+                    Result = bin
+                };
+
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+
+                return new Response<Bin>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+            }
+            
         }
 
-        public void SaveBin(Bin bin)
+        public Response<Bin> SaveBin(Bin bin)
         {
-            _binRepository.SaveBin(bin);
+            try
+            {
+                _binRepository.SaveBin(bin);
+
+                return new Response<Bin>() 
+                { 
+                    IsSuccess = true, 
+                    Result = bin 
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+
+                return new Response<Bin>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+            }
         }
 
-        public Dictionary<int,int> DistributeQuantityAcrossSubspaces(in Bin bin, int totalQuantity)
+        public Response<Dictionary<int,int>?> DistributeQuantityAcrossSubspaces(in Bin bin, int totalQuantity)
         {
-            //TODO: should protect agianst null value.
-            int subspaceCount = bin.Section.SubspaceCount.Value;
+            if(bin is null || bin.Section is null) 
+            {
+                return new Response<Dictionary<int, int>?>()
+                {
+                    IsSuccess = false,
+                    Result = null,
+                    Message = _localizer["ErrorBinOrSectionUnavailable"]
+                };
+            }
+
+            int subspaceCount = bin.Section.SubspaceCount!.Value;
+            
+            if (subspaceCount == 0)
+            {
+                var message = string.Format(_localizer["ErrorZeroSubspaceCount"], bin.Section.SectionName); ;
+                return new Response<Dictionary<int, int>?>()
+                {
+                    IsSuccess = false,
+                    Result = null,
+                    Message = message
+                };
+            }
+            
             int[] quantities = DividePartsEvenly(totalQuantity, subspaceCount);
+            
             Dictionary<int, int> subspaceQuantity = new Dictionary<int, int>();
 
             for (int i = 1; i <= quantities.Length; i++)
@@ -42,7 +115,11 @@ namespace Bintainer.Service
                 subspaceQuantity.Add(i, quantities[i - 1]);
             }
 
-            return subspaceQuantity;
+            return new Response<Dictionary<int, int>?>()
+            {
+                IsSuccess = true,
+                Result = subspaceQuantity
+            };
         }
 
         private int[] DividePartsEvenly(int totalParts, int totalSubspaces)

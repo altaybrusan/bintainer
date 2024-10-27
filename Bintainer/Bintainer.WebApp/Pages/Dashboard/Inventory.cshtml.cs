@@ -3,11 +3,13 @@ using Bintainer.Model.Entity;
 using Bintainer.Model.View;
 using Bintainer.Service;
 using Bintainer.Service.Interface;
+using Bintainer.SharedResources.Interface;
 using Bintainer.WebApp.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using System.Text.Json.Serialization;
 
 namespace Bintainer.WebApp.Pages.Dashboard
@@ -18,25 +20,49 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public List<InventorySection>? Sections { get; set; } = new();
         public string InventoryName { get; set; } = string.Empty;
 
-        readonly IInventoryService _inventoryService;
-        public InventoryModel(IInventoryService inventoryService, SignInManager<IdentityUser> signInManager)
+        private readonly IInventoryService _inventoryService;
+        private readonly IStringLocalizer _localizer;
+        private readonly IAppLogger _appLogger;
+        public InventoryModel(IInventoryService inventoryService, 
+                              SignInManager<IdentityUser> signInManager,
+                              IStringLocalizer localizer,
+                              IAppLogger appLogger)
         {
             _SignInManager = signInManager;
             _inventoryService = inventoryService;
-           
+            _localizer = localizer;
+            _appLogger = appLogger;
+
         }
         public void OnGet()
         {
-            if(User.Identity != null) 
+            if(User.Identity is not null) 
             {
                 string userName = User.Identity.Name ?? string.Empty;
-                Sections = _inventoryService.GetInventorySectionsOfUser(userName);
+                var response = _inventoryService.GetInventorySectionsOfUser(userName);
+                if (response.IsSuccess && string.IsNullOrEmpty(response.Message)) 
+                {
+                    Sections = response.Result;
+                }
             }            
+            _appLogger.LogMessage(_localizer["WarningInvalidUser"], LogLevel.Warning);
         }
-        public void OnPostSubmitForm([FromBody] List<InventorySection> sectionList, string inventoryName) 
+        
+        public IActionResult OnPostSubmitForm([FromBody] List<InventorySection> sectionList, string inventoryName) 
         {
-            //TODO: check if this logic is fine or not
-            if(User.Identity != null) 
+
+            if (!ModelState.IsValid)
+            {
+                _appLogger.LogModelError(nameof(OnPostSubmitForm), ModelState);
+
+                return BadRequest(new
+                {
+                    success = false,
+                    message = _localizer["ErrorModelStateError"],
+                });
+            }
+
+            if (User.Identity != null) 
             {
                 string userName = User.Identity.Name ?? string.Empty;
                 var UserId = User.Claims.ToList().FirstOrDefault(c=>c.Type.Contains("nameidentifier"))?.Value;
@@ -44,9 +70,22 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 UserViewModel user = new() { Name = userName, UserId = UserId };
                
                 var inventory = _inventoryService.CreateOrUpdateInventory(user, inventoryName);
-                _ = _inventoryService.AddSectionsToInventory(sectionList, inventory);
-                
-            }            
+                if(inventory.IsSuccess && inventory.Result is not null) 
+                {
+                    _ = _inventoryService.AddSectionsToInventory(sectionList, inventory.Result);
+                }
+                else 
+                {
+                    return new JsonResult(new { success = false, message = inventory.Message });
+                }
+                _appLogger.LogMessage(_localizer["InfoRepositoryCreateOrUpdateSuccess"], LogLevel.Information);
+                return new JsonResult(new { success = true, message = _localizer["InfoRepositoryCreateOrUpdateSuccess"] });
+            }
+
+            _appLogger.LogMessage(_localizer["WarningInvalidUser"], LogLevel.Warning);
+            
+            return new JsonResult(new { success = false, message = _localizer["WarningInvalidUser"] });
+
         }
     }
 }

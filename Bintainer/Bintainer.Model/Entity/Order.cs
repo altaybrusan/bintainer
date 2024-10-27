@@ -9,7 +9,7 @@ public partial class Order
 
     public string? OrderNumber { get; set; }
 
-    public string Supplier { get; set; } = null!;
+    public string? Supplier { get; set; } = null!;
 
     public DateTime? OrderDate { get; set; }
 

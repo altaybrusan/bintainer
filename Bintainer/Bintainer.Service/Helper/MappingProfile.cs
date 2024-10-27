@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Bintainer.Model.DTO;
 using Bintainer.Model.Request;
+using Bintainer.Model.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,7 @@ namespace Bintainer.Service.Helper
         public MappingProfile() 
         {
             CreateMap<FilterOrderRequest, FilterOrderRequestModel>();
+            CreateMap<PartAttributeInfo, PartAttributeViewModel>();
         }
     }
 }

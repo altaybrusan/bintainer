@@ -12,6 +12,9 @@ using Bintainer.Repository.Service;
 using Bintainer.Service.Interface;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
+using Microsoft.Extensions.Logging;
+using Bintainer.SharedResources.Interface;
+using Bintainer.SharedResources.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +33,10 @@ builder.Services.Configure<RequestLocalizationOptions>(options => {
 });
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
+//builder.Logging.AddFile("Logs/Bintainer-{Date}.txt");
 
 builder.Services.AddSingleton<Microsoft.Extensions.Localization.IStringLocalizerFactory,
     Microsoft.Extensions.Localization.ResourceManagerStringLocalizerFactory>();
@@ -57,6 +64,13 @@ if (builder.Environment.IsDevelopment())
 {
 	builder.Configuration.AddUserSecrets<Program>();
 }
+// Use AWS logging in Production
+if (builder.Environment.IsProduction())
+{
+    //TODO: check this out
+    //builder.Logging.AddAWSProvider(builder.Configuration.GetSection("Logging:AWS.Logging"));
+}
+
 
 builder.Services.Configure<DigikeySettings>(builder.Configuration.GetSection("Digikey"));
 
@@ -79,6 +93,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPartService, PartService>();
 builder.Services.AddScoped<ITemplateService, TemplateService>();
 
+builder.Services.AddScoped<IAppLogger, AppLogger>();
 
 
 builder.Services.AddTransient<IEmailSender, SESEmailSender>();

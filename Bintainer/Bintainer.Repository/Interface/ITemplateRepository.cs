@@ -1,4 +1,6 @@
-﻿using Bintainer.Model.Entity;
+﻿using Bintainer.Model.DTO;
+using Bintainer.Model.Entity;
+using Bintainer.Model.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,9 @@ namespace Bintainer.Repository.Interface
         public PartAttributeTemplate? GetAttributeTemplateByName(string partName, string userId);
         public PartAttributeTemplate? CreateAttributeTemplateByName(string partName, string userId);
         public void SaveAttributes(List<PartAttribute> attributes);
+        public List<PartCategory>? GetPartCategories(string userId);
+        public List<PartAttributeInfo> GetPartAttributeInfo(int tableId);                  
+
 
     }
 }
