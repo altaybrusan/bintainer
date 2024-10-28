@@ -17,10 +17,12 @@ namespace Bintainer.Repository.Service
     public class PartRepository : IPartRepository
     {
         BintainerDbContext _dbContext;
+        
         public PartRepository(BintainerDbContext dbcontext)
         {
             _dbContext = dbcontext;
         }
+        
         public Part? GetPartByName(string partName, string userId)
         {
             Part? part = _dbContext.Parts.Include(p => p.PartBinAssociations)
@@ -151,6 +153,7 @@ namespace Bintainer.Repository.Service
 
             return;
         }
+        
         public List<PartBinAssociation>? UpdatePartBinassociations(List<PartBinAssociation>? associations) 
         {
             if (associations is null)

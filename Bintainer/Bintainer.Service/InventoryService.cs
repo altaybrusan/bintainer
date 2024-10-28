@@ -6,6 +6,7 @@ using Bintainer.Repository.Interface;
 using Bintainer.Repository.Service;
 using Bintainer.Service.Interface;
 using Bintainer.SharedResources.Interface;
+using Bintainer.SharedResources.Resources;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -17,11 +18,11 @@ namespace Bintainer.Service
 
         IInventoryRepository _inventoryRepository;
         IBinService _binService;
-        IStringLocalizer _strLocalizer;
+        IStringLocalizer<ErrorMessages> _strLocalizer;
         IAppLogger _appLogger;
         public InventoryService(IBinService binService, 
                                 IInventoryRepository inventoryRepository,
-                                IStringLocalizer localizer,
+                                IStringLocalizer<ErrorMessages> localizer,
                                 IAppLogger appLogger)
         {
             _binService = binService;

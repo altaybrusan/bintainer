@@ -15,6 +15,7 @@ using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Bintainer.SharedResources.Interface;
 using Bintainer.SharedResources.Service;
+using Microsoft.Extensions.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,7 @@ builder.Logging.AddConsole();
 
 builder.Services.AddSingleton<Microsoft.Extensions.Localization.IStringLocalizerFactory,
     Microsoft.Extensions.Localization.ResourceManagerStringLocalizerFactory>();
+builder.Services.AddSingleton(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
 builder.Services.AddControllersWithViews()
         .AddDataAnnotationsLocalization()

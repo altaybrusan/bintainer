@@ -8,6 +8,7 @@ using Bintainer.Repository.Interface;
 using Bintainer.Service.Extention;
 using Bintainer.Service.Interface;
 using Bintainer.SharedResources.Interface;
+using Bintainer.SharedResources.Resources;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -21,14 +22,14 @@ namespace Bintainer.Service
         private readonly IInventoryRepository _inventoryRepository;
         private readonly IInventoryService _inventoryService;
         private readonly IBinService _binService;
-        private IStringLocalizer _localizer;
+        private IStringLocalizer<ErrorMessages> _localizer;
         private IAppLogger _appLogger;
         public PartService(IPartRepository partRepository,
                            ITemplateRepository templateRepository,
                            IInventoryRepository inventoryRepository,
                            IInventoryService inventoryService,
                            IBinService binService,
-                           IStringLocalizer stringLocalizer,
+                           IStringLocalizer<ErrorMessages> stringLocalizer,
                            IAppLogger applogger)
         {
             _partRepository = partRepository;

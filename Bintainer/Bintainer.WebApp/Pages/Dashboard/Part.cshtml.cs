@@ -64,7 +64,8 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public void OnGet()
         {
 			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-            AttributeTemplatesTable = _templateService.GetTemplateByUserId(userId);            
+            
+            AttributeTemplatesTable = _templateService.GetTemplateByUserId(userId).Result;            
 		}
 
         public IActionResult OnPostRetrievePartAttributeDetails(string partNumber) 

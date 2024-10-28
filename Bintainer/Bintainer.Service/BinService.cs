@@ -4,6 +4,7 @@ using Bintainer.Repository.Interface;
 using Bintainer.Repository.Service;
 using Bintainer.Service.Interface;
 using Bintainer.SharedResources.Interface;
+using Bintainer.SharedResources.Resources;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
@@ -18,11 +19,11 @@ namespace Bintainer.Service
     {
         private readonly IBinRepository _binRepository;
         private readonly IInventoryRepository _inventoryRepository;
-        private readonly IStringLocalizer _localizer;
+        private readonly IStringLocalizer<ErrorMessages> _localizer;
         private IAppLogger _appLogger;
         public BinService(IBinRepository binRepository, 
                           IInventoryRepository inventoryRepository,
-                          IStringLocalizer localizer,
+                          IStringLocalizer<ErrorMessages> localizer,
                           IAppLogger appLooger)
         {
             _binRepository = binRepository;

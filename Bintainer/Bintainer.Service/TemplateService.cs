@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using Bintainer.Model.DTO;
 using Bintainer.Model.Entity;
+using Bintainer.Model.Request;
 using Bintainer.Model.Template;
 using Bintainer.Model.View;
 using Bintainer.Repository.Interface;
 using Bintainer.Service.Interface;
 using Bintainer.SharedResources.Interface;
+using Bintainer.SharedResources.Resources;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -21,11 +23,11 @@ namespace Bintainer.Service
     {
         ITemplateRepository _templateRepository;
         IAppLogger _appLoger;
-        IStringLocalizer _localizer;
+        IStringLocalizer<ErrorMessages> _localizer;
         IMapper _mapper;
         public TemplateService(ITemplateRepository repository,
                                IAppLogger appLogger,
-                               IStringLocalizer localizer,
+                               IStringLocalizer<ErrorMessages> localizer,
                                IMapper mapper)
         {
             _templateRepository = repository;
@@ -101,6 +103,16 @@ namespace Bintainer.Service
             }
         }
 
+        public void EnsureRootNodeExists(string userId)
+        {
+            var root = _templateRepository.GetPartCategoryById(userId);
+            if (root is null)
+            {
+                AddRootNode(userId);
+            }
+        }
+
+
         private List<CategoryViewModel> BuildCategoryTree(IEnumerable<PartCategory>? categories, int? parentId = null)
         {
             return categories.Where(c => c.ParentCategoryId == parentId)
@@ -110,6 +122,131 @@ namespace Bintainer.Service
                                  Id = c.Id,
                                  Children = BuildCategoryTree(categories, c.Id)
                              }).ToList();
+        }
+
+        private void AddRootNode(string userId)
+        {
+            CategoryViewModel viewNode = new CategoryViewModel()
+            {
+                Title = "Root"
+            };
+            AddItem(viewNode, userId);
+
+        }
+        
+        private void DeleteItem(CategoryViewModel parent)
+        {
+            _templateRepository.RemovePartCategory(parent.Id);
+            foreach (var item in parent.Children)
+            {
+                DeleteItem(item);
+            }
+        }
+        
+        private void AddItem(CategoryViewModel nodeView, string userId, int? parentId = null)
+        {
+            PartCategory newCategory = new() { Name = nodeView.Title, UserId = userId };
+            if (parentId != null)
+            {
+                newCategory.ParentCategory = _templateRepository.GetCategory(parentId);
+            }
+
+            _templateRepository.AddAndSavePartCategory(newCategory);
+
+
+            foreach (var item in nodeView.Children)
+            {
+                AddItem(item, userId, newCategory.Id);
+            }
+        }
+
+        public Response<Dictionary<int, string>> LoadAttributes(string userId)
+        {
+            try
+            {
+                var result = _templateRepository.LoadAttributes(userId);
+                return new Response<Dictionary<int, string>>()
+                {
+                    IsSuccess = true,
+                    Result = result
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLoger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<Dictionary<int, string>>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+            }
+
+        }
+
+        public Response<PartAttributeTemplate> SaveAttributeTemplate(CreateAttributeTemplateRequest request, string userId)
+        {
+            try
+            {
+                PartAttributeTemplate table = new() { TemplateName = request.TableName, UserId = userId };
+
+                foreach (var item in request.Attributes)
+                {
+                    var attribute = new PartAttribute() { Name = item.Key, Value = item.Value };
+                    table.PartAttributes.Add(attribute);
+                }
+                _templateRepository.AddAndSavePartAttribute(table);
+
+                return new Response<PartAttributeTemplate>()
+                {
+                    IsSuccess = true,
+                    Result = table
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLoger.LogMessage(ex.Message,LogLevel.Error);
+                return new Response<PartAttributeTemplate>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+            } 
+        }
+
+        //TODO: needs rewrite
+        public Response<List<CategoryViewModel>> SavePartCategory(List<CategoryViewModel> categories, string userId) 
+        {
+            var original = _templateRepository.GetPartCategories(userId);
+            var mappedOriginal = _mapper.Map<List<CategoryViewModel>>(original);
+            CategoryViewModelComparer comparer = new CategoryViewModelComparer(mappedOriginal, categories);
+            var AddedItems = comparer.Added;
+            var deletedItems = comparer.Deleted;
+            var updatedItems = comparer.Updated;
+
+            foreach (var item in updatedItems)
+            {
+                var _category = _templateRepository.GetCategory(item.Id);
+                _category.Name = item.Title;
+                _category.UserId = userId;
+                //TODO: refactor this
+                _templateRepository.UpdateAndSaveCategory(_category);
+            }
+
+            foreach (var item in deletedItems)
+            {
+                DeleteItem(item);
+            }
+            foreach (var item in AddedItems)
+            {
+                AddItem(item, userId, item.ParentId);
+            }
+            _templateRepository.SaveChanges();
+
+            return new Response<List<CategoryViewModel>>()
+            {
+                IsSuccess = true,
+                Result = mappedOriginal
+            };
         }
 
     }

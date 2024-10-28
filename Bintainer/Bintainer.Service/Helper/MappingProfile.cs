@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Bintainer.Model.DTO;
+using Bintainer.Model.Entity;
 using Bintainer.Model.Request;
 using Bintainer.Model.View;
 using System;
@@ -16,6 +17,7 @@ namespace Bintainer.Service.Helper
         {
             CreateMap<FilterOrderRequest, FilterOrderRequestModel>();
             CreateMap<PartAttributeInfo, PartAttributeViewModel>();
+            CreateMap<PartCategory, CategoryViewModel>();
         }
     }
 }

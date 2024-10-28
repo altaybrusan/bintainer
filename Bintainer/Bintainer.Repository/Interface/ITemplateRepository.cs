@@ -17,7 +17,15 @@ namespace Bintainer.Repository.Interface
         public PartAttributeTemplate? CreateAttributeTemplateByName(string partName, string userId);
         public void SaveAttributes(List<PartAttribute> attributes);
         public List<PartCategory>? GetPartCategories(string userId);
-        public List<PartAttributeInfo> GetPartAttributeInfo(int tableId);                  
+        public PartCategory? GetPartCategoryById(string userId);
+        public PartCategory? GetCategory(int? id);
+        public PartCategory? UpdateAndSaveCategory(PartCategory category);
+        public List<PartAttributeInfo> GetPartAttributeInfo(int tableId);
+        public PartCategory AddAndSavePartCategory(PartCategory category);
+        public void RemovePartCategory(int? id);
+        public Dictionary<int, string> LoadAttributes(string userId);
+        public PartAttributeTemplate AddAndSavePartAttribute(PartAttributeTemplate partAttribute);
+        public void SaveChanges();
 
 
     }
