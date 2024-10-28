@@ -112,7 +112,6 @@ namespace Bintainer.Service
             }
         }
 
-
         private List<CategoryViewModel> BuildCategoryTree(IEnumerable<PartCategory>? categories, int? parentId = null)
         {
             return categories.Where(c => c.ParentCategoryId == parentId)
