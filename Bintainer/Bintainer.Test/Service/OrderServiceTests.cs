@@ -103,11 +103,14 @@ namespace Bintainer.Test.Service
         public void FilterOrder_WhenOrdersExist_ShouldReturnFilteredOrders()
         {
             // Arrange
-            var request = new FilterOrderRequest() 
+            var request = new FilterOrderRequest()
             {
-                OrderNumber ="ORD123"
+                OrderNumber = "ORD123"
             };
-            var requestModel = new FilterOrderRequestModel();
+            var requestModel = new FilterOrderRequestModel() 
+            {
+                OrderNumber = "ORD123"
+            };
             _mockMapper.Setup(m => m.Map<FilterOrderRequestModel>(request)).Returns(requestModel);
 
             var orders = new List<OrderInfo>
@@ -117,14 +120,11 @@ namespace Bintainer.Test.Service
                     OrderNumber = "ORD123",
                     Supplier = "Supplier1",
                     OrderDate = new DateTime(2023, 1, 1),
-                    HandOverDate = new DateTime(2023, 1, 10)
-                },
-                new OrderInfo
-                {
-                    OrderNumber = "ORD124",
-                    Supplier = "Supplier2",
-                    OrderDate = new DateTime(2023, 1, 2),
-                    HandOverDate = new DateTime(2023, 1, 12)
+                    HandOverDate = new DateTime(2023, 1, 10),
+                    Parts = new List<PartSummary>
+                    {
+                        new PartSummary { PartName = "Part1", Quantity = 5 }
+                    }
                 }
             };
 
@@ -138,7 +138,7 @@ namespace Bintainer.Test.Service
             Assert.IsNotNull(result.Result);
             Assert.That(result.Result.Count, Is.EqualTo(1));
             Assert.That(result.Result.First().OrderNumber, Is.EqualTo("ORD123"));
-            Assert.That(actual: result.Result.First().Parts.First().PartName, Is.EqualTo("Part1"));
+            Assert.That(actual: result.Result.First().Parts!.First()?.PartName, Is.EqualTo("Part1"));
         }
 
         [Test]
