@@ -4,6 +4,7 @@ using Bintainer.Model.Request;
 using Bintainer.Model.View;
 using Bintainer.Service.Interface;
 using Bintainer.SharedResources.Interface;
+using Bintainer.SharedResources.Resources;
 using Bintainer.WebApp.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +30,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 		private IAppLogger _applogger;
 
 		public TemplateModel(ITemplateService service,
-							 IStringLocalizer localizer,
+							 IStringLocalizer<ErrorMessages> localizer,
 							 IAppLogger appLogger )
 		{
 			_templateService = service;

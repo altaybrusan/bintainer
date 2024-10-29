@@ -4,6 +4,7 @@ using Bintainer.Model.View;
 using Bintainer.Service;
 using Bintainer.Service.Interface;
 using Bintainer.SharedResources.Interface;
+using Bintainer.SharedResources.Resources;
 using Bintainer.WebApp.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
         private readonly IAppLogger _appLogger;
         public InventoryModel(IInventoryService inventoryService, 
                               SignInManager<IdentityUser> signInManager,
-                              IStringLocalizer localizer,
+                              IStringLocalizer<ErrorMessages> localizer,
                               IAppLogger appLogger)
         {
             _SignInManager = signInManager;
