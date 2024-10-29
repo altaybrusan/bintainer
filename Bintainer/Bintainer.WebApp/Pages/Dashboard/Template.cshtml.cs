@@ -38,19 +38,21 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			_applogger = appLogger;
 		}
 
-        public IActionResult OnGet()
+        public void OnGet()
         {
             var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
 			_templateService.EnsureRootNodeExists(userId);
             
 			var response = _templateService.GetPartCategories(userId);
-			if(!response.IsSuccess && response.Result is null)
+			if(response.IsSuccess && response.Result is not null)
 			{
-				return new JsonResult(new{ success = false, message = response.Message });
+				Categories = response.Result;
 			}
-			_templateService.LoadAttributes(userId);
-
-			return new OkResult();
+            var attributeResponse = _templateService.LoadAttributes(userId);
+            if (attributeResponse.IsSuccess && response.Result is not null)
+            {
+				AttributeTables = attributeResponse.Result!;
+            }
 		}
 		
 		//TODO: update the javascript to meet new return back.
