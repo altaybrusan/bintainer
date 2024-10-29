@@ -21,10 +21,10 @@ namespace Bintainer.Service
 {
     public class TemplateService : ITemplateService
     {
-        ITemplateRepository _templateRepository;
-        IAppLogger _appLoger;
-        IStringLocalizer<ErrorMessages> _localizer;
-        IMapper _mapper;
+        private ITemplateRepository _templateRepository;
+        private IAppLogger _appLoger;
+        private IStringLocalizer<ErrorMessages> _localizer;
+        private IMapper _mapper;
         public TemplateService(ITemplateRepository repository,
                                IAppLogger appLogger,
                                IStringLocalizer<ErrorMessages> localizer,
