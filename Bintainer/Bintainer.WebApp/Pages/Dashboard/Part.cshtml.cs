@@ -30,9 +30,9 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public List<InventorySection> Sections { get; set; } = new();
         public Inventory Inventory { get; set; } = new();
 
-        DigikeyService _digikeyService;
-        ITemplateService _templateService;
-        IPartService _partService;
+        private DigikeyService _digikeyService;
+        private ITemplateService _templateService;
+        private IPartService _partService;
         public PartModel(ITemplateService templateService, IPartService partService, DigikeyService digikeyServices)
         {
             _templateService = templateService;
