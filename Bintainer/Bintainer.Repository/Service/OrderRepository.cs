@@ -83,7 +83,7 @@ namespace Bintainer.Repository.Service
                                 .Select(opa => new PartSummary
                                 {
                                     PartName = opa.Part.Name,
-                                    Quantity = opa.Qunatity
+                                    Quantity = opa.Quantity
                                 }).ToList()
                 })
                 .ToList();

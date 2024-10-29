@@ -48,7 +48,7 @@ namespace Bintainer.Service
                     {
                         OrderPartAssociation association = new OrderPartAssociation();
                         association.PartId = part.Id;
-                        association.Qunatity = item.Quantity;
+                        association.Quantity = item.Quantity;
                         order.OrderPartAssociations.Add(association);
                     }
                 }
@@ -68,7 +68,7 @@ namespace Bintainer.Service
                 registeredOrder.Supplier = request.Supplier;
                 foreach (var item in registeredOrder.OrderPartAssociations)
                 {
-                    item.Qunatity = request.Parts.FirstOrDefault(p => p.PartId == item.PartId)?.Quantity;
+                    item.Quantity = request.Parts.FirstOrDefault(p => p.PartId == item.PartId)?.Quantity;
                 }
                 _orderRepository.UpdateOrder(registeredOrder);                
             }

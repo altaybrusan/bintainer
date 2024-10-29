@@ -59,10 +59,12 @@ namespace Bintainer.Repository.Service
             _dbContext.PartAttributes.AddRange(attributes);
             _dbContext.SaveChanges();
         }
+        
         public List<PartCategory>? GetPartCategories(string userId)
         {
             return _dbContext.PartCategories.Where(p => p.UserId == userId).ToList();
         }
+        
         public PartCategory? GetPartCategoryById(string userId)
         {
             return _dbContext.PartCategories.Where(p => p.UserId == userId).FirstOrDefault();
@@ -81,6 +83,7 @@ namespace Bintainer.Repository.Service
         {
             return _dbContext.PartCategories.FirstOrDefault(i => i.Id == id);
         }
+        
         public PartCategory? UpdateAndSaveCategory(PartCategory category) 
         {
             _dbContext.PartCategories.Update(category);

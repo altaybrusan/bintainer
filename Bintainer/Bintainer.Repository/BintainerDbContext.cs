@@ -210,7 +210,7 @@ public partial class BintainerDbContext : DbContext
 
             entity.ToTable("OrderPartAssociation");
 
-            entity.Property(e => e.Qunatity).HasDefaultValueSql("((0))");
+            entity.Property(e => e.Quantity).HasDefaultValueSql("((0))");
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderPartAssociations)
                 .HasForeignKey(d => d.OrderId)

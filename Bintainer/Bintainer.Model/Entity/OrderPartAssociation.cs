@@ -9,7 +9,7 @@ public partial class OrderPartAssociation
 
     public int PartId { get; set; }
 
-    public int? Qunatity { get; set; }
+    public int? Quantity { get; set; }
 
     public virtual Order Order { get; set; } = null!;
 
