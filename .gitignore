@@ -400,3 +400,4 @@ FodyWeavers.xsd
 #ignore aws credentials
 credential/
 /aws credentials
+/Bintainer/.sonarqube
