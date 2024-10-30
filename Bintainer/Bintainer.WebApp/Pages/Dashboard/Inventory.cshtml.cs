@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
+
 namespace Bintainer.WebApp.Pages.Dashboard
 {
     public class InventoryModel : PageModel
