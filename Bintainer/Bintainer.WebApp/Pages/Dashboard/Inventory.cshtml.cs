@@ -1,9 +1,16 @@
+using Bintainer.Model;
+using Bintainer.Model.Entity;
+using Bintainer.Model.View;
+using Bintainer.Service;
+using Bintainer.Service.Interface;
+using Bintainer.SharedResources.Interface;
+using Bintainer.SharedResources.Resources;
 using Bintainer.WebApp.Data;
-using Bintainer.WebApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using System.Text.Json.Serialization;
 
 
@@ -12,79 +19,75 @@ namespace Bintainer.WebApp.Pages.Dashboard
     public class InventoryModel : PageModel
     {
         SignInManager<IdentityUser> _SignInManager;
-        BintainerDbContext _dbContext;
-
-        public List<InventorySection> Sections { get; set; } = new();
+        public List<InventorySection>? Sections { get; set; } = new();
         public string InventoryName { get; set; } = string.Empty;
 
-        public InventoryModel(SignInManager<IdentityUser> signInManager, BintainerDbContext dbContext)
+        private readonly IInventoryService _inventoryService;
+        private readonly IStringLocalizer _localizer;
+        private readonly IAppLogger _appLogger;
+        public InventoryModel(IInventoryService inventoryService, 
+                              SignInManager<IdentityUser> signInManager,
+                              IStringLocalizer<ErrorMessages> localizer,
+                              IAppLogger appLogger)
         {
             _SignInManager = signInManager;
-            _dbContext = dbContext;
-        }
+            _inventoryService = inventoryService;
+            _localizer = localizer;
+            _appLogger = appLogger;
 
+        }
         public void OnGet()
         {
-            if(User.Identity != null) 
+            if(User.Identity is not null) 
             {
                 string userName = User.Identity.Name ?? string.Empty;
-                var inventory = _dbContext.Inventories.FirstOrDefault(i => i.Admin == userName);
-                InventoryName = inventory?.Name;
-
-                if(inventory != null) 
+                var response = _inventoryService.GetInventorySectionsOfUser(userName);
+                if (response.IsSuccess && string.IsNullOrEmpty(response.Message)) 
                 {
-                    Sections = _dbContext.InventorySections.Where(s=>s.InventoryId==inventory.Id).ToList();
-                }
-                else 
-                {
-                    Sections = new List<InventorySection>();
-                    Sections.Add(new InventorySection() { Height = 1, Width = 1 });
+                    Sections = response.Result;
                 }
             }            
+            _appLogger.LogMessage(_localizer["WarningInvalidUser"], LogLevel.Warning);
         }
-        public void OnPostSubmitForm([FromBody] List<InventorySection> sectionList, string inventoryName) 
+        
+        public IActionResult OnPostSubmitForm([FromBody] List<InventorySection> sectionList, string inventoryName) 
         {
-            if(User.Identity != null) 
+
+            if (!ModelState.IsValid)
+            {
+                _appLogger.LogModelError(nameof(OnPostSubmitForm), ModelState);
+
+                return BadRequest(new
+                {
+                    success = false,
+                    message = _localizer["ErrorModelStateError"],
+                });
+            }
+
+            if (User.Identity != null) 
             {
                 string userName = User.Identity.Name ?? string.Empty;
-                var inventory = _dbContext.Inventories.FirstOrDefault(i => i.Admin == userName);
-                if (inventory == null)
+                var UserId = User.Claims.ToList().FirstOrDefault(c=>c.Type.Contains("nameidentifier"))?.Value;
+                
+                UserViewModel user = new() { Name = userName, UserId = UserId };
+               
+                var inventory = _inventoryService.CreateOrUpdateInventory(user, inventoryName);
+                if(inventory.IsSuccess && inventory.Result is not null) 
                 {
-                    var UserId = User.Claims.ToList().FirstOrDefault(c=>c.Type.Contains("nameidentifier"))?.Value;
-                    inventory = new Inventory() { Admin = userName, Name = inventoryName?.Trim(), UserId = UserId };
-                    _dbContext.Inventories.Add(inventory);
-                    _dbContext.SaveChanges();
+                    _ = _inventoryService.AddSectionsToInventory(sectionList, inventory.Result);
                 }
                 else 
                 {
-                    // the user already created an inventory
-                   if( inventory.Name != inventoryName) 
-                   {
-                        inventory.Name = inventoryName?.Trim();
-                        _dbContext.Update(inventory);
-                        _dbContext.SaveChanges(true);
-                   }
-
+                    return new JsonResult(new { success = false, message = inventory.Message });
                 }
+                _appLogger.LogMessage(_localizer["InfoRepositoryCreateOrUpdateSuccess"], LogLevel.Information);
+                return new JsonResult(new { success = true, message = _localizer["InfoRepositoryCreateOrUpdateSuccess"] });
+            }
 
-                foreach (var item in sectionList)
-                {
-                    if (item.Id == 0) 
-                    {
-                        item.InventoryId = inventory.Id;
-                        _dbContext.InventorySections.Add(item);
-                    }
-                    else
-                    {
-                        item.InventoryId = inventory.Id;
-                        _dbContext.InventorySections.Update(item);
-                        _dbContext.SaveChanges(true);
-                    }
-                    
-                }
+            _appLogger.LogMessage(_localizer["WarningInvalidUser"], LogLevel.Warning);
+            
+            return new JsonResult(new { success = false, message = _localizer["WarningInvalidUser"] });
 
-                _dbContext.SaveChanges();
-            }            
         }
     }
 }

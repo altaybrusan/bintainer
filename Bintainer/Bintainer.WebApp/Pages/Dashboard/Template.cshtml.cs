@@ -1,239 +1,98 @@
+using Bintainer.Model;
+using Bintainer.Model.Entity;
+using Bintainer.Model.Request;
+using Bintainer.Model.View;
+using Bintainer.Service.Interface;
+using Bintainer.SharedResources.Interface;
+using Bintainer.SharedResources.Resources;
 using Bintainer.WebApp.Data;
-using Bintainer.WebApp.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Localization;
+using System.Runtime.Serialization;
 using System.Security.Policy;
 
 
 namespace Bintainer.WebApp.Pages.Dashboard
 {
-    public class AttributeTableTemplate
-	{
-		public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
-		public string TableName { get; set; } = string.Empty;
-	}
-	public class CategoryView
-	{
-		public string Title { get; set; } = string.Empty;
-		public int? Id { get; set; }
-		public int? ParentId { get; set; }
-		public List<CategoryView> Children { get; set; } = new();
-	}
-	public class CategoryViewComparer
-	{
-		public List<CategoryView> Added { get; private set; }
-		public List<CategoryView> Deleted { get; private set; }
-		public List<CategoryView> Unchanged { get; private set; }
-		public List<CategoryView> Updated { get; private set; }
-
-		public CategoryViewComparer(List<CategoryView> original, List<CategoryView> updated)
-		{
-			Added = new List<CategoryView>();
-			Deleted = new List<CategoryView>();
-			Unchanged = new List<CategoryView>();
-			Updated = new List<CategoryView>();
-
-			CompareLists(original, updated, null);
-		}
-
-		private void CompareLists(List<CategoryView> original, List<CategoryView> updated, int? parentId)
-		{
-			var originalDict = original.ToDictionary(item => item.Id ?? -1); 
-
-			foreach (var item in updated)
-			{
-
-				if (!originalDict.ContainsKey(item.Id ?? -1))
-				{
-					item.ParentId = parentId;
-					Added.Add(item);
-				}
-				else
-				{
-					var originalItem = originalDict.ContainsKey(item.Id ?? -1) ? originalDict[item.Id ?? -1] : null;
-					if (IsUpdated(originalItem, item))
-					{
-						Updated.Add(new CategoryView { Title = item.Title, Id = item.Id });
-					}
-					else
-					{
-						Unchanged.Add(new CategoryView { Title = originalItem.Title, Id = item.Id });
-					}
-					originalDict.Remove(item.Id ?? -1);
-				}
-
-			}
-
-			Deleted.AddRange(originalDict.Values);
-
-			foreach (var originalItem in original)
-			{
-				var updatedChild = updated.FirstOrDefault(u => u.Id == originalItem.Id);
-				if (updatedChild != null)
-				{
-					CompareLists(originalItem.Children, updatedChild?.Children ?? new List<CategoryView>(), originalItem.Id); // Pass parent ID
-				}
-			}
-		}
-
-		private bool IsUpdated(CategoryView original, CategoryView updated)
-		{
-			return original.Title != updated.Title;
-		}
-	}
-
-
+    
 	public class TemplateModel : PageModel
     {
-		BintainerDbContext _dbcontext;
 
         public Dictionary<int,string> AttributeTables { get; set; } = new Dictionary<int, string>();
-		public List<CategoryView> Categories { get; set; } = new();
+		public List<CategoryViewModel> Categories { get; set; } = new();
+       
+		private ITemplateService _templateService;
+		private IStringLocalizer _localizer;
+		private IAppLogger _applogger;
 
-
-        public List<CategoryView> BuildCategoryTree(IEnumerable<PartCategory> categories, int? parentId = null)
+		public TemplateModel(ITemplateService service,
+							 IStringLocalizer<ErrorMessages> localizer,
+							 IAppLogger appLogger )
 		{
-			return categories.Where(c => c.ParentCategoryId == parentId)
-							 .Select(c => new CategoryView
-							 {
-								 Title = c.Name?.Trim() ?? string.Empty,
-								 Id= c.Id,
-								 Children = BuildCategoryTree(categories, c.Id)
-							 }).ToList();
+			_templateService = service;
+			_localizer = localizer;
+			_applogger = appLogger;
 		}
 
-		public TemplateModel(BintainerDbContext dbContext )
-		{
-			_dbcontext = dbContext;
-
-		}
-        public async Task OnGet()
+        public void OnGet()
         {
             var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-
-            if (FindRoot(userId) == null) 
+			_templateService.EnsureRootNodeExists(userId);
+            
+			var response = _templateService.GetPartCategories(userId);
+			if(response.IsSuccess && response.Result is not null)
 			{
-				AddRootNode(userId);
+				Categories = response.Result;
 			}
-			Categories = await GetCategoryHierarchyAsync(userId);
-			LoadAttributes(userId);
+            var attributeResponse = _templateService.LoadAttributes(userId);
+            if (attributeResponse.IsSuccess && response.Result is not null)
+            {
+				AttributeTables = attributeResponse.Result!;
+            }
 		}
-
 		
-        public async Task<List<CategoryView>> GetCategoryHierarchyAsync(string userId)
+		//TODO: update the javascript to meet new return back.
+        public IActionResult GetCategoryHierarchy(string userId)
         {
-            var categories = await _dbcontext.PartCategories.Where(p=>p.UserId== userId).ToListAsync();
-            return BuildCategoryTree(categories);
+            var categories = _templateService.GetPartCategories(userId);
+
+			if (!categories.IsSuccess)
+				return new JsonResult(new { success = true, result = categories });
+
+            return new JsonResult(categories.Result);
         }
+        
 		public IActionResult OnPostLoadAttributeTable(int tableId) 
 		{
-			var resultList = _dbcontext.PartAttributes
-									   .Where(t => t.TemplateId == tableId)
-									   .Select(attribute => new { Name = attribute.Name, Value = attribute.Value })
-									   .ToList();			
-			return new JsonResult(resultList);
+			var response = _templateService.GetPartAttributes(tableId);
+			if (!response.IsSuccess)
+				return new JsonResult(new { success = false, message = response.Message });
+
+			return new JsonResult(response.Result);
 		}
-		public void OnPostAttributesTemplateSave([FromBody] AttributeTableTemplate attributeTable) 
-        {
-			
+		public void OnPostAttributesTemplateSave([FromBody] CreateAttributeTemplateRequest attributeTable) 
+        {			
 			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-			PartAttributeTemplate table = new() { TemplateName = attributeTable.TableName, UserId = userId };
-
-			foreach (var item in attributeTable.Attributes)
-			{
-				var attribute = new PartAttribute() { Name = item.Key, Value = item.Value };
-				table.PartAttributes.Add(attribute);
-
-			}
-			_dbcontext.PartAttributeTemplates.Add(table);
-			_dbcontext.SaveChanges();
-
+			_templateService.SaveAttributeTemplate(attributeTable, userId);
 		}
-		public async Task<IActionResult> OnPostDeleteAttributeTable(int tableId)
-		{
-			await _dbcontext.PartAttributes.Where(a => a.TemplateId == tableId).ExecuteDeleteAsync();
-			await _dbcontext.PartAttributeTemplates.Where(t => t.Id == tableId).ExecuteDeleteAsync();
-			await _dbcontext.SaveChangesAsync();
-			return new OkResult();
-		}
+		//TODO: rewrite this
+		//public async Task<IActionResult> OnPostDeleteAttributeTable(int tableId)
+		//{
+		//	await _dbcontext.PartAttributes.Where(a => a.TemplateId == tableId).ExecuteDeleteAsync();
+		//	await _dbcontext.PartAttributeTemplates.Where(t => t.Id == tableId).ExecuteDeleteAsync();
+		//	await _dbcontext.SaveChangesAsync();
+		//	return new OkResult();
+		//}
 
-		private void LoadAttributes(string userId) 
-		{
-			foreach (var item in _dbcontext.PartAttributeTemplates.Where(p => p.UserId == userId))
-			{
-				if (item.TemplateName != null)
-					AttributeTables[item.Id] = item.TemplateName;
-			}
-		}
-		private PartCategory? FindRoot(string userId) 
-		{
-            return _dbcontext.PartCategories.Where(p=> p.UserId == userId).FirstOrDefault();        }
-		private void AddRootNode(string userId) 
-		{
-			CategoryView viewNode = new CategoryView() {
-				Title = "Root"
-			};
-			AddItem(viewNode, userId);
-
-        }
-		private void DeleteItem(CategoryView parent) 
-		{
-			_dbcontext.PartCategories.Remove(_dbcontext.PartCategories.First(i => i.Id == parent.Id));
-			foreach (var item in parent.Children)
-			{
-				DeleteItem(item);
-			}						
-
-		}
-		private void AddItem(CategoryView nodeView, string userId ,int? parentId=null)
-		{
-			PartCategory newCategory = new() { Name = nodeView.Title, UserId = userId };
-			if(parentId != null) 
-			{
-				newCategory.ParentCategory = _dbcontext.PartCategories.First(i => i.Id == parentId);
-			}
-						
-			_dbcontext.PartCategories.Add(newCategory);
-			_dbcontext.SaveChanges();
-			
-			foreach (var item in nodeView.Children)
-			{
-				AddItem(item,userId, newCategory.Id);
-			}
-		}
-		public async Task OnPostCategorySave([FromBody] List<CategoryView> categories)
+		public async Task OnPostCategorySave([FromBody] List<CategoryViewModel> categories)
 		{
             var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-			var original = await GetCategoryHierarchyAsync(userId);
-			CategoryViewComparer comparer = new CategoryViewComparer(original, categories);
-			var AddedItems = comparer.Added;
-			var deletedItems = comparer.Deleted;
-			var updatedItems = comparer.Updated;
-
-            foreach (var item in updatedItems) 
-			{
-				var _category = _dbcontext.PartCategories.First(i => i.Id == item.Id);
-				_category.Name= item.Title;
-				_category.UserId = userId;
-
-                _dbcontext.PartCategories.Update(_category);
-			}
-
-			foreach (var item in deletedItems) 
-			{
-				DeleteItem(item);
-			}
-			foreach (var item in AddedItems)
-			{
-				AddItem(item, userId, item.ParentId);
-			}
 
 
-
-			_dbcontext.SaveChanges();
-		}
-	}
+        }
+    }
 }

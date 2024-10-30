@@ -1,0 +1,133 @@
+﻿using Bintainer.Model;
+using Bintainer.Model.DTO;
+using Bintainer.Model.Entity;
+using Bintainer.Model.View;
+using Bintainer.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bintainer.Repository.Service
+{
+    public class TemplateRepository : ITemplateRepository
+    {
+        readonly BintainerDbContext _dbContext;
+        public TemplateRepository(BintainerDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+        public Dictionary<int, string> AttributeTemplatesTable { get; set; } = new Dictionary<int, string>();
+
+        public Dictionary<int, string?> GetTemplatesOfUser(string userId)
+        {
+            return _dbContext.PartAttributeTemplates
+                              .Where(t => t.UserId == userId && t.TemplateName != null)
+                              .ToDictionary(t => t.Id, t => t.TemplateName);
+
+
+        }
+
+        public PartAttributeTemplate? GetAttributeTemplateById(int? templateId)
+        {
+            if (templateId is null)
+                return null;
+            return _dbContext.PartAttributeTemplates.Where(t => t.Id == templateId).FirstOrDefault();
+        }
+
+        public PartAttributeTemplate? GetAttributeTemplateByName(string partName, string userId)
+        {
+            string trimmedPartName = partName.Trim();
+            string trimmedUserId = userId.Trim();
+            return _dbContext.PartAttributeTemplates.FirstOrDefault(t => t.TemplateName == trimmedPartName && t.UserId.Trim() == trimmedUserId);
+        }
+
+        public PartAttributeTemplate? CreateAttributeTemplateByName(string partName, string userId)
+        {
+            string trimmedPartName = partName.Trim();
+            var attributeTemplate = new PartAttributeTemplate() { TemplateName = trimmedPartName, UserId = userId };
+            _dbContext.PartAttributeTemplates.Add(attributeTemplate);
+            _dbContext.SaveChanges(true);
+            return attributeTemplate;
+        }
+
+        public void SaveAttributes(List<PartAttribute> attributes)
+        {
+            _dbContext.PartAttributes.AddRange(attributes);
+            _dbContext.SaveChanges();
+        }
+        
+        public List<PartCategory>? GetPartCategories(string userId)
+        {
+            return _dbContext.PartCategories.Where(p => p.UserId == userId).ToList();
+        }
+        
+        public PartCategory? GetPartCategoryById(string userId)
+        {
+            return _dbContext.PartCategories.Where(p => p.UserId == userId).FirstOrDefault();
+        }
+
+        public List<PartAttributeInfo> GetPartAttributeInfo(int tableId)
+        {
+            var resultList = _dbContext.PartAttributes
+                                       .Where(t => t.TemplateId == tableId)
+                                       .Select(attribute => new PartAttributeInfo() { Name = attribute.Name, Value = attribute.Value })
+                                       .ToList();
+            return resultList;
+        }
+
+        public PartCategory? GetCategory(int? id)
+        {
+            return _dbContext.PartCategories.FirstOrDefault(i => i.Id == id);
+        }
+        
+        public PartCategory? UpdateAndSaveCategory(PartCategory category) 
+        {
+            _dbContext.PartCategories.Update(category);
+            _dbContext.SaveChanges();
+            return category;
+
+        }
+
+        public PartCategory AddAndSavePartCategory(PartCategory category)
+        {
+            _dbContext.PartCategories.Add(category);
+            _dbContext.SaveChanges(true);
+            return category;
+        }
+        
+        public void RemovePartCategory(int? id)
+        {
+            var category = _dbContext.PartCategories.FirstOrDefault(i => i.Id == id);
+            if (category is not null)
+                _dbContext.PartCategories.Remove(category);
+        }
+        
+        public Dictionary<int,string> LoadAttributes(string userId) 
+        {
+            var attributes = _dbContext.PartAttributeTemplates.Where(p => p.UserId == userId);
+            Dictionary<int,string>  AttributeTables = new Dictionary<int,string>();
+            foreach (var item in attributes)
+            {
+                if (item.TemplateName != null)
+                    AttributeTables[item.Id] = item.TemplateName;
+            }
+            return AttributeTables;
+        }
+
+        public PartAttributeTemplate AddAndSavePartAttribute(PartAttributeTemplate partAttribute)
+        {
+            _dbContext.PartAttributeTemplates.Add(partAttribute);
+            _dbContext.SaveChanges();
+            return partAttribute;
+        }
+
+        public void SaveChanges() 
+        {
+            _dbContext.SaveChanges();
+        }
+    }
+}
