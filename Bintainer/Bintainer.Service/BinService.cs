@@ -94,9 +94,9 @@ namespace Bintainer.Service
                 };
             }
 
-            int subspaceCount = bin.Section.SubspaceCount!.Value;
+            int? subspaceCount = bin.Section.SubspaceCount;
             
-            if (subspaceCount == 0)
+            if ( subspaceCount is null || subspaceCount == 0)
             {
                 var message = string.Format(_localizer["ErrorZeroSubspaceCount"], bin.Section.SectionName); ;
                 return new Response<Dictionary<int, int>?>()
@@ -107,7 +107,7 @@ namespace Bintainer.Service
                 };
             }
             
-            int[] quantities = DividePartsEvenly(totalQuantity, subspaceCount);
+            int[] quantities = DividePartsEvenly(totalQuantity, subspaceCount!.Value);
             
             Dictionary<int, int> subspaceQuantity = new Dictionary<int, int>();
 

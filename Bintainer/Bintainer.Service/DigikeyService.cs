@@ -33,6 +33,11 @@ namespace Bintainer.Service
                 return token;
             }
 
+            if (string.IsNullOrEmpty(_clientId) || string.IsNullOrEmpty(_clientSecret) || string.IsNullOrEmpty(_grantType))
+            {
+                throw new InvalidOperationException("Client ID, Client Secret, or Grant Type is not configured.");
+            }
+
             var requestBody = new Dictionary<string, string?>
             {
                 { "client_id", _clientId },
@@ -52,11 +57,12 @@ namespace Bintainer.Service
             var responseContent = await response.Content.ReadAsStringAsync();
             var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseContent);
 
-            if (tokenResponse == null)
+            if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.access_token))
             {
-                throw new InvalidOperationException("Failed to retrieve token.");
+                throw new InvalidOperationException("Failed to retrieve a valid token.");
             }
 
+            // Cache the token, reducing expiration time by a minute for safety
             _cache.Set("DigikeyToken", tokenResponse.access_token, TimeSpan.FromSeconds(tokenResponse.expires_in - 60));
 
             return tokenResponse.access_token;
@@ -65,6 +71,11 @@ namespace Bintainer.Service
         public async Task<string> GetProductDetailsAsync(string keyword)
         {
             var token = await GetTokenAsync();
+
+            if (string.IsNullOrEmpty(token))
+            {
+                throw new InvalidOperationException("Invalid or missing token.");
+            }
 
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiEndpointBase}search/{keyword}/productdetails");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -80,20 +91,33 @@ namespace Bintainer.Service
         {
             JObject jsonObject = JObject.Parse(productDetails);
             List<Parameter> parameters = new List<Parameter>();
-            string detailedDescription = (string)jsonObject["Product"]["Description"]["DetailedDescription"];
-            parameters.Add(new Parameter { Category = "DetailedDescription", Name = "DetailedDescription", Value = detailedDescription });
-            string PhotoUrl = (string)jsonObject["Product"]["PhotoUrl"];
-            parameters.Add(new Parameter { Category = "PhotoUrl", Name = "PhotoUrl", Value = PhotoUrl });
-            JArray parameterArray = (JArray)jsonObject["Product"]["Parameters"];
-            foreach (var item in parameterArray)
+
+            string? detailedDescription = (string?)jsonObject["Product"]?["Description"]?["DetailedDescription"];
+            if (!string.IsNullOrEmpty(detailedDescription))
             {
-                parameters.Add(new Parameter
-                {
-                    Category = "Parameter",
-                    Name = item["ParameterText"].ToString(),
-                    Value = item["ValueText"].ToString()
-                });
+                parameters.Add(new Parameter { Category = "DetailedDescription", Name = "DetailedDescription", Value = detailedDescription });
             }
+
+            string? photoUrl = (string?)jsonObject["Product"]?["PhotoUrl"];
+            if (!string.IsNullOrEmpty(photoUrl))
+            {
+                parameters.Add(new Parameter { Category = "PhotoUrl", Name = "PhotoUrl", Value = photoUrl });
+            }
+
+            JArray? parameterArray = (JArray?)jsonObject["Product"]?["Parameters"];
+            if (parameterArray != null)
+            {
+                foreach (var item in parameterArray)
+                {
+                    parameters.Add(new Parameter
+                    {
+                        Category = "Parameter",
+                        Name = item["ParameterText"]?.ToString() ?? string.Empty,
+                        Value = item["ValueText"]?.ToString() ?? string.Empty
+                    });
+                }
+            }
+
             return parameters;
         }
 
@@ -110,7 +134,5 @@ namespace Bintainer.Service
             public string Name { get; set; }
             public string Value { get; set; }
         }
-
-
     }
 }
