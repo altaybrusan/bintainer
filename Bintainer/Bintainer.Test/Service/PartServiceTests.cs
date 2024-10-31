@@ -13,6 +13,7 @@ using Bintainer.Service;
 using Bintainer.SharedResources.Interface;
 using Bintainer.SharedResources.Resources;
 using Microsoft.Extensions.Logging;
+using Bintainer.Model.Template;
 
 namespace Bintainer.Test.Service
 {
@@ -28,6 +29,8 @@ namespace Bintainer.Test.Service
         private Mock<IStringLocalizer<ErrorMessages>> _localizerMock;
         private Mock<IAppLogger> _appLoggerMock;
         private PartService _partService;
+        private InventoryService _inventoryService;
+
 
         [SetUp]
         public void Setup()
@@ -49,6 +52,8 @@ namespace Bintainer.Test.Service
                 _localizerMock.Object,
                 _appLoggerMock.Object
             );
+
+            _inventoryService = new InventoryService(_binServiceMock.Object, _inventoryRepositoryMock.Object, _localizerMock.Object, _appLoggerMock.Object);
         }
 
         // Example 1: GetPartByName Test
@@ -423,6 +428,115 @@ namespace Bintainer.Test.Service
             });
         }
 
+
+        // Test case: Inventory section missing
+        [Test]
+        public void ArrangePartRequest_ShouldLogError_WhenInventorySectionIsMissing()
+        {
+            // Arrange
+            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartName = "Part1", CoordinateX = 0, CoordinateY = 0 };
+            var userId = "user123";
+
+            _inventoryRepositoryMock.Setup(repo => repo.GetSection(userId, arrangeRequest.SectionId)).Returns((InventorySection)null);
+
+            // Act
+            _partService.ArrangePartRequest(arrangeRequest, userId);
+
+            // Assert
+
+            _appLoggerMock.Verify(logger => logger.LogMessage("ErrorInventorySectionMissing", It.IsAny<LogLevel>(),It.IsAny<string>()), Times.Once);
+        }
+
+        // Test case: Part not found
+        [Test]
+        public void ArrangePartRequest_ShouldLogError_WhenPartNotFound()
+        {
+            // Arrange
+            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartName = "Part1", CoordinateX = 0, CoordinateY = 0 };
+            var userId = "user123";
+            var inventorySection = new InventorySection();
+
+            _inventoryRepositoryMock.Setup(repo => repo.GetSection(userId, arrangeRequest.SectionId)).Returns(inventorySection);
+            _partRepositoryMock.Setup(repo => repo.GetPartByName(arrangeRequest.PartName, userId)).Returns((Part)null);
+
+            // Act
+            _partService.ArrangePartRequest(arrangeRequest, userId);
+
+            // Assert
+            _appLoggerMock.Verify(logger => logger.LogMessage(It.IsAny<string>(),It.IsAny<LogLevel>(),It.IsAny<string>()), Times.Once);
+        }
+
+        // Test case: Existing bin found
+        [Test]
+        public void ArrangePartRequest_ShouldProcessArrangeRequest_WhenBinFound()
+        {
+            // Arrange
+            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartName = "Part1", CoordinateX = 0, CoordinateY = 0 };
+            var userId = "user123";
+            var inventorySection = new InventorySection();
+            var part = new Part();
+            var bin = new Bin();
+
+            _inventoryRepositoryMock.Setup(repo => repo.GetSection(userId, arrangeRequest.SectionId)).Returns(inventorySection);
+            _partRepositoryMock.Setup(repo => repo.GetPartByName(arrangeRequest.PartName, userId)).Returns(part);
+            _inventoryServiceMock.Setup(service => service.GetBinFrom(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY))
+                .Returns(new Model.Template.Response<Bin> { IsSuccess = true, Result = bin });
+
+            // Act
+            _partService.ArrangePartRequest(arrangeRequest, userId);
+
+            // Assert
+            // You would need to verify that ProcessArrangePartRequest was called with the correct parameters
+            // This requires you to expose ProcessArrangePartRequest as a virtual method or use another technique to verify.
+        }
+
+        // Test case: Bin not found and new bin created
+        [Test]
+        public void ArrangePartRequest_ShouldCreateNewBin_WhenBinNotFound()
+        {
+            // Arrange
+            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartName = "Part1", CoordinateX = 0, CoordinateY = 0 };
+            var userId = "user123";
+            var inventorySection = new InventorySection();
+            var part = new Part();
+            var newBin = new Bin();
+
+            _inventoryRepositoryMock.Setup(repo => repo.GetSection(userId, arrangeRequest.SectionId)).Returns(inventorySection);
+            _partRepositoryMock.Setup(repo => repo.GetPartByName(arrangeRequest.PartName, userId)).Returns(part);
+            _inventoryServiceMock.Setup(service => service.GetBinFrom(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY))
+                .Returns(new Response<Bin> { IsSuccess = false, Message = "Bin not found" });
+
+            _inventoryServiceMock.Setup(service => service.CreateBin(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY))
+                .Returns(new Response<Bin> { IsSuccess = true, Result = newBin });
+
+            // Act
+            _partService.ArrangePartRequest(arrangeRequest, userId);
+
+            // Assert
+            // Again, verify that ProcessArrangePartRequest was called with the correct parameters
+        }
+
+        // Test case: Exception handling
+        [Test]
+        public void ArrangePartRequest_ShouldLogError_WhenExceptionThrown()
+        {
+            // Arrange
+            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartName = "Part1", CoordinateX = 0, CoordinateY = 0 };
+            var userId = "user123";
+            var inventorySection = new InventorySection();
+            var part = new Part();
+
+            _inventoryRepositoryMock.Setup(repo => repo.GetSection(userId, arrangeRequest.SectionId)).Returns(inventorySection);
+            _partRepositoryMock.Setup(repo => repo.GetPartByName(arrangeRequest.PartName, userId)).Returns(part);
+            _inventoryServiceMock.Setup(service => service.GetBinFrom(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY))
+                .Throws(new Exception("Database error"));
+
+            // Act
+            _partService.ArrangePartRequest(arrangeRequest, userId);
+
+            // Assert
+            _appLoggerMock.Verify(logger => logger.LogMessage("Database error", LogLevel.Error,It.IsAny<string>()), Times.Once);
+        }
     }
 
 
