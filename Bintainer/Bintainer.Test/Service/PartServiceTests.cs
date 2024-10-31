@@ -242,11 +242,6 @@ namespace Bintainer.Test.Service
             _appLoggerMock.Verify(log => log.LogMessage(It.IsAny<string>(), LogLevel.Error, It.IsAny<string>()), Times.Once);
         }
 
-        
-        /// <summary>
-        /// /////////////////////////////////
-        /// </summary>
-
         [Test]
         public void AddPartIntoGroup_ShouldReturnGroup_WhenPartAlreadyExistsInGroup()
         {
@@ -332,6 +327,99 @@ namespace Bintainer.Test.Service
             {
                 Assert.That(response.IsSuccess, Is.False);
                 Assert.That(response.Message, Is.EqualTo("Database error"));
+            });
+        }
+
+        // Test case: Quantity used exceeds available quantity
+        [Test]
+        public void TryAdjustPartQuantity_ShouldLogError_WhenQuantityUsedExceedsAvailable()
+        {
+            // Arrange
+            var request = new AdjustQuantityRequest { Quantity = 5, QuantityUsed = 6 };
+            var userId = "user123";
+
+            // Act
+            _partService.TryAdjustPartQuantity(request, userId);
+
+            // Assert
+            _appLoggerMock.Verify(logger => logger.LogMessage(It.IsAny<string>(), LogLevel.Error,It.IsAny<string>()), Times.Once);
+        }
+
+        // Test case: Part not found
+        [Test]
+        public void TryAdjustPartQuantity_ShouldReturnWarning_WhenPartNotFound()
+        {
+            // Arrange
+            var request = new AdjustQuantityRequest { Quantity = 5, QuantityUsed = 3, PartName = "Part1", BinId = 1, SubspaceIndices = "1,2" };
+            var userId = "user123";
+            LocalizedString localizedString = new LocalizedString("WarningPartNotFound", "Part not found.");
+
+            _partRepositoryMock.Setup(repo => repo.GetPartByName(request.PartName, userId)).Returns((Part)null);
+            _localizerMock.Setup(localizer => localizer["WarningPartNotFound"]).Returns(localizedString);
+
+            // Act
+            var response = _partService.TryAdjustPartQuantity(request, userId);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.True);
+                Assert.That(response.Result, Is.Null);
+                Assert.That(response.Message, Is.EqualTo("Part not found."));
+            });
+        }
+
+        // Test case: Adjusting quantity successfully
+        [Test]
+        public void TryAdjustPartQuantity_ShouldAdjustQuantities_WhenPartFoundAndQuantityIsValid()
+        {
+            // Arrange
+            var request = new AdjustQuantityRequest { Quantity = 5, QuantityUsed = 3, PartName = "Part1", BinId = 1, SubspaceIndices = "0" };
+            var userId = "user123";
+
+            var part = new Part
+            {
+                PartBinAssociations = new List<PartBinAssociation>
+            {
+                new PartBinAssociation { BinId = request.BinId, Quantity = 5, Subspace = new BinSubspace { SubspaceIndex = 0 } }
+            }
+            };
+
+            _partRepositoryMock.Setup(repo => repo.GetPartByName(request.PartName, userId)).Returns(part);
+            _partRepositoryMock.Setup(repo => repo.UpdatePartBinassociations(It.IsAny<List<PartBinAssociation>>())).Returns((List<PartBinAssociation>?)part.PartBinAssociations);
+
+            // Act
+            var response = _partService.TryAdjustPartQuantity(request, userId);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.True);
+                Assert.That(response.Result, Is.Not.Null);
+                Assert.That(response.Result.First().Quantity, Is.EqualTo(2)); // 5 - 3 = 2
+            });
+        }
+
+        // Test case: Exception handling
+        [Test]
+        public void TryAdjustPartQuantity_ShouldLogErrorAndReturnFalse_WhenExceptionThrown()
+        {
+            // Arrange
+            var request = new AdjustQuantityRequest { Quantity = 5, QuantityUsed = 3, PartName = "Part1", BinId = 1, SubspaceIndices = "0" };
+            var userId = "user123";
+
+            _partRepositoryMock.Setup(repo => repo.GetPartByName(request.PartName, userId)).Throws(new Exception("Database error"));
+            _appLoggerMock.Setup(logger => logger.LogMessage(It.IsAny<string>(), LogLevel.Error, It.IsAny<string>()));
+
+            // Act
+            var response = _partService.TryAdjustPartQuantity(request, userId);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.False);
+                Assert.That(response.Message, Is.EqualTo("Database error"));
+                Assert.That(response.Result, Is.Null);
             });
         }
 
