@@ -97,13 +97,13 @@ namespace Bintainer.Service
             catch (Exception ex)
             {
                 _appLogger.LogMessage(ex.Message,LogLevel.Error);
+                return new Response<List<PartAttributeViewModel>?>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message,
+                    Result = null
+                };
             }
-
-            return new Response<List<PartAttributeViewModel>?>()
-            {
-                IsSuccess = false,
-                Result = null
-            };
 
         }
 
@@ -118,7 +118,7 @@ namespace Bintainer.Service
                     UserId = userId
                 };
                 var parts = _partRepository.GetPartsByCriteria(filter);
-                if (parts is not null)
+                if (parts is not null && parts.Count > 0)
                 {
                     //TODO: log event
                     _appLogger.LogMessage(_localizer["ErrorPartAlreadyExists"], LogLevel.Warning);

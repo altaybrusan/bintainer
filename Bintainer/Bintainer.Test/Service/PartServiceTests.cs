@@ -17,7 +17,6 @@ using Microsoft.Extensions.Logging;
 namespace Bintainer.Test.Service
 {
 
-
     [TestFixture]
     public class PartServiceTests
     {
@@ -88,8 +87,6 @@ namespace Bintainer.Test.Service
                 Assert.That(response.IsSuccess, Is.True);
                 Assert.That(response.Result, Is.Null);
             });
-            //Assert.That(response.Message, Is.EqualTo("Error loading part"));
-            //_appLoggerMock.Verify(log => log.LogMessage(It.IsAny<string>(), LogLevel.Error, It.IsAny<string>()), Times.Once);
         }
 
         // Example 2: MapPartAttributesToViewModel Test
@@ -103,7 +100,7 @@ namespace Bintainer.Test.Service
             {
                 Name = partName,
                 AttributeTemplates = new List<PartAttributeTemplate>
-                {
+            {
                 new()
                 {
                     PartAttributes = new List<PartAttribute>
@@ -121,12 +118,31 @@ namespace Bintainer.Test.Service
 
             // Assert
             Assert.Multiple(() =>
-            {                
+            {
                 Assert.That(response.IsSuccess, Is.True);
                 Assert.That(response.Result, Is.Not.Null);
                 Assert.That(response.Result, Has.Count.EqualTo(2));
-                Assert.That(actual: response.Result[0].Name, Is.EqualTo("Attribute1"));
+                Assert.That(response.Result[0].Name, Is.EqualTo("Attribute1"));
                 Assert.That(response.Result[0].Value, Is.EqualTo("Value1"));
+            });
+        }
+
+        [Test]
+        public void MapPartAttributesToViewModel_ShouldReturnError_WhenPartNotFound()
+        {
+            // Arrange
+            var partName = "NonexistentPart";
+            var userId = "user123";
+            _partRepositoryMock.Setup(repo => repo.GetPartByName(partName, userId)).Throws(new Exception("Error loading part attributes"));
+
+            // Act
+            var response = _partService.MapPartAttributesToViewModel(partName, userId);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.False);
+                Assert.That(response.Message, Is.EqualTo("Error loading part attributes"));
             });
         }
 
@@ -155,20 +171,20 @@ namespace Bintainer.Test.Service
         public void CreatePartForUser_ShouldCreatePart_WhenPartDoesNotExist()
         {
             // Arrange
-            var request = new CreatePartRequest { PartName = "NewPart", Supplier = "Supplier1", Description= "Desc1", Group = "group 1" ,Attributes = new Dictionary<string, string>() };
+            var request = new CreatePartRequest { PartName = "NewPart", Supplier = "Supplier1", Description = "Desc1", Group = "group 1", Attributes = new Dictionary<string, string>() };
             var userId = "user123";
-            _partRepositoryMock.Setup(repo => repo.GetPartsByCriteria(It.IsAny<PartFilterCriteria>())).Returns((List<Part>)null);
+            _partRepositoryMock.Setup(repo => repo.GetPartsByCriteria(It.IsAny<PartFilterCriteria>())).Returns(new List<Part>());
 
             // Act
             var response = _partService.CreatePartForUser(request, userId);
 
             // Assert
             Assert.Multiple(() =>
-            {                
+            {
                 Assert.That(response.IsSuccess, Is.True);
                 Assert.That(response.Result, Is.Not.Null);
+                Assert.That(response.Result.Name, Is.EqualTo(request.PartName));
             });
-            Assert.That(response.Result!.Name, Is.EqualTo(request.PartName));
         }
 
         // Example 4: ParseSubspaceIndices Test
@@ -184,6 +200,142 @@ namespace Bintainer.Test.Service
             // Assert
             Assert.That(result, Is.EqualTo(new List<int> { 1, 2, 3 }));
         }
+
+        [Test]
+        public void ParseSubspaceIndices_ShouldReturnEmptyList_WhenInputIsEmpty()
+        {
+            // Arrange
+            var commaSeparatedIndices = "";
+
+            // Act
+            var result = _partService.ParseSubspaceIndices(commaSeparatedIndices);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(new List<int>()));
+        }
+
+        [Test]
+        public void ParseSubspaceIndices_ShouldThrowFormatException_WhenInputIsInvalid()
+        {
+            // Arrange
+            var commaSeparatedIndices = "1,a,3";
+
+            // Act & Assert
+            Assert.Throws<FormatException>(() => _partService.ParseSubspaceIndices(commaSeparatedIndices));
+        }
+
+        // Additional Tests for Catch Phrases
+        [Test]
+        public void CreatePartForUser_ShouldLogError_WhenCreatingPartFails()
+        {
+            // Arrange
+            var request = new CreatePartRequest { PartName = "NewPart", Description = "Desc" };
+            var userId = "user123";
+            _partRepositoryMock.Setup(repo => repo.GetPartsByCriteria(It.IsAny<PartFilterCriteria>())).Returns(new List<Part>());
+            //_partRepositoryMock.Setup(repo => repo.AddPart(It.IsAny<Part>())).Throws(new Exception("Database error"));
+
+            // Act
+            var response = _partService.CreatePartForUser(request, userId);
+
+            // Assert
+            Assert.IsFalse(response.IsSuccess);
+            _appLoggerMock.Verify(log => log.LogMessage(It.IsAny<string>(), LogLevel.Error, It.IsAny<string>()), Times.Once);
+        }
+
+        
+        /// <summary>
+        /// /////////////////////////////////
+        /// </summary>
+
+        [Test]
+        public void AddPartIntoGroup_ShouldReturnGroup_WhenPartAlreadyExistsInGroup()
+        {
+            // Arrange
+            var part = new Part { Name = "Part1" };
+            var groupName = "Group1";
+            var userId = "user123";
+            var existingGroup = new PartGroup { Name = groupName, UserId = userId, Parts = new List<Part> { part } };
+
+            _partRepositoryMock.Setup(repo => repo.GetPartGroup(groupName, userId)).Returns(existingGroup);
+
+            // Act
+            var response = _partService.AddPartIntoGroup(part, groupName, userId);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.True);
+                Assert.That(response.Result, Is.EqualTo(existingGroup));
+            });
+        }
+
+        // Test case: Adding a part to an existing group that does not contain the part
+        [Test]
+        public void AddPartIntoGroup_ShouldAddPart_WhenPartDoesNotExistInGroup()
+        {
+            // Arrange
+            var part = new Part { Name = "Part1" };
+            var groupName = "Group1";
+            var userId = "user123";
+            var existingGroup = new PartGroup { Name = groupName, UserId = userId, Parts = new List<Part>() };
+
+            _partRepositoryMock.Setup(repo => repo.GetPartGroup(groupName, userId)).Returns(existingGroup);
+
+            // Act
+            var response = _partService.AddPartIntoGroup(part, groupName, userId);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.True);
+                Assert.That(response.Result.Parts, Contains.Item(part));
+            });
+        }
+
+        // Test case: Creating a new group and adding the part when the group does not exist
+        [Test]
+        public void AddPartIntoGroup_ShouldCreateNewGroup_WhenGroupDoesNotExist()
+        {
+            // Arrange
+            var part = new Part { Name = "Part1" };
+            var groupName = "Group1";
+            var userId = "user123";
+            _partRepositoryMock.Setup(repo => repo.GetPartGroup(groupName, userId)).Returns((PartGroup)null);
+
+            // Act
+            var response = _partService.AddPartIntoGroup(part, groupName, userId);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.True);
+                Assert.That(response.Result.Name, Is.EqualTo(groupName));
+                Assert.That(response.Result.Parts, Contains.Item(part));
+            });
+        }
+
+        // Test case: Handling exceptions thrown during execution
+        [Test]
+        public void AddPartIntoGroup_ShouldReturnError_WhenExceptionThrown()
+        {
+            // Arrange
+            var part = new Part { Name = "Part1" };
+            var groupName = "Group1";
+            var userId = "user123";
+            _partRepositoryMock.Setup(repo => repo.GetPartGroup(groupName, userId)).Throws(new Exception("Database error"));
+
+            // Act
+            var response = _partService.AddPartIntoGroup(part, groupName, userId);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.False);
+                Assert.That(response.Message, Is.EqualTo("Database error"));
+            });
+        }
+
     }
+
 
 }
