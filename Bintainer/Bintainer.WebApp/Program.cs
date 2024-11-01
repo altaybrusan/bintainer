@@ -39,8 +39,7 @@ builder.Logging.AddConsole();
 
 //builder.Logging.AddFile("Logs/Bintainer-{Date}.txt");
 
-builder.Services.AddSingleton<Microsoft.Extensions.Localization.IStringLocalizerFactory,
-    Microsoft.Extensions.Localization.ResourceManagerStringLocalizerFactory>();
+builder.Services.AddSingleton<IStringLocalizerFactory,ResourceManagerStringLocalizerFactory>();
 builder.Services.AddSingleton(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
 builder.Services.AddControllersWithViews()
