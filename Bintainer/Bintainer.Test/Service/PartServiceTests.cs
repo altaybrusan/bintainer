@@ -14,6 +14,7 @@ using Bintainer.SharedResources.Interface;
 using Bintainer.SharedResources.Resources;
 using Microsoft.Extensions.Logging;
 using Bintainer.Model.Template;
+using Bintainer.Model.Response;
 
 namespace Bintainer.Test.Service
 {
@@ -518,6 +519,48 @@ namespace Bintainer.Test.Service
 
             // Assert
             _appLoggerMock.Verify(logger => logger.LogMessage("Database error", LogLevel.Error,It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public void UsePart_ShouldReturnSuccessResponse_WhenPartIsFound()
+        {
+            // Arrange
+            var partName = "SamplePart";
+            var userId = "user123";
+            var part = new Part();
+            var expectedResponse = new List<PartUsageResponse> { new PartUsageResponse() };
+
+            _partRepositoryMock.Setup(repo => repo.GetPartByName(partName, userId)).Returns(part);
+
+            // Act
+            var response = _partService.UsePart(partName, userId);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.IsSuccess, Is.True);
+                Assert.That(response.Result, Is.Not.Null);
+                //Assert.AreEqual(expectedResponse, response.Result);
+                Assert.That(response.Message, Is.Null);
+            });
+        }
+
+        [Test]
+        public void UsePart_ShouldReturnFailureResponse_WhenPartIsNotFound()
+        {
+            // Arrange
+            var partName = "NonExistentPart";
+            var userId = "user123";
+
+            _partRepositoryMock.Setup(repo => repo.GetPartByName(partName, userId)).Returns((Part?)null);
+
+            // Act
+            var response = _partService.UsePart(partName, userId);
+
+            // Assert
+            Assert.IsFalse(response.IsSuccess);
+            Assert.IsNull(response.Result);
+            Assert.AreEqual("", response.Message);
         }
     }
 

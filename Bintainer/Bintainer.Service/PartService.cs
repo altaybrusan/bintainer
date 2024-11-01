@@ -346,25 +346,24 @@ namespace Bintainer.Service
                 .ToList();
         }
 
-        public Response<List<PartUsageResponse>> UsePart(string partName, string userId)
+        public Response<List<PartUsageResponse>?> UsePart(string partName, string userId)
         {
             Part? part = _partRepository.GetPartByName(partName, userId);
-            if (part == null)
+            if (part is not null)
             {
                var result = GetPartUsageResponse(part);
-                return new Response<List<PartUsageResponse>>()
+                return new Response<List<PartUsageResponse>?>()
                 {
                     IsSuccess = true,
                     Result = result
                 };
             }
-            return new Response<List<PartUsageResponse>>()
+            return new Response<List<PartUsageResponse>?>()
             {
                 IsSuccess = false,
                 Result = null,
                 Message = ""
-            };
-            throw new NotImplementedException();
+            };            
         }
 
         public Response<List<PartBinAssociation>?> TryAdjustPartQuantity(AdjustQuantityRequest request,string userId) 
