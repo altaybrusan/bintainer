@@ -56,7 +56,6 @@ namespace Bintainer.Test.Service
             _inventoryService = new InventoryService(_binServiceMock.Object, _inventoryRepositoryMock.Object, _localizerMock.Object, _appLoggerMock.Object);
         }
 
-        // Example 1: GetPartByName Test
         [Test]
         public void GetPartByName_ShouldReturnPart_WhenPartExists()
         {
@@ -94,7 +93,6 @@ namespace Bintainer.Test.Service
             });
         }
 
-        // Example 2: MapPartAttributesToViewModel Test
         [Test]
         public void MapPartAttributesToViewModel_ShouldReturnAttributes_WhenPartExists()
         {
@@ -151,7 +149,6 @@ namespace Bintainer.Test.Service
             });
         }
 
-        // Example 3: CreatePartForUser Test
         [Test]
         public void CreatePartForUser_ShouldReturnError_WhenPartAlreadyExists()
         {
@@ -192,7 +189,6 @@ namespace Bintainer.Test.Service
             });
         }
 
-        // Example 4: ParseSubspaceIndices Test
         [Test]
         public void ParseSubspaceIndices_ShouldReturnParsedIndices()
         {
@@ -229,7 +225,6 @@ namespace Bintainer.Test.Service
             Assert.Throws<FormatException>(() => _partService.ParseSubspaceIndices(commaSeparatedIndices));
         }
 
-        // Additional Tests for Catch Phrases
         [Test]
         public void CreatePartForUser_ShouldLogError_WhenCreatingPartFails()
         {
@@ -269,7 +264,6 @@ namespace Bintainer.Test.Service
             });
         }
 
-        // Test case: Adding a part to an existing group that does not contain the part
         [Test]
         public void AddPartIntoGroup_ShouldAddPart_WhenPartDoesNotExistInGroup()
         {
@@ -292,7 +286,6 @@ namespace Bintainer.Test.Service
             });
         }
 
-        // Test case: Creating a new group and adding the part when the group does not exist
         [Test]
         public void AddPartIntoGroup_ShouldCreateNewGroup_WhenGroupDoesNotExist()
         {
@@ -314,7 +307,6 @@ namespace Bintainer.Test.Service
             });
         }
 
-        // Test case: Handling exceptions thrown during execution
         [Test]
         public void AddPartIntoGroup_ShouldReturnError_WhenExceptionThrown()
         {
@@ -335,7 +327,6 @@ namespace Bintainer.Test.Service
             });
         }
 
-        // Test case: Quantity used exceeds available quantity
         [Test]
         public void TryAdjustPartQuantity_ShouldLogError_WhenQuantityUsedExceedsAvailable()
         {
@@ -350,7 +341,6 @@ namespace Bintainer.Test.Service
             _appLoggerMock.Verify(logger => logger.LogMessage(It.IsAny<string>(), LogLevel.Error,It.IsAny<string>()), Times.Once);
         }
 
-        // Test case: Part not found
         [Test]
         public void TryAdjustPartQuantity_ShouldReturnWarning_WhenPartNotFound()
         {
@@ -374,7 +364,6 @@ namespace Bintainer.Test.Service
             });
         }
 
-        // Test case: Adjusting quantity successfully
         [Test]
         public void TryAdjustPartQuantity_ShouldAdjustQuantities_WhenPartFoundAndQuantityIsValid()
         {
@@ -405,7 +394,6 @@ namespace Bintainer.Test.Service
             });
         }
 
-        // Test case: Exception handling
         [Test]
         public void TryAdjustPartQuantity_ShouldLogErrorAndReturnFalse_WhenExceptionThrown()
         {
@@ -428,8 +416,6 @@ namespace Bintainer.Test.Service
             });
         }
 
-
-        // Test case: Inventory section missing
         [Test]
         public void ArrangePartRequest_ShouldLogError_WhenInventorySectionIsMissing()
         {
@@ -447,7 +433,6 @@ namespace Bintainer.Test.Service
             _appLoggerMock.Verify(logger => logger.LogMessage("ErrorInventorySectionMissing", It.IsAny<LogLevel>(),It.IsAny<string>()), Times.Once);
         }
 
-        // Test case: Part not found
         [Test]
         public void ArrangePartRequest_ShouldLogError_WhenPartNotFound()
         {
@@ -466,7 +451,6 @@ namespace Bintainer.Test.Service
             _appLoggerMock.Verify(logger => logger.LogMessage(It.IsAny<string>(),It.IsAny<LogLevel>(),It.IsAny<string>()), Times.Once);
         }
 
-        // Test case: Existing bin found
         [Test]
         public void ArrangePartRequest_ShouldProcessArrangeRequest_WhenBinFound()
         {
@@ -490,7 +474,6 @@ namespace Bintainer.Test.Service
             // This requires you to expose ProcessArrangePartRequest as a virtual method or use another technique to verify.
         }
 
-        // Test case: Bin not found and new bin created
         [Test]
         public void ArrangePartRequest_ShouldCreateNewBin_WhenBinNotFound()
         {
@@ -516,7 +499,6 @@ namespace Bintainer.Test.Service
             // Again, verify that ProcessArrangePartRequest was called with the correct parameters
         }
 
-        // Test case: Exception handling
         [Test]
         public void ArrangePartRequest_ShouldLogError_WhenExceptionThrown()
         {
