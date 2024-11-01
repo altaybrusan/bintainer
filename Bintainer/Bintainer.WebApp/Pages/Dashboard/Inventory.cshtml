@@ -28,16 +28,15 @@
         <hr />
         <div class="row align-items-center">
             <div class="col-md-2">
-                <div class="row mb-1"><label for="orderNumber" class="form-label">Inventory Name</label></div>
-                <div class="row"><label for="orderNumber" class="form-label">Admin</label></div>
+                <label for="inventoryName" class="form-label">Inventory Name</label>
+                <label class="form-label">Admin</label>
             </div>
             <div class="col-md-4">
-                <div class="row mb-1"><input type="text" class="form-control input-sharp " id="inventoryName" value="@Model.InventoryName" placeholder="Inventory Name"></div>
-                <div class="row"><input type="text" class="form-control input-sharp " value="@User.Identity?.Name" disabled="disabled"></div>
-
+                <input type="text" class="form-control input-sharp" id="inventoryName" value="@Model.InventoryName" placeholder="Inventory Name" />
+                <input type="text" class="form-control input-sharp" value="@User.Identity?.Name" disabled="disabled" />
             </div>
-
         </div>
+
         <h2>Section List</h2>
         <hr />
         <div class="row">
@@ -45,10 +44,10 @@
                 <table class="table" id="sectionlist">
                     <thead>
                         <tr>
-                            <th style="width:300px">Section name</th>
+                            <th style="width:300px">Section Name</th>
                             <th style="width:150px;">Width</th>
-                            <th style="width:150px;">Hight</th>
-                            <th style="width:150px;">Bin subspace</th>
+                            <th style="width:150px;">Height</th>
+                            <th style="width:150px;">Bin Subspace</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -59,33 +58,40 @@
                                     <input type="text" name="section-name" class="form-control input-sharp" value="@Model.Sections[i].SectionName" />
                                 </td>
                                 <td>
-                                    <input type="number" name="section-width" class="form-control input-sharp" min="1" value="@Model.Sections[i].Width" />
+                                    <input type="number" name="section-width" class="form-control input-sharp"
+                                           min="@Model.MinSectionWidth" max="@Model.MaxSectionWidth"
+                                           value="@(Model.MinSectionWidth)" />
                                 </td>
                                 <td>
-                                    <input type="number" name="section-height" class="form-control input-sharp" min="1" value="@Model.Sections[i].Height" />
+                                    <input type="number" name="section-height" class="form-control input-sharp"
+                                           min="@Model.MinSectionHeight" max="@Model.MaxSectionHeight"
+                                           value="@(Model.MinSectionHeight)" />
                                 </td>
                                 <td>
-                                    <input type="number" name="bin-section" class="form-control input-sharp" min="1" value="@((Model.Sections[i].SubspaceCount == null) ? 1 : Model.Sections[i].SubspaceCount)" />
+                                    <input type="number" name="bin-section" class="form-control input-sharp"
+                                           min="@(Model.MinSubspace)" max="@(Model.MaxSubspace)"
+                                           value="1" />
                                 </td>
                                 <td>
                                     @if (i == 0)
                                     {
-                                        <button type="button" class="btn button-row btn-primary btn-xs classAdd">Add</button>
+                                        <button type="button" class="btn btn-primary btn-xs classAdd">Add</button>
                                     }
                                     else
                                     {
                                         <div class="button-row">
-                                            <button type="button" class="btn button-row btn-primary btn-xs classAdd">Add</button>
-                                            <button type="button" class="btn button-row btn-danger btn-xs btnDelete">Remove</button>
+                                            <button type="button" class="btn btn-primary btn-xs classAdd">Add</button>
+                                            <button type="button" class="btn btn-danger btn-xs btnDelete">Remove</button>
                                         </div>
                                     }
                                 </td>
                             </tr>
                         }
                     </tbody>
+
                 </table>
-                <div class="button-row align-items-end justify-content-end mt-5">
-                    <button type="button" id="submitBtn" class="button-row btn btn-primary btn-md pull-right btn-sm">Submit</button>
+                <div class="mt-5 text-end">
+                    <button type="button" id="submitBtn" class="btn btn-primary btn-md">Submit</button>
                 </div>
             </div>
         </div>
@@ -94,44 +100,95 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $(document).on("click", ".classAdd", function () { 
-            var rowCount = $('.inventory-subsection-list').length + 1;
-            var contactdiv = '<tr id="0" class="inventory-subsection-list">' +
-                '<td><input type="text" name="section-name' + rowCount + '" class="form-control input-sharp" /></td>' +
-                '<td><input type="number" name="section-width' + rowCount + '" class="form-control input-sharp" min="0"/></td>' +
-                '<td><input type="number" name="section-height' + rowCount + '" class="form-control input-sharp" min="0"/></td>' +
-                '<td><input type="number" name="bin-section' + rowCount + '" class="form-control input-sharp" min="0"/></td>' +
-                '<td><div class ="button-row"><button type="button" id="btnAdd" class="button-row btn btn-xs btn-primary classAdd">Add</button>' +
-                '<button type="button" id="btnDelete" class="button-row btn deleteContact btn btn-danger btn-xs btnDelete">Remove</button></div></td>' +
-                '</tr>';
-            $('#sectionlist').append(contactdiv); // Adding these controls to Main table class
+        var minSectionWidth = @Model.MinSectionWidth;
+        var maxSectionWidth = @Model.MaxSectionWidth;
+        var minSectionHeight = @Model.MinSectionHeight;
+        var maxSectionHeight = @Model.MaxSectionHeight;
+        var minSubspace = @Model.MinSubspace;
+        var maxSubspace = @Model.MaxSubspace;
+
+        function validateBounds(input, min, max) {
+            var value = parseInt(input.val(), 10);
+            if (isNaN(value)) return; // Ignore NaN values
+            if (value < min) {
+                input.val(min); // Truncate to minimum
+            } else if (value > max) {
+                input.val(max); // Truncate to maximum
+            }
+        }
+
+        $(document).on("click", ".classAdd", function () {
+            var rowCount = $('#sectionlist tbody tr').length + 1; // Count existing rows
+            var newRow = `<tr id="0" class="inventory-subsection-list">
+                                <td><input type="text" name="section-name${rowCount}" class="form-control input-sharp" /></td>
+                                <td><input type="number" name="section-width${rowCount}" class="form-control input-sharp" min="${minSectionWidth}" max="${maxSectionWidth}" value="${minSectionWidth}" /></td> <!-- Set default value -->
+                                <td><input type="number" name="section-height${rowCount}" class="form-control input-sharp" min="${minSectionHeight}" max="${maxSectionHeight}" value="${minSectionHeight}" /></td> <!-- Set default value -->
+                                <td><input type="number" name="bin-section${rowCount}" class="form-control input-sharp" min="${minSubspace}" max="${maxSubspace}" value="${minSubspace}" /></td> <!-- Set default value -->
+                                <td>
+                                    <div class="button-row">
+                                        <button type="button" class="btn btn-primary btn-xs classAdd">Add</button>
+                                        <button type="button" class="btn btn-danger btn-xs btnDelete">Remove</button>
+                                    </div>
+                                </td>
+                            </tr>`;
+            $('#sectionlist tbody').append(newRow); // Append new row to tbody
         });
+
         $(document).on("click", ".btnDelete", function () {
             $(this).closest("tr").remove();
         });
+
+        // Validate bounds on input and blur events
+        $(document).on("input blur", "input[name^='section-width'], input[name^='section-height'], input[name^='bin-section']", function () {
+            validateBounds($(this), parseInt($(this).attr("min"), 10), parseInt($(this).attr("max"), 10));
+        });
+
         $(document).on("click", "#submitBtn", function () {
+            var isValid = true;
             var sectionList = [];
             $("#sectionlist tbody tr").each(function () {
                 var row = $(this);
-                var rowData = {
+                var width = parseInt(row.find("input[name^='section-width']").val(), 10);
+                var height = parseInt(row.find("input[name^='section-height']").val(), 10);
+                var subspaceCount = parseInt(row.find("input[name^='bin-section']").val(), 10);
+
+                // Validate width and height ranges
+                if (width < minSectionWidth || width > maxSectionWidth) {
+                    alert(`Width must be between ${minSectionWidth} and ${maxSectionWidth}.`);
+                    isValid = false; // Prevent submission
+                    return false; // Break out of each
+                }
+                if (height < minSectionHeight || height > maxSectionHeight) {
+                    alert(`Height must be between ${minSectionHeight} and ${maxSectionHeight}.`);
+                    isValid = false; // Prevent submission
+                    return false; // Break out of each
+                }
+                if (subspaceCount < minSubspace || subspaceCount > maxSubspace) {
+                    alert(`Subspace Count must be between ${minSubspace} and ${maxSubspace}.`);
+                    isValid = false; // Prevent submission
+                    return false; // Break out of each
+                }
+
+                sectionList.push({
                     Id: row.attr("id"),
                     SectionName: row.find("input[name^='section-name']").val(),
-                    Width: parseInt(row.find("input[name^='section-width']").val(), 10),
-                    Height: parseInt(row.find("input[name^='section-height']").val(), 10),
-                    SubspaceCount: parseInt(row.find("input[name^='bin-section']").val(), 10)
-                };
-                sectionList.push(rowData);
+                    Width: width,
+                    Height: height,
+                    SubspaceCount: subspaceCount
+                });
             });
-            var name = $(inventoryName).val();
+
+            if (!isValid) return; // Only proceed if valid
+
+            var name = $('#inventoryName').val();
             $.ajax({
                 type: "POST",
-                url: '/dashboard/inventory?handler=SubmitForm&inventoryName=' + encodeURIComponent(name),
+                url: `/dashboard/inventory?handler=SubmitForm&inventoryName=${encodeURIComponent(name)}`,
                 contentType: 'application/json',
                 data: JSON.stringify(sectionList),
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader("XSRF-TOKEN",
-                        $('input:hidden[name="__RequestVerificationToken"]').val());
-                },               
+                    xhr.setRequestHeader("XSRF-TOKEN", $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
                 success: function (response) {
                     console.log('Data saved successfully:', response);
                     alert('Data submitted successfully.');
@@ -142,7 +199,9 @@
                 }
             });
         });
-
-
     });
 </script>
+
+
+
+

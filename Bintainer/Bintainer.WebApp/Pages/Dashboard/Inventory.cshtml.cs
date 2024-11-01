@@ -3,6 +3,7 @@ using Bintainer.Model.Entity;
 using Bintainer.Model.View;
 using Bintainer.Service;
 using Bintainer.Service.Interface;
+using Bintainer.SharedResources.Const;
 using Bintainer.SharedResources.Interface;
 using Bintainer.SharedResources.Resources;
 using Bintainer.WebApp.Data;
@@ -21,6 +22,13 @@ namespace Bintainer.WebApp.Pages.Dashboard
         SignInManager<IdentityUser> _SignInManager;
         public List<InventorySection>? Sections { get; set; } = new();
         public string InventoryName { get; set; } = string.Empty;
+        
+        public int MaxSectionWidth { get; private set; }
+        public int MaxSectionHeight { get; private set; }
+        public int MinSectionWidth {  get; private set; }
+        public int MinSectionHeight {  get; private set; }
+        public int MaxSubspace {  get; private set; }
+        public int MinSubspace {  get; private set; }
 
         private readonly IInventoryService _inventoryService;
         private readonly IStringLocalizer _localizer;
@@ -35,6 +43,12 @@ namespace Bintainer.WebApp.Pages.Dashboard
             _localizer = localizer;
             _appLogger = appLogger;
 
+            MinSectionWidth = GlobalConstants.MinSectionWidth;
+            MinSectionHeight = GlobalConstants.MinSectionHeight;
+            MaxSectionWidth = GlobalConstants.MaxSectionWidth;
+            MaxSectionHeight = GlobalConstants.MaxSectionHeight;
+            MaxSubspace = GlobalConstants.MaxSubspace;
+            MinSubspace = GlobalConstants.MinSubspace;
         }
         public void OnGet()
         {
