@@ -223,6 +223,15 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Inventory does not exist..
+        /// </summary>
+        public static string WarningInventoryNotExist {
+            get {
+                return ResourceManager.GetString("WarningInventoryNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No results found.
         /// </summary>
         public static string WarningNotFound {

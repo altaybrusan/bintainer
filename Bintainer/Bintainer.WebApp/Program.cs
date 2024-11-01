@@ -35,7 +35,10 @@ builder.Services.Configure<RequestLocalizationOptions>(options => {
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+builder.Logging.AddConsole(options =>
+{
+    options.FormatterName = "colorful"; // Specify the formatter name
+});
 
 //builder.Logging.AddFile("Logs/Bintainer-{Date}.txt");
 

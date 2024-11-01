@@ -42,7 +42,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
             {
                 string userName = User.Identity.Name ?? string.Empty;
                 var response = _inventoryService.GetInventorySectionsOfUser(userName);
-                if (response.IsSuccess && string.IsNullOrEmpty(response.Message)) 
+                if (response is not null && response.IsSuccess && string.IsNullOrEmpty(response.Message)) 
                 {
                     Sections = response.Result;
                 }
@@ -72,13 +72,15 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 UserViewModel user = new() { Name = userName, UserId = UserId };
                
                 var inventory = _inventoryService.CreateOrUpdateInventory(user, inventoryName);
-                if(inventory.IsSuccess && inventory.Result is not null) 
+                if(inventory is not null && inventory.IsSuccess && inventory.Result is not null) 
                 {
                     _ = _inventoryService.AddSectionsToInventory(sectionList, inventory.Result);
                 }
                 else 
                 {
-                    return new JsonResult(new { success = false, message = inventory.Message });
+                    _appLogger.LogMessage(_localizer["WarningInventoryNotExist"], LogLevel.Information);
+
+                    return new JsonResult(new { success = false, message = inventory?.Message });
                 }
                 _appLogger.LogMessage(_localizer["InfoRepositoryCreateOrUpdateSuccess"], LogLevel.Information);
                 return new JsonResult(new { success = true, message = _localizer["InfoRepositoryCreateOrUpdateSuccess"] });

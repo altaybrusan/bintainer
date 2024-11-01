@@ -171,6 +171,9 @@
   <data name="WarningInvalidUser" xml:space="preserve">
     <value>Unable to identify the signed-in user.</value>
   </data>
+  <data name="WarningInventoryNotExist" xml:space="preserve">
+    <value>Inventory does not exist.</value>
+  </data>
   <data name="WarningNotFound" xml:space="preserve">
     <value>No results found</value>
   </data>
