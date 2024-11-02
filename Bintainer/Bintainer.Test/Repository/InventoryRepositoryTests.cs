@@ -110,7 +110,7 @@ namespace Bintainer.Test.Repository
             _mockDbContext.Setup(c => c.Inventories).Returns(inventories.AsQueryable().BuildMockDbSet().Object);
 
             // Act
-            var result = _inventoryRepository.GetUserInventoryByUserName("user1");
+            var result = _inventoryRepository.GetInventory("user1");
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -164,7 +164,7 @@ namespace Bintainer.Test.Repository
             _mockDbContext.Setup(c => c.SaveChanges(true)).Returns(1);
 
             // Act
-            var result = _inventoryRepository.UpdateInventory(inventory);
+            var result = _inventoryRepository.CreateOrUpdateInventory(inventory);
 
             // Assert
             Assert.That(result, Is.Not.Null);

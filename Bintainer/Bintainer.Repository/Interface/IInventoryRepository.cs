@@ -9,14 +9,13 @@ namespace Bintainer.Repository.Interface
 {
     public interface IInventoryRepository
     {
-        public Inventory? GetUserInventoryByUserName(string userName);
+        public Inventory? GetInventory(string admin);
         public Inventory? GetUserInventoryByUserId(string userId);
         public List<InventorySection>? GetAllInventorySections(int inventoryId);
         public InventorySection? GetSection(string userId, int sectionId);
         public InventorySection? UpdateSection(InventorySection? section);
         public InventorySection? AddBin(InventorySection section, Bin bin);
-        public Inventory? AddAndSaveInventory(Inventory? inventory);
-        public Inventory? UpdateInventory(Inventory? inventory);
+        public Inventory? CreateOrUpdateInventory(Inventory? inventory);
 
 
     }

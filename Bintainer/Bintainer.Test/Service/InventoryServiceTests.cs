@@ -124,11 +124,11 @@ namespace Bintainer.Test.Service
             var admin = "adminUser";
             var inventory = new Inventory { Id = 1, Name = "Test Inventory" };
             var sections = new List<InventorySection> { new InventorySection { Height = 2, Width = 2 } };
-            _mockInventoryRepository.Setup(r => r.GetUserInventoryByUserName(admin)).Returns(inventory);
+            _mockInventoryRepository.Setup(r => r.GetInventory(admin)).Returns(inventory);
             _mockInventoryRepository.Setup(r => r.GetAllInventorySections(inventory.Id)).Returns(sections);
 
             // Act
-            var result = _inventoryService.GetInventorySectionsOfUser(admin);
+            var result = _inventoryService.GetInventory(admin);
 
             // Assert
             Assert.IsTrue(result.IsSuccess);
@@ -141,7 +141,7 @@ namespace Bintainer.Test.Service
             // Arrange
             var user = new UserViewModel { Name = "user1", UserId = "userId1" };
             var inventoryName = "New Inventory";
-            _mockInventoryRepository.Setup(r => r.GetUserInventoryByUserName(user.Name)).Returns((Inventory)null);
+            _mockInventoryRepository.Setup(r => r.GetInventory(user.Name)).Returns((Inventory)null);
             _mockInventoryRepository.Setup(r => r.AddAndSaveInventory(It.IsAny<Inventory>())).Returns(new Inventory { Name = inventoryName });
 
             // Act
@@ -165,7 +165,7 @@ namespace Bintainer.Test.Service
         };
 
             // Act
-            var result = _inventoryService.AddSectionsToInventory(sections, inventory);
+            var result = _inventoryService.CreateOrUpdateInventorySections(sections, inventory);
 
             // Assert
             Assert.IsTrue(result.IsSuccess);

@@ -1,6 +1,7 @@
 ﻿using Bintainer.Model;
 using Bintainer.Model.Entity;
 using Bintainer.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,10 +36,9 @@ namespace Bintainer.Repository.Service
             return _dbContext.InventorySections.Where(s => s.InventoryId == inventoryId).ToList();
         }
 
-
-        public Inventory? GetUserInventoryByUserName(string userName)
+        public Inventory? GetInventory(string? admin)
         {
-            return _dbContext.Inventories.FirstOrDefault(i => i.Name == userName);
+            return _dbContext.Inventories.Where(i => i.Admin == admin).Include(i => i.InventorySections).Include(i=>i.User).FirstOrDefault();
         }
 
         public Inventory? GetUserInventoryByUserId(string userId)
@@ -46,7 +46,7 @@ namespace Bintainer.Repository.Service
             return _dbContext.Inventories.FirstOrDefault(i => i.User.Id == userId);
         }
 
-        public Inventory? AddAndSaveInventory(Inventory? inventory)
+        private Inventory? AddAndSaveInventory(Inventory? inventory)
         {
             if (inventory is null)
                 return inventory;
@@ -57,14 +57,71 @@ namespace Bintainer.Repository.Service
 
         }
 
-        public Inventory? UpdateInventory(Inventory? inventory)
+        public Inventory? CreateOrUpdateInventory(Inventory? requestModel)
         {
-            if (inventory is null)
-                return inventory;
+            
+            if (requestModel is null)
+                return requestModel;
 
-            _dbContext.Inventories.Update(inventory);
+
+            Inventory? existingInventory = GetInventory(requestModel.User!.UserName);
+            
+            if (existingInventory is null)
+            {
+                existingInventory = new Inventory()
+                {
+                    Admin = requestModel.User.UserName,
+                    Name = requestModel.Name?.Trim(),
+                    User = requestModel.User,
+                    UserId = requestModel.UserId
+                };
+                existingInventory = AddAndSaveInventory(existingInventory);
+            }
+
+            if (existingInventory == null)
+                return null;
+
+            // Find sections that exist in the database but not in the incoming inventory
+            var sectionIds = requestModel.InventorySections.Select(s => s.Id).ToHashSet();
+            var sectionsToRemove = existingInventory.InventorySections
+                .Where(s => !sectionIds.Contains(s.Id))
+                .ToList();
+
+            // Remove sections that are not in the incoming list
+            foreach (var section in sectionsToRemove)
+            {
+                _dbContext.InventorySections.Remove(section);
+                existingInventory.InventorySections.Remove(section);
+            }
+
             _dbContext.SaveChanges(true);
-            return inventory;
+
+
+            // Update other properties and sections as needed
+            foreach (var section in requestModel.InventorySections)
+            {
+                var existingSection = existingInventory.InventorySections
+                    .FirstOrDefault(s => s.Id == section.Id && s.SectionName.Contains(section.SectionName));
+
+                if (existingSection != null)
+                {
+                    // Update the existing section
+                    existingSection.Width = section.Width;
+                    existingSection.Height = section.Height;
+                    existingSection.SectionName = section.SectionName?.Trim();
+                    existingSection.SubspaceCount = section.SubspaceCount;
+                }
+                else
+                {
+                    // Add new sections
+                    existingInventory.InventorySections.Add(section);
+                }
+            }
+
+            _dbContext.Inventories.Update(existingInventory);
+            _dbContext.SaveChanges(true);
+
+            return existingInventory;
         }
 
         public InventorySection? UpdateSection(InventorySection? section)
@@ -75,5 +132,6 @@ namespace Bintainer.Repository.Service
             _dbContext.SaveChanges(true);
             return section;
         }
+ 
     }
 }

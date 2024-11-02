@@ -97,14 +97,14 @@ namespace Bintainer.Test.Page
             httpContextMock.Setup(h => h.User.Identity).Returns(identityMock.Object);
             _inventoryModel.PageContext.HttpContext = httpContextMock.Object;
 
-            _inventoryServiceMock.Setup(service => service.GetInventorySectionsOfUser("TestUser"))
+            _inventoryServiceMock.Setup(service => service.GetInventory("TestUser"))
                 .Returns(new Response<List<InventorySection>> { IsSuccess = true, Result = new List<InventorySection>() });
 
             // Act
             _inventoryModel.OnGet();
 
             // Assert
-            _inventoryServiceMock.Verify(service => service.GetInventorySectionsOfUser("TestUser"), Times.Once);
+            _inventoryServiceMock.Verify(service => service.GetInventory("TestUser"), Times.Once);
         }
 
         [Test]

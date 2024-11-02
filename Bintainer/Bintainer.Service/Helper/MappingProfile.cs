@@ -18,6 +18,9 @@ namespace Bintainer.Service.Helper
             CreateMap<FilterOrderRequest, FilterOrderRequestModel>();
             CreateMap<PartAttributeInfo, PartAttributeViewModel>();
             CreateMap<PartCategory, CategoryViewModel>();
+            CreateMap<UserViewModel, AspNetUser>()
+                .ForMember(dest => dest.UserName, src => src.MapFrom(mbr => mbr.Name))
+                .ForMember(dest => dest.Id, src => src.MapFrom(mbr => mbr.UserId));
         }
     }
 }
