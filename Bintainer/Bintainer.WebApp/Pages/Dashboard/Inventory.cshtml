@@ -32,7 +32,7 @@
                 <label class="form-label">Admin</label>
             </div>
             <div class="col-md-4">
-                <input type="text" class="form-control input-sharp" id="inventoryName" value="@Model.InventoryName" placeholder="Inventory Name" />
+                <input type="text" class="form-control input-sharp" id="inventoryName" value="@Model.InventoryName" placeholder="Inventory Name" required />
                 <input type="text" class="form-control input-sharp" value="@User.Identity?.Name" disabled="disabled" />
             </div>
         </div>
@@ -146,6 +146,15 @@
         $(document).on("click", "#submitBtn", function () {
             var isValid = true;
             var sectionList = [];
+
+            // Check if inventoryName is empty
+            var inventoryName = $('#inventoryName').val().trim();
+            if (!inventoryName) {
+                alert('Inventory Name is required. Please enter a name.');
+                $('#inventoryName').focus(); // Focus the input for user convenience
+                return; // Prevent submission
+            }
+
             $("#sectionlist tbody tr").each(function () {
                 var row = $(this);
                 var width = parseInt(row.find("input[name^='section-width']").val(), 10);
@@ -174,16 +183,18 @@
                     SectionName: row.find("input[name^='section-name']").val(),
                     Width: width,
                     Height: height,
-                    SubspaceCount: subspaceCount
+                    SubspaceCount: subspaceCount,
+                    Inventory:null,
+                    Bins:null
                 });
             });
 
             if (!isValid) return; // Only proceed if valid
 
-            var name = $('#inventoryName').val();
+            // Proceed with AJAX submission
             $.ajax({
                 type: "POST",
-                url: `/dashboard/inventory?handler=SubmitForm&inventoryName=${encodeURIComponent(name)}`,
+                url: `/dashboard/inventory?handler=SubmitForm&inventoryName=${encodeURIComponent(inventoryName)}`,
                 contentType: 'application/json',
                 data: JSON.stringify(sectionList),
                 beforeSend: function (xhr) {
@@ -199,6 +210,7 @@
                 }
             });
         });
+
     });
 </script>
 

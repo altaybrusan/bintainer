@@ -22,7 +22,9 @@ namespace Bintainer.WebApp.Pages.Dashboard
         SignInManager<IdentityUser> _SignInManager;
         public List<InventorySection>? Sections { get; set; } = new();
         public string InventoryName { get; set; } = string.Empty;
-        
+
+
+        //TODO: rafactor the parameters into setting files and setting services
         public int MaxSectionWidth { get; private set; }
         public int MaxSectionHeight { get; private set; }
         public int MinSectionWidth {  get; private set; }
@@ -60,7 +62,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 {
                     Sections = response.Result;
                 }
-            }            
+            }
             _appLogger.LogMessage(_localizer["WarningInvalidUser"], LogLevel.Warning);
         }
         
