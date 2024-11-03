@@ -63,7 +63,6 @@ namespace Bintainer.Repository.Service
             if (requestModel is null)
                 return requestModel;
 
-
             Inventory? existingInventory = GetInventory(requestModel.User!.UserName);
             
             if (existingInventory is null)
