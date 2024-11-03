@@ -136,7 +136,19 @@ namespace Bintainer.Service
         {
             try
             {
+                
+                if (userViewModel is null || 
+                    string.IsNullOrEmpty(userViewModel.UserId) || 
+                    string.IsNullOrEmpty(userViewModel.Name) || 
+                    string.IsNullOrEmpty(inventoryName)) 
+                {
+                    throw new ArgumentNullException(nameof(userViewModel));
+                }
                 var user = _userRepository.GetUser(userViewModel.UserId);
+                if (user == null) 
+                {
+                    throw new ArgumentNullException(nameof(user));
+                }
                 Inventory inventory = new()
                 {
                     InventorySections = sectionList,

@@ -13,7 +13,7 @@ public partial class Inventory
 
     public string UserId { get; set; } = null!;
 
-    public virtual ICollection<InventorySection> InventorySections { get; set; } = new List<InventorySection>();
+    public virtual ICollection<InventorySection>? InventorySections { get; set; } = new List<InventorySection>();
 
     public virtual AspNetUser User { get; set; } = null!;
 }
