@@ -210,7 +210,7 @@ namespace Bintainer.Test.Repository
             _mockDbContext.Setup(c => c.PartAttributeTemplates).Returns(mockSet.Object);
 
             // Act
-            var result = _repository.LoadAttributes(userId);
+            var result = _repository.GetAttributeTemplates(userId);
 
             // Assert
             Assert.That(result.Count, Is.EqualTo(2));

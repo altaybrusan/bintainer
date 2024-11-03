@@ -135,6 +135,9 @@
   <data name="ErrorFailedPartLoading" xml:space="preserve">
     <value>Failed to load part.</value>
   </data>
+  <data name="ErrorFailedSavingPartCategories" xml:space="preserve">
+    <value>Failed saving part categories.</value>
+  </data>
   <data name="ErrorInvalidPartDetails" xml:space="preserve">
     <value>The specified part cannot be arranged due to invalid details.</value>
   </data>
@@ -190,12 +193,12 @@
     <value>Inventory does not exist.</value>
   </data>
   <data name="WarningLogTestMessage" xml:space="preserve">
-    <value>Warning log test message</value>
+    <value>Warning log test message.</value>
   </data>
   <data name="WarningNotFound" xml:space="preserve">
-    <value>No results found</value>
+    <value>No results found.</value>
   </data>
   <data name="WarningPartNotFound" xml:space="preserve">
-    <value>Warning part not found</value>
+    <value>Warning part not found.</value>
   </data>
 </root>

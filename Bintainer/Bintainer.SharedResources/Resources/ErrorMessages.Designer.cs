@@ -115,6 +115,15 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed saving part categories..
+        /// </summary>
+        public static string ErrorFailedSavingPartCategories {
+            get {
+                return ResourceManager.GetString("ErrorFailedSavingPartCategories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specified part cannot be arranged due to invalid details..
         /// </summary>
         public static string ErrorInvalidPartDetails {
@@ -277,7 +286,7 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Warning log test message.
+        ///   Looks up a localized string similar to Warning log test message..
         /// </summary>
         public static string WarningLogTestMessage {
             get {
@@ -286,7 +295,7 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No results found.
+        ///   Looks up a localized string similar to No results found..
         /// </summary>
         public static string WarningNotFound {
             get {
@@ -295,7 +304,7 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Warning part not found.
+        ///   Looks up a localized string similar to Warning part not found..
         /// </summary>
         public static string WarningPartNotFound {
             get {

@@ -23,7 +23,7 @@ namespace Bintainer.Repository.Interface
         public List<PartAttributeInfo> GetPartAttributeInfo(int tableId);
         public PartCategory AddAndSavePartCategory(PartCategory category);
         public void RemovePartCategory(int? id);
-        public Dictionary<int, string> LoadAttributes(string userId);
+        public Dictionary<int, string> GetAttributeTemplates(string userId);
         public PartAttributeTemplate AddAndSavePartAttribute(PartAttributeTemplate partAttribute);
         public void SaveChanges();
 

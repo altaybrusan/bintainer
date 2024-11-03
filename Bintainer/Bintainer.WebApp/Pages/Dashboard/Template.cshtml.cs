@@ -48,24 +48,14 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			{
 				Categories = response.Result;
 			}
-            var attributeResponse = _templateService.LoadAttributes(userId);
+            var attributeResponse = _templateService.GetAttributeTemplates(userId);
             if (attributeResponse.IsSuccess && response.Result is not null)
             {
 				AttributeTables = attributeResponse.Result!;
             }
 		}
 		
-		//TODO: update the javascript to meet new return back.
-        public IActionResult GetCategoryHierarchy(string userId)
-        {
-            var categories = _templateService.GetPartCategories(userId);
-
-			if (!categories.IsSuccess)
-				return new JsonResult(new { success = true, result = categories });
-
-            return new JsonResult(categories.Result);
-        }
-        
+	       
 		public IActionResult OnPostLoadAttributeTable(int tableId) 
 		{
 			var response = _templateService.GetPartAttributes(tableId);
@@ -88,11 +78,14 @@ namespace Bintainer.WebApp.Pages.Dashboard
 		//	return new OkResult();
 		//}
 
-		public async Task OnPostCategorySave([FromBody] List<CategoryViewModel> categories)
+		public IActionResult OnPostCategorySave([FromBody] List<CategoryViewModel> categories)
 		{
             var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+			var response = _templateService.SavePartCategory(categories, userId);
+            if (!response.IsSuccess)
+                return new JsonResult(new { success = false, message = response.Message });
 
-
+            return new JsonResult(response.Result);
         }
     }
 }

@@ -106,7 +106,7 @@ namespace Bintainer.Repository.Service
                 _dbContext.PartCategories.Remove(category);
         }
         
-        public Dictionary<int,string> LoadAttributes(string userId) 
+        public Dictionary<int,string> GetAttributeTemplates(string userId) 
         {
             var attributes = _dbContext.PartAttributeTemplates.Where(p => p.UserId == userId);
             Dictionary<int,string>  AttributeTables = new Dictionary<int,string>();

@@ -17,7 +17,7 @@ namespace Bintainer.Service.Interface
         public Response<List<CategoryViewModel>?> GetPartCategories(string userId);
         public Response<List<PartAttributeViewModel>> GetPartAttributes(int tableId);
         public void EnsureRootNodeExists(string userId);
-        public Response<Dictionary<int, string>> LoadAttributes(string userId);
+        public Response<Dictionary<int, string>> GetAttributeTemplates(string userId);
         public Response<PartAttributeTemplate> SaveAttributeTemplate(CreateAttributeTemplateRequest request,string userId);
         public Response<List<CategoryViewModel>> SavePartCategory(List<CategoryViewModel> categories, string userId);
     }

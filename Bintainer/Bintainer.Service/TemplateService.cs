@@ -159,11 +159,11 @@ namespace Bintainer.Service
             }
         }
 
-        public Response<Dictionary<int, string>> LoadAttributes(string userId)
+        public Response<Dictionary<int, string>> GetAttributeTemplates(string userId)
         {
             try
             {
-                var result = _templateRepository.LoadAttributes(userId);
+                var result = _templateRepository.GetAttributeTemplates(userId);
                 return new Response<Dictionary<int, string>>()
                 {
                     IsSuccess = true,
@@ -215,37 +215,51 @@ namespace Bintainer.Service
         //TODO: needs rewrite
         public Response<List<CategoryViewModel>> SavePartCategory(List<CategoryViewModel> categories, string userId) 
         {
-            var original = _templateRepository.GetPartCategories(userId);
-            var mappedOriginal = _mapper.Map<List<CategoryViewModel>>(original);
-            CategoryViewModelComparer comparer = new CategoryViewModelComparer(mappedOriginal, categories);
-            var AddedItems = comparer.Added;
-            var deletedItems = comparer.Deleted;
-            var updatedItems = comparer.Updated;
+            try
+            {
+                var original = _templateRepository.GetPartCategories(userId);
+                var mappedOriginal = _mapper.Map<List<CategoryViewModel>>(original);
+                CategoryViewModelComparer comparer = new CategoryViewModelComparer(mappedOriginal, categories);
+                var AddedItems = comparer.Added;
+                var deletedItems = comparer.Deleted;
+                var updatedItems = comparer.Updated;
 
-            foreach (var item in updatedItems)
-            {
-                var _category = _templateRepository.GetCategory(item.Id);
-                _category.Name = item.Title;
-                _category.UserId = userId;
-                //TODO: refactor this
-                _templateRepository.UpdateAndSaveCategory(_category);
-            }
+                foreach (var item in updatedItems)
+                {
+                    var _category = _templateRepository.GetCategory(item.Id);
+                    _category.Name = item.Title;
+                    _category.UserId = userId;
+                    //TODO: refactor this
+                    _templateRepository.UpdateAndSaveCategory(_category);
+                }
+                foreach (var item in deletedItems)
+                {
+                    DeleteItem(item);
+                }
+                foreach (var item in AddedItems)
+                {
+                    AddItem(item, userId, item.ParentId);
+                }
+                _templateRepository.SaveChanges();
 
-            foreach (var item in deletedItems)
-            {
-                DeleteItem(item);
-            }
-            foreach (var item in AddedItems)
-            {
-                AddItem(item, userId, item.ParentId);
-            }
-            _templateRepository.SaveChanges();
+                return new Response<List<CategoryViewModel>>()
+                {
+                    IsSuccess = true,
+                    Result = mappedOriginal
+                };
 
-            return new Response<List<CategoryViewModel>>()
+            }
+            catch (Exception ex)
             {
-                IsSuccess = true,
-                Result = mappedOriginal
-            };
+                _appLoger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<List<CategoryViewModel>>()
+                {
+                    IsSuccess = false,
+                    Message = _localizer["ErrorFailedSavingPartCategories"],
+                    Result = null
+                };
+            }
+ 
         }
 
     }
