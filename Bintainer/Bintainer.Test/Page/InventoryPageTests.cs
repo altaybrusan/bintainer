@@ -71,12 +71,16 @@ namespace Bintainer.Test.Page
         }
 
         [Test]
-        public void OnGet_UserIdentityIsNull_ShouldLogWarning()
+        public void OnGet_UserIdentityIsNull_ShouldNotLogWarning()
         {
             // Arrange
             var httpContextMock = new Mock<HttpContext>();
             var identityMock = new Mock<ClaimsIdentity>();
-            identityMock.Setup(i => i.Name).Returns((string)null);
+
+            // Simulating that User.Identity is not null, but User.Identity.Name is null
+            identityMock.Setup(i => i.IsAuthenticated).Returns(true); // Simulating authenticated user
+            identityMock.Setup(i => i.Name).Returns((string)null); // User name is null
+
             httpContextMock.Setup(h => h.User.Identity).Returns(identityMock.Object);
             _inventoryModel.PageContext.HttpContext = httpContextMock.Object;
 
@@ -84,8 +88,25 @@ namespace Bintainer.Test.Page
             _inventoryModel.OnGet();
 
             // Assert
-            _appLoggerMock.Verify(logger => logger.LogMessage(It.IsAny<string>(), LogLevel.Warning,It.IsAny<string>()), Times.Once);
+            _appLoggerMock.Verify(logger => logger.LogMessage(It.IsAny<string>(), LogLevel.Warning, It.IsAny<string>()), Times.Never);
         }
+
+        [Test]
+        public void OnGet_UserIdentityIsNull_ShouldLogWarning()
+        {
+            // Arrange
+            var httpContextMock = new Mock<HttpContext>();
+
+            httpContextMock.Setup(h => h.User.Identity).Returns((ClaimsIdentity)null);
+            _inventoryModel.PageContext.HttpContext = httpContextMock.Object;
+
+            // Act
+            _inventoryModel.OnGet();
+
+            // Assert
+            _appLoggerMock.Verify(logger => logger.LogMessage(It.IsAny<string>(), LogLevel.Warning, It.IsAny<string>()), Times.Once);
+        }
+
 
         [Test]
         public void OnGet_UserIdentityIsNotNull_ShouldCallInventoryService()
