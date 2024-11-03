@@ -7,7 +7,7 @@ using Microsoft.Extensions.Localization;
 using Moq;
 using NUnit.Framework;
 using Bintainer.SharedResources.Resources;
-using Bintainer.SharedResources.Service;
+
 
 namespace Bintainer.Test.Service
 {

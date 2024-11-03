@@ -15,6 +15,7 @@ using Bintainer.SharedResources.Resources;
 using Microsoft.Extensions.Logging;
 using Bintainer.Model.Template;
 using Bintainer.Model.Response;
+using AutoMapper;
 
 namespace Bintainer.Test.Service
 {
@@ -29,6 +30,8 @@ namespace Bintainer.Test.Service
         private Mock<IBinService> _binServiceMock;
         private Mock<IStringLocalizer<ErrorMessages>> _localizerMock;
         private Mock<IAppLogger> _appLoggerMock;
+        private Mock<IUserRepository> _userRepositoryMock;
+        private Mock<IMapper> _mapperMock;
         private PartService _partService;
         private InventoryService _inventoryService;
 
@@ -43,7 +46,8 @@ namespace Bintainer.Test.Service
             _binServiceMock = new Mock<IBinService>();
             _localizerMock = new Mock<IStringLocalizer<ErrorMessages>>();
             _appLoggerMock = new Mock<IAppLogger>();
-
+            _userRepositoryMock = new Mock<IUserRepository>();
+            _mapperMock = new Mock<IMapper>();
             _partService = new PartService(
                 _partRepositoryMock.Object,
                 _templateRepositoryMock.Object,
@@ -54,7 +58,14 @@ namespace Bintainer.Test.Service
                 _appLoggerMock.Object
             );
 
-            _inventoryService = new InventoryService(_binServiceMock.Object, _inventoryRepositoryMock.Object, _localizerMock.Object, _appLoggerMock.Object);
+            _inventoryService = new InventoryService(
+                _binServiceMock.Object,
+                _inventoryRepositoryMock.Object,
+                _localizerMock.Object,
+                _mapperMock.Object,
+                _appLoggerMock.Object,
+                _userRepositoryMock.Object
+            );
         }
 
         [Test]

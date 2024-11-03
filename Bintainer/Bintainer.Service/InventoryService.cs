@@ -176,40 +176,5 @@ namespace Bintainer.Service
             }            
         }
 
-        public Response<Inventory?> CreateOrUpdateInventorySections(List<InventorySection>? sectionList, Inventory inventory) 
-        {
-            try
-            {
-                if (sectionList is null) 
-                {
-                    return new Response<Inventory?>
-                    {
-                        IsSuccess = true,
-                        Result = inventory
-                    };
-                }
-                inventory.InventorySections = sectionList;  
-
-                var results = _inventoryRepository.CreateOrUpdateInventory(inventory);
-                
-                return new Response<Inventory?>
-                {
-                    IsSuccess = true,
-                    Result = inventory
-                };
-
-            }
-            catch (Exception ex)
-            {
-                _appLogger.LogMessage(ex.Message, LogLevel.Error);
-                return new Response<Inventory?>
-                {
-                    IsSuccess = false,
-                    Message = ex.Message
-                };
-            }
-         
-        }
-         
     }
 }

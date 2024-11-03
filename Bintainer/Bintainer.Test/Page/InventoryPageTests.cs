@@ -98,7 +98,7 @@ namespace Bintainer.Test.Page
             _inventoryModel.PageContext.HttpContext = httpContextMock.Object;
 
             _inventoryServiceMock.Setup(service => service.GetInventory("TestUser"))
-                .Returns(new Response<List<InventorySection>> { IsSuccess = true, Result = new List<InventorySection>() });
+                .Returns(new Response<Inventory> { IsSuccess = true, Result = new Inventory() });
 
             // Act
             _inventoryModel.OnGet();
@@ -151,7 +151,7 @@ namespace Bintainer.Test.Page
             httpContextMock.Setup(h => h.User.Claims).Returns(claims);
             _inventoryModel.PageContext.HttpContext = httpContextMock.Object;
 
-            _inventoryServiceMock.Setup(service => service.CreateOrUpdateInventory(It.IsAny<UserViewModel>(), "TestInventory"))
+            _inventoryServiceMock.Setup(service => service.CreateOrUpdateInventory(It.IsAny<UserViewModel>(), "TestInventory",It.IsAny<List<InventorySection>>()))
                 .Returns(new Response<Inventory> { IsSuccess = true, Result = new Inventory() });
 
             // Act
@@ -159,7 +159,7 @@ namespace Bintainer.Test.Page
 
             // Assert
             Assert.That(result, Is.InstanceOf<JsonResult>());
-            _inventoryServiceMock.Verify(service => service.CreateOrUpdateInventory(It.IsAny<UserViewModel>(), "TestInventory"), Times.Once);
+            _inventoryServiceMock.Verify(service => service.CreateOrUpdateInventory(It.IsAny<UserViewModel>(), "TestInventory",It.IsAny<List<InventorySection>>()), Times.Once);
         }
     }
 }

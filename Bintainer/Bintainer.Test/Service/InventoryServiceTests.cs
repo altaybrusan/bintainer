@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using AutoMapper;
 
 namespace Bintainer.Test.Service
 {
@@ -25,6 +26,8 @@ namespace Bintainer.Test.Service
         private Mock<IStringLocalizer<ErrorMessages>> _mockLocalizer;
         private Mock<IAppLogger> _mockAppLogger;
         private InventoryService _inventoryService;
+        private Mock<IUserRepository> _mockUserRepository;
+        private Mock<IMapper> _mockMapper;
 
         [SetUp]
         public void SetUp()
@@ -33,12 +36,16 @@ namespace Bintainer.Test.Service
             _mockBinService = new Mock<IBinService>();
             _mockLocalizer = new Mock<IStringLocalizer<ErrorMessages>>();
             _mockAppLogger = new Mock<IAppLogger>();
-
+            _mockUserRepository = new Mock<IUserRepository>();
+            _mockMapper = new Mock<IMapper>();
+                        
             _inventoryService = new InventoryService(
                 _mockBinService.Object,
-                _mockInventoryRepository.Object,
+                _mockInventoryRepository.Object,                 
                 _mockLocalizer.Object,
-                _mockAppLogger.Object
+                _mockMapper.Object,
+                _mockAppLogger.Object,
+                _mockUserRepository.Object
             );
         }
 
@@ -118,60 +125,33 @@ namespace Bintainer.Test.Service
         }
 
         [Test]
-        public void GetInventorySectionsOfUser_WhenInventoryExists_ReturnsInventorySections()
-        {
-            // Arrange
-            var admin = "adminUser";
-            var inventory = new Inventory { Id = 1, Name = "Test Inventory" };
-            var sections = new List<InventorySection> { new InventorySection { Height = 2, Width = 2 } };
-            _mockInventoryRepository.Setup(r => r.GetInventory(admin)).Returns(inventory);
-            _mockInventoryRepository.Setup(r => r.GetAllInventorySections(inventory.Id)).Returns(sections);
-
-            // Act
-            var result = _inventoryService.GetInventory(admin);
-
-            // Assert
-            Assert.IsTrue(result.IsSuccess);
-            Assert.AreEqual(sections, result.Result);
-        }
-
-        [Test]
         public void CreateOrUpdateInventory_WhenNewInventory_ReturnsCreatedInventory()
         {
             // Arrange
             var user = new UserViewModel { Name = "user1", UserId = "userId1" };
             var inventoryName = "New Inventory";
-            _mockInventoryRepository.Setup(r => r.GetInventory(user.Name)).Returns((Inventory)null);
-            _mockInventoryRepository.Setup(r => r.AddAndSaveInventory(It.IsAny<Inventory>())).Returns(new Inventory { Name = inventoryName });
+            var sectionList = new List<InventorySection>(); // Example section list (can be empty or populated)
+
+            var mockUser = new AspNetUser { Id = user.UserId, UserName = user.Name };
+
+            _mockUserRepository.Setup(r => r.GetUser(user.UserId)).Returns(mockUser);
+            _mockInventoryRepository.Setup(r => r.CreateOrUpdateInventory(It.IsAny<Inventory>()));
 
             // Act
-            var result = _inventoryService.CreateOrUpdateInventory(user, inventoryName);
+            var result = _inventoryService.CreateOrUpdateInventory(user, inventoryName, sectionList);
 
             // Assert
-            Assert.IsTrue(result.IsSuccess);
-            Assert.AreEqual(inventoryName, result.Result.Name);
-            _mockInventoryRepository.Verify(r => r.AddAndSaveInventory(It.IsAny<Inventory>()), Times.Once);
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccess, Is.True, "Expected IsSuccess to be true.");
+                Assert.That(result.Result?.Name, Is.EqualTo(inventoryName), "Expected inventory name to match.");
+                Assert.That(result.Result?.User, Is.EqualTo(mockUser), "Expected the User to be correctly assigned.");
+            });
+
+            // Verify that the CreateOrUpdateInventory method was called
+            _mockInventoryRepository.Verify(r => r.CreateOrUpdateInventory(It.IsAny<Inventory>()), Times.Once);
         }
 
-        [Test]
-        public void AddSectionsToInventory_WhenCalledWithNewSections_AddsSectionsToInventory()
-        {
-            // Arrange
-            var inventory = new Inventory { Id = 1 };
-            var sections = new List<InventorySection>
-        {
-            new InventorySection { Id = 0, Height = 2, Width = 2 },
-            new InventorySection { Id = 2, Height = 3, Width = 3 }
-        };
-
-            // Act
-            var result = _inventoryService.CreateOrUpdateInventorySections(sections, inventory);
-
-            // Assert
-            Assert.IsTrue(result.IsSuccess);
-            Assert.AreEqual(inventory, result.Result);
-            _mockInventoryRepository.Verify(r => r.UpdateSection(It.IsAny<InventorySection>()), Times.Once);
-        }
     }
 
 }

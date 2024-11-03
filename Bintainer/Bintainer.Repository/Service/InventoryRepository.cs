@@ -81,6 +81,8 @@ namespace Bintainer.Repository.Service
             if (existingInventory == null)
                 return null;
 
+            if(!existingInventory.Name!.Contains(requestModel.Name))
+                existingInventory.Name = requestModel.Name;
             // Find sections that exist in the database but not in the incoming inventory
             var sectionIds = requestModel.InventorySections.Select(s => s.Id).ToHashSet();
             var sectionsToRemove = existingInventory.InventorySections
