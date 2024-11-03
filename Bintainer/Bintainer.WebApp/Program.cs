@@ -14,8 +14,8 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Bintainer.SharedResources.Interface;
-using Bintainer.SharedResources.Service;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging.Console;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,11 +35,9 @@ builder.Services.Configure<RequestLocalizationOptions>(options => {
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Logging.ClearProviders();
-builder.Logging.AddConsole(options =>
-{
-    options.FormatterName = "colorful"; // Specify the formatter name
-});
+builder.Logging.AddConsole();
 
+builder.Logging.SetMinimumLevel(LogLevel.Trace);
 //builder.Logging.AddFile("Logs/Bintainer-{Date}.txt");
 
 builder.Services.AddSingleton<IStringLocalizerFactory,ResourceManagerStringLocalizerFactory>();

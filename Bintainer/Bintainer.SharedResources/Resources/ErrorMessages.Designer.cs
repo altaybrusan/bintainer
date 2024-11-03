@@ -61,6 +61,24 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Critical log test message.
+        /// </summary>
+        public static string CriticalLogTestMessage {
+            get {
+                return ResourceManager.GetString("CriticalLogTestMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Debug log test message.
+        /// </summary>
+        public static string DebugLogTestMessage {
+            get {
+                return ResourceManager.GetString("DebugLogTestMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Bin is required to insert part into subspace..
         /// </summary>
         public static string ErrorBinCannotBeNull {
@@ -120,6 +138,15 @@ namespace Bintainer.SharedResources.Resources {
         public static string ErrorInventorySectionMissing {
             get {
                 return ResourceManager.GetString("ErrorInventorySectionMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error log test message.
+        /// </summary>
+        public static string ErrorLogTestMessage {
+            get {
+                return ResourceManager.GetString("ErrorLogTestMessage", resourceCulture);
             }
         }
         
@@ -214,6 +241,24 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Information log test message.
+        /// </summary>
+        public static string InformationLogTestMessage {
+            get {
+                return ResourceManager.GetString("InformationLogTestMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trace log test message.
+        /// </summary>
+        public static string TraceLogTestMessage {
+            get {
+                return ResourceManager.GetString("TraceLogTestMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to identify the signed-in user..
         /// </summary>
         public static string WarningInvalidUser {
@@ -228,6 +273,15 @@ namespace Bintainer.SharedResources.Resources {
         public static string WarningInventoryNotExist {
             get {
                 return ResourceManager.GetString("WarningInventoryNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning log test message.
+        /// </summary>
+        public static string WarningLogTestMessage {
+            get {
+                return ResourceManager.GetString("WarningLogTestMessage", resourceCulture);
             }
         }
         

@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CriticalLogTestMessage" xml:space="preserve">
+    <value>Critical log test message</value>
+  </data>
+  <data name="DebugLogTestMessage" xml:space="preserve">
+    <value>Debug log test message</value>
+  </data>
   <data name="ErrorBinCannotBeNull" xml:space="preserve">
     <value>Bin is required to insert part into subspace.</value>
   </data>
@@ -137,6 +143,9 @@
   </data>
   <data name="ErrorInventorySectionMissing" xml:space="preserve">
     <value>Inventory section is missing.</value>
+  </data>
+  <data name="ErrorLogTestMessage" xml:space="preserve">
+    <value>Error log test message</value>
   </data>
   <data name="ErrorModelState" xml:space="preserve">
     <value>Model validation failed at {DateTime} on {Page}. Errors: {Errors}</value>
@@ -168,11 +177,20 @@
   <data name="InfoRepositoryCreateOrUpdateSuccess" xml:space="preserve">
     <value>Repository creation or update completed successfully.</value>
   </data>
+  <data name="InformationLogTestMessage" xml:space="preserve">
+    <value>Information log test message</value>
+  </data>
+  <data name="TraceLogTestMessage" xml:space="preserve">
+    <value>Trace log test message</value>
+  </data>
   <data name="WarningInvalidUser" xml:space="preserve">
     <value>Unable to identify the signed-in user.</value>
   </data>
   <data name="WarningInventoryNotExist" xml:space="preserve">
     <value>Inventory does not exist.</value>
+  </data>
+  <data name="WarningLogTestMessage" xml:space="preserve">
+    <value>Warning log test message</value>
   </data>
   <data name="WarningNotFound" xml:space="preserve">
     <value>No results found</value>

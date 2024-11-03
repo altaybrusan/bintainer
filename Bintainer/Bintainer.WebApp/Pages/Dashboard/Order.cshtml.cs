@@ -6,7 +6,6 @@ using Bintainer.Service;
 using Bintainer.Service.Interface;
 using Bintainer.SharedResources.Interface;
 using Bintainer.SharedResources.Resources;
-using Bintainer.SharedResources.Service;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
