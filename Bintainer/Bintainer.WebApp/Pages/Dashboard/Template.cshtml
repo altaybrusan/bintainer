@@ -189,7 +189,12 @@
 	});
 </script>
 <script type="text/javascript">	
-	var data = @Html.Raw(JsonSerializer.Serialize(Model.Categories, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+	var data = @Html.Raw(JsonSerializer.Serialize(Model.Categories, 
+		new JsonSerializerOptions 
+		{ 
+			PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+			DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault
+		}));
 
 	const myTree = new DinampTreeEditor('.category-treeview').setData(data);
 
