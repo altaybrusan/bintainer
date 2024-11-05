@@ -1,5 +1,6 @@
 using Bintainer.Model;
 using Bintainer.Model.Entity;
+using Bintainer.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Bintainer.Model.Entity;
 using Microsoft.EntityFrameworkCore;
+using Bintainer.Model.Entity;
 
-namespace Bintainer.Model;
+namespace Bintainer.Repository;
 
 public partial class BintainerDbContext : DbContext
 {
@@ -126,7 +126,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<Bin>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Bin__3214EC07802969E7");
+            entity.HasKey(e => e.Id).HasName("PK__Bin__3214EC07B99AA048");
 
             entity.ToTable("Bin", tb => tb.HasTrigger("CheckBinCoordinates"));
 
@@ -137,7 +137,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<BinSubspace>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__BinSubsp__3214EC07F9402AF8");
+            entity.HasKey(e => e.Id).HasName("PK__BinSubsp__3214EC071001E3D0");
 
             entity.ToTable("BinSubspace");
 
@@ -182,7 +182,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC077FEF5991");
+            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC072087C9BD");
 
             entity.ToTable("Order");
 
@@ -225,7 +225,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<Part>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC07E1A6313B");
+            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC0744500450");
 
             entity.ToTable("Part");
 
@@ -252,6 +252,7 @@ public partial class BintainerDbContext : DbContext
 
             entity.HasOne(d => d.Category).WithMany(p => p.Parts)
                 .HasForeignKey(d => d.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Part_PartCategory");
 
             entity.HasOne(d => d.Package).WithMany(p => p.Parts)
@@ -389,7 +390,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<PartLabel>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC078CA57F0D");
+            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC074A8B6176");
 
             entity.ToTable("PartLabel");
 

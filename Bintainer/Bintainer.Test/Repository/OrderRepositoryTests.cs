@@ -13,6 +13,7 @@ using Bintainer.Model.Request;
 using Moq;
 using MockQueryable.Moq;
 using NuGet.Protocol.Core.Types;
+using Bintainer.Repository;
 
 
 namespace Bintainer.Test.Repository

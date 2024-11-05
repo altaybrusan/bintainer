@@ -9,6 +9,7 @@ using Bintainer.Model;
 using Bintainer.Repository.Service;
 using Bintainer.Model.Entity;
 using Bintainer.Model.DTO;
+using Bintainer.Repository;
 
 namespace Bintainer.Test.Repository
 {
