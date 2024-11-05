@@ -8,7 +8,7 @@ namespace Bintainer.Model.Request
         public string? Description { get; set; }
         public string? Supplier { get; set; }
         public string? Package { get; set; } = string.Empty;
-        public int? CategoryId { get; set; }
+        //public int? CategoryId { get; set; }
         public string? Group { get; set; }
         public string? OrderNumber { get; set; }
         public string? OrderQuantity { get; set; }
@@ -17,5 +17,6 @@ namespace Bintainer.Model.Request
         public int? AttributeTemplateId { get; set; }
         public DateTime? OrderDate { get; set; }
         public Dictionary<string, string>? Attributes { get; set; }
+        public List<string?>? PathToCategory { get; set; } // Add the Path property
     }
 }

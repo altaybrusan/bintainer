@@ -177,6 +177,9 @@
   <data name="ErrorZeroSubspaceCount" xml:space="preserve">
     <value>The subspace count defined for the section '{sectionName}' cannot be zero.</value>
   </data>
+  <data name="InfoPartCreatedSuccessfully" xml:space="preserve">
+    <value>Part has been successfully created.</value>
+  </data>
   <data name="InfoRepositoryCreateOrUpdateSuccess" xml:space="preserve">
     <value>Repository creation or update completed successfully.</value>
   </data>

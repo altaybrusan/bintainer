@@ -11,6 +11,6 @@ namespace Bintainer.Model.View
         public string Title { get; set; } = string.Empty;
         public int? Id { get; set; }
         public int? ParentId { get; set; }
-        public List<CategoryViewModel> Children { get; set; } = new();
+        public List<CategoryViewModel>? Children { get; set; } = new();
     }
 }

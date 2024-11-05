@@ -114,14 +114,25 @@ namespace Bintainer.Service
 
         private List<CategoryViewModel> BuildCategoryTree(IEnumerable<PartCategory>? categories, int? parentId = null)
         {
-            return categories.Where(c => c.ParentCategoryId == parentId)
-                             .Select(c => new CategoryViewModel
-                             {
-                                 Title = c.Name?.Trim() ?? string.Empty,
-                                 Id = c.Id,
-                                 Children = BuildCategoryTree(categories, c.Id)
-                             }).ToList();
+            if (categories == null) return new List<CategoryViewModel>();
+
+            // Build the tree starting with root categories (ParentCategoryId == parentId)
+            var rootCategories = categories.Where(c => c.ParentCategoryId == parentId)
+                                           .Select(c => new CategoryViewModel
+                                           {
+                                               Title = c.Name?.Trim() ?? string.Empty,
+                                               Id = c.Id,
+                                               // Recursively build the children and set to null if the list is empty
+                                               Children = BuildCategoryTree(categories, c.Id)
+                                                           .ToList()
+                                                           .Any() ? BuildCategoryTree(categories, c.Id) : null
+                                           })
+                                           .ToList();
+
+            return rootCategories;
         }
+
+
 
         private void AddRootNode(string userId)
         {

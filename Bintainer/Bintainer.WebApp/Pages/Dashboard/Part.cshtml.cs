@@ -4,15 +4,21 @@ using Azure;
 using Azure.Core;
 using Bintainer.Model.Entity;
 using Bintainer.Model.Request;
+using Bintainer.Model.View;
 using Bintainer.Service;
 using Bintainer.Service.Interface;
+using Bintainer.SharedResources.Interface;
+using Bintainer.SharedResources.Resources;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing.Drawing2D;
 using System.Runtime;
 
 namespace Bintainer.WebApp.Pages.Dashboard
@@ -21,7 +27,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
     {
         public List<PartPackage> Packages { get; set; } = new List<PartPackage>();
 
-        public List<PartCategory> Category { get; set; } = new List<PartCategory>();
+        public List<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
         public List<Part> Part { get; set; } = new List<Part>();
         
         public List<PartGroup> Group { get; set; } = new List<PartGroup>();
@@ -30,15 +36,22 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public List<InventorySection> Sections { get; set; } = new();
         public Inventory Inventory { get; set; } = new();
 
-        private DigikeyService _digikeyService;
-        private ITemplateService _templateService;
-        private IPartService _partService;
-        public PartModel(ITemplateService templateService, IPartService partService, DigikeyService digikeyServices)
+        private readonly DigikeyService _digikeyService;
+        private readonly ITemplateService _templateService;
+        private readonly IPartService _partService;
+        private readonly IAppLogger _appLogger;
+        private readonly IStringLocalizer _localizer;
+        public PartModel(ITemplateService templateService, 
+                         IPartService partService,
+                         IAppLogger appLogger,
+                         IStringLocalizer<ErrorMessages> sringLocalizer,
+                         DigikeyService digikeyServices)
         {
             _templateService = templateService;
             _partService = partService;
-
             _digikeyService = digikeyServices;
+            _appLogger = appLogger;
+            _localizer = sringLocalizer;
         }
 
         public async Task<IActionResult> OnGetDigikeyParameters(string partNumber) 
@@ -66,7 +79,9 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
             
             AttributeTemplatesTable = _templateService.GetTemplateByUserId(userId).Result;            
-		}
+            var test = _templateService.GetPartCategories(userId).Result;
+            Categories = test;
+        }
 
         public IActionResult OnPostRetrievePartAttributeDetails(string partNumber) 
         {
@@ -95,12 +110,26 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         public IActionResult OnPostCreatePart([FromBody]CreatePartRequest request) 
         {
-            if (ModelState.IsValid) 
-            {                
-                var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-                _partService.CreatePartForUser(request, UserId);               
+            if (!ModelState.IsValid) 
+            {
+                _appLogger.LogModelError(nameof(OnPostCreatePart), ModelState);
+
+                return BadRequest(new
+                {
+                    success = false,
+                    message = _localizer["ErrorModelStateError"],
+                });
             }
-            return new JsonResult(new { message = "New part created." }) { StatusCode = 200 };                      
+            // Example: Use the Path to find the category
+            var path = request.PathToCategory;
+            if (path == null || !path.Any())
+            {
+                return BadRequest(new { message = "Invalid category path" });
+            }
+
+            var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+            var response = _partService.CreatePartForUser(request, UserId);
+            return new JsonResult(new { message = response.Message }) { StatusCode = 200 };                      
         }
 
         public IActionResult OnPostUpdatePartAttribute([FromBody] UpdateAttributeRequest updatedRequest) 

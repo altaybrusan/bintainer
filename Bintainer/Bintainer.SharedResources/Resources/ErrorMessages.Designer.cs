@@ -241,6 +241,15 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Part has been successfully created..
+        /// </summary>
+        public static string InfoPartCreatedSuccessfully {
+            get {
+                return ResourceManager.GetString("InfoPartCreatedSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Repository creation or update completed successfully..
         /// </summary>
         public static string InfoRepositoryCreateOrUpdateSuccess {

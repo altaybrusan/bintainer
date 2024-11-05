@@ -134,7 +134,13 @@ namespace Bintainer.Service
                 Part part = new Part();
                 part.Name = request.PartName!.Trim();
                 part.Description = request.Description!.Trim();
-                part.CategoryId = request.CategoryId;
+
+                var Categories = _templateRepository.GetPartCategories(userId);
+               
+                var categoryId = FindCategoryIdByPath(Categories, request.PathToCategory);
+                part.CategoryId = categoryId;
+                
+                
                 part.UserId = userId;
                 part.Supplier = request.Supplier!.Trim();
 
@@ -176,7 +182,8 @@ namespace Bintainer.Service
                 return new Response<Part?>()
                 {
                     IsSuccess = true,
-                    Result = part
+                    Result = part,
+                    Message = _localizer["InfoPartCreatedSuccessfully"]
                 };
             }
             catch (Exception ex)
@@ -548,6 +555,37 @@ namespace Bintainer.Service
             return bin;
         }
 
+        public int? FindCategoryIdByPath(List<PartCategory> Categories,List<string> path)
+        {           
+            return FindCategoryIdRecursively(Categories, path, 0);
+        }
+
+        private int? FindCategoryIdRecursively(List<PartCategory> categories, List<string> path, int level)
+        {
+            // If we've reached the end of the path, return null
+            if (level >= path.Count)
+            {
+                return null;
+            }
+
+            foreach (var category in categories)
+            {
+                // Check if the current category name matches the path at the current level
+                if (category.Name?.Trim() == path[level])
+                {
+                    // If this is the last level in the path, return the Id
+                    if (level == path.Count - 1)
+                    {
+                        return category.Id;
+                    }
+                    // Otherwise, continue searching in the child categories
+                    return FindCategoryIdRecursively(category.InverseParentCategory.ToList(), path, level + 1);
+                }
+            }
+
+            // If no matching category is found, return null
+            return null;
+        }
 
         #endregion
 
