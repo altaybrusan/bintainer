@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Bintainer.SharedResources.Interface;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging.Console;
+using Bintainer.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 

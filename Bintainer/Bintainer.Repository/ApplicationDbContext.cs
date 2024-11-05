@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bintainer.WebApp.Data
+namespace Bintainer.Repository
 {
     public class ApplicationDbContext : IdentityDbContext
     {

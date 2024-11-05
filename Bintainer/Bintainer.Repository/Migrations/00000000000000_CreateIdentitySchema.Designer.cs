@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Bintainer.WebApp.Data;
 using System;
+using Bintainer.Repository;
 
 namespace Bintainer.WebApp.Data.Migrations
 {
