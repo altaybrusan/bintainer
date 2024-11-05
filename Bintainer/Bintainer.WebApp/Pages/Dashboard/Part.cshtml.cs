@@ -78,9 +78,8 @@ namespace Bintainer.WebApp.Pages.Dashboard
         {
 			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
             
-            AttributeTemplatesTable = _templateService.GetTemplateByUserId(userId).Result;            
-            var test = _templateService.GetPartCategories(userId).Result;
-            Categories = test;
+            AttributeTemplatesTable = _templateService.GetTemplateByUserId(userId).Result;
+            Categories = _templateService.GetPartCategories(userId).Result;             
         }
 
         public IActionResult OnPostRetrievePartAttributeDetails(string partNumber) 
