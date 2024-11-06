@@ -27,7 +27,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
        
 		private ITemplateService _templateService;
 		private IStringLocalizer _localizer;
-		private IAppLogger _applogger;
+		private IAppLogger _appLogger;
 
 		public TemplateModel(ITemplateService service,
 							 IStringLocalizer<ErrorMessages> localizer,
@@ -35,7 +35,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 		{
 			_templateService = service;
 			_localizer = localizer;
-			_applogger = appLogger;
+			_appLogger = appLogger;
 		}
 
         public void OnGet()
@@ -69,14 +69,23 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
 			_templateService.SaveAttributeTemplate(attributeTable, userId);
 		}
-		//TODO: rewrite this
-		//public async Task<IActionResult> OnPostDeleteAttributeTable(int tableId)
-		//{
-		//	await _dbcontext.PartAttributes.Where(a => a.TemplateId == tableId).ExecuteDeleteAsync();
-		//	await _dbcontext.PartAttributeTemplates.Where(t => t.Id == tableId).ExecuteDeleteAsync();
-		//	await _dbcontext.SaveChangesAsync();
-		//	return new OkResult();
-		//}
+		
+		public IActionResult OnPostDeleteAttributeTable(int tableId)
+		{
+			if (!ModelState.IsValid)
+			{
+				_appLogger.LogModelError(nameof(OnPostDeleteAttributeTable), ModelState);
+
+				return BadRequest(new
+				{
+					success = false,
+					message = _localizer["ErrorModelStateError"],
+				});
+			}
+			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+			_templateService.RemoveAttributeTemplate(userId, tableId);
+			return new OkResult();
+		}
 
 		public IActionResult OnPostCategorySave([FromBody] List<CategoryViewModel> categories)
 		{

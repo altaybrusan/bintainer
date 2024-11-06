@@ -9,6 +9,7 @@ using Bintainer.Service.Interface;
 using Bintainer.SharedResources.Interface;
 using Bintainer.SharedResources.Resources;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
@@ -255,7 +256,7 @@ namespace Bintainer.Service
 
                 return new Response<List<CategoryViewModel>>()
                 {
-                    IsSuccess = true,
+                    IsSuccess = true,                    
                     Result = mappedOriginal
                 };
 
@@ -273,5 +274,27 @@ namespace Bintainer.Service
  
         }
 
-    }
+		public Response<string> RemoveAttributeTemplate(string userId, int templateId)
+		{
+            try
+            {
+                _templateRepository.RemoveAttributeTemplate(userId, templateId);
+                return new Response<string>()
+                {
+                    IsSuccess = true,
+                    Message = _localizer["InfoAttributeTemplatedRemoved"]
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLoger.LogMessage(ex.Message, LogLevel.Error);
+				return new Response<string>()
+				{
+					IsSuccess = true,
+					Message = _localizer["ErrorFailedAttributeTemplatedRemove"]
+				};
+			}
+
+		}
+	}
 }

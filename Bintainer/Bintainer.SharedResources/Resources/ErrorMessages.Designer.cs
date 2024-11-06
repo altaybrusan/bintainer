@@ -106,6 +106,15 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to remove attribute template..
+        /// </summary>
+        public static string ErrorFailedAttributeTemplatedRemove {
+            get {
+                return ResourceManager.GetString("ErrorFailedAttributeTemplatedRemove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to load part..
         /// </summary>
         public static string ErrorFailedPartLoading {
@@ -237,6 +246,15 @@ namespace Bintainer.SharedResources.Resources {
         public static string ErrorZeroSubspaceCount {
             get {
                 return ResourceManager.GetString("ErrorZeroSubspaceCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attribute template removed successfully..
+        /// </summary>
+        public static string InfoAttributeTemplatedRemoved {
+            get {
+                return ResourceManager.GetString("InfoAttributeTemplatedRemoved", resourceCulture);
             }
         }
         

@@ -129,5 +129,12 @@ namespace Bintainer.Repository.Service
         {
             _dbContext.SaveChanges();
         }
-    }
+
+		public void RemoveAttributeTemplate(string userId, int templateId)
+		{
+			_dbContext.PartAttributes.Where(a => a.TemplateId == templateId && userId == userId)?.ExecuteDelete();
+			_dbContext.PartAttributeTemplates.Where(t => t.Id == templateId && userId == userId)?.ExecuteDelete();
+			_dbContext.SaveChanges();
+		}
+	}
 }

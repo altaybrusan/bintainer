@@ -132,6 +132,9 @@
   <data name="ErrorBinOrSectionUnavailable" xml:space="preserve">
     <value>Unable to distribute quantity across subspaces as the specified bin or its associated section is missing or invalid.</value>
   </data>
+  <data name="ErrorFailedAttributeTemplatedRemove" xml:space="preserve">
+    <value>Failed to remove attribute template.</value>
+  </data>
   <data name="ErrorFailedPartLoading" xml:space="preserve">
     <value>Failed to load part.</value>
   </data>
@@ -176,6 +179,9 @@
   </data>
   <data name="ErrorZeroSubspaceCount" xml:space="preserve">
     <value>The subspace count defined for the section '{sectionName}' cannot be zero.</value>
+  </data>
+  <data name="InfoAttributeTemplatedRemoved" xml:space="preserve">
+    <value>Attribute template removed successfully.</value>
   </data>
   <data name="InfoPartCreatedSuccessfully" xml:space="preserve">
     <value>Part has been successfully created.</value>

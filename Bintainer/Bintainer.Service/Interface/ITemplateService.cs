@@ -20,5 +20,6 @@ namespace Bintainer.Service.Interface
         public Response<Dictionary<int, string>> GetAttributeTemplates(string userId);
         public Response<PartAttributeTemplate> SaveAttributeTemplate(CreateAttributeTemplateRequest request,string userId);
         public Response<List<CategoryViewModel>> SavePartCategory(List<CategoryViewModel> categories, string userId);
+        public Response<string> RemoveAttributeTemplate(string userId,int templateId);
     }
 }

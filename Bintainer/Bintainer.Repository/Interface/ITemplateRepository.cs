@@ -26,6 +26,7 @@ namespace Bintainer.Repository.Interface
         public Dictionary<int, string> GetAttributeTemplates(string userId);
         public PartAttributeTemplate AddAndSavePartAttribute(PartAttributeTemplate partAttribute);
         public void SaveChanges();
+        public void RemoveAttributeTemplate(string userId,int attributeId);
 
 
     }
