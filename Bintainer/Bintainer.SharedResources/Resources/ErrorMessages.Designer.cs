@@ -133,6 +133,15 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to retrive part attributes..
+        /// </summary>
+        public static string ErrorFailToRetriveAttributes {
+            get {
+                return ResourceManager.GetString("ErrorFailToRetriveAttributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specified part cannot be arranged due to invalid details..
         /// </summary>
         public static string ErrorInvalidPartDetails {

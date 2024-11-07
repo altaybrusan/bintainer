@@ -35,6 +35,26 @@ namespace Bintainer.Repository.Service
             return part;
         }
 
+        public List<PartAttribute>? GetPartAttributes(string partName, string userId)
+        {
+            Part? part = _dbContext.Parts.Include(p => p.PartBinAssociations)
+                                         .ThenInclude(b => b.Bin)
+                                         .ThenInclude(b => b.BinSubspaces)
+                                         .Include(p => p.OrderPartAssociations)
+                                         .Include(p => p.AttributeTemplates)
+                                         .ThenInclude(p => p.PartAttributes)
+                                         .Where(p => p.Name.Contains(partName) && p.UserId == userId)
+                                         .FirstOrDefault();
+
+            var partAttributeTemplate = part?.AttributeTemplates.FirstOrDefault();
+            
+            if(partAttributeTemplate is null)
+                return null;
+            
+            return partAttributeTemplate.PartAttributes.ToList();
+            
+        }
+
         public Part? GetPartById(int partId) 
         {
             return _dbContext.Parts.FirstOrDefault(c => c.Id == partId);

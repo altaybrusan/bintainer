@@ -87,11 +87,11 @@ namespace Bintainer.WebApp.Pages.Dashboard
             try
             {
                 var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-                var results = _partService.GetPartByName(partNumber,userId);
-                if (results is null)
+                var response = _partService.GetPartAttributes(partNumber,userId);
+                if (response is null)
                     return new OkResult();
 
-                return new JsonResult(results);
+                return new JsonResult(response.Result);
 
             }
             catch (Exception)

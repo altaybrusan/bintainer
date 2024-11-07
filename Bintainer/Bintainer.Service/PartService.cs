@@ -1,4 +1,5 @@
-﻿using Bintainer.Model.DTO;
+﻿using AutoMapper;
+using Bintainer.Model.DTO;
 using Bintainer.Model.Entity;
 using Bintainer.Model.Request;
 using Bintainer.Model.Response;
@@ -22,15 +23,17 @@ namespace Bintainer.Service
         private readonly IInventoryRepository _inventoryRepository;
         private readonly IInventoryService _inventoryService;
         private readonly IBinService _binService;
-        private IStringLocalizer<ErrorMessages> _localizer;
-        private IAppLogger _appLogger;
+        private readonly IStringLocalizer<ErrorMessages> _localizer;
+        private readonly IAppLogger _appLogger;
+        private readonly IMapper _mapper;
         public PartService(IPartRepository partRepository,
                            ITemplateRepository templateRepository,
                            IInventoryRepository inventoryRepository,
                            IInventoryService inventoryService,
                            IBinService binService,
                            IStringLocalizer<ErrorMessages> stringLocalizer,
-                           IAppLogger applogger)
+                           IAppLogger applogger,
+                           IMapper mapper)
         {
             _partRepository = partRepository;
             _templateRepository = templateRepository;
@@ -39,6 +42,7 @@ namespace Bintainer.Service
             _binService = binService;
             _localizer = stringLocalizer;
             _appLogger = applogger;
+            _mapper = mapper;
         }
 
         public Response<Part?> GetPartByName(string partName, string userId) 
@@ -67,6 +71,27 @@ namespace Bintainer.Service
 
         }
 
+        public Response<List<PartAttributeViewModel>?> GetPartAttributes(string partName, string userId) 
+        {
+            try
+            {            
+                var attributes = _partRepository.GetPartAttributes(partName, userId);
+                return new Response<List<PartAttributeViewModel>?>()
+                {
+                    IsSuccess = true,
+                    Result = _mapper.Map<List<PartAttributeViewModel>>(attributes)
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<List<PartAttributeViewModel>?>()
+                {
+                    IsSuccess = false,
+                    Message = _localizer["ErrorFailToRetriveAttributes"]
+                };
+            }
+        }
         public Response<List<PartAttributeViewModel>?> MapPartAttributesToViewModel(string partName,string userId) 
         {
             try
