@@ -1,3 +1,4 @@
+using AutoMapper;
 using Bintainer.Model;
 using Bintainer.Model.Entity;
 using Bintainer.Model.View;
@@ -35,15 +36,18 @@ namespace Bintainer.WebApp.Pages.Dashboard
         private readonly IInventoryService _inventoryService;
         private readonly IStringLocalizer _localizer;
         private readonly IAppLogger _appLogger;
+        private readonly IMapper _mapper;
         public InventoryModel(IInventoryService inventoryService, 
                               SignInManager<IdentityUser> signInManager,
                               IStringLocalizer<ErrorMessages> localizer,
-                              IAppLogger appLogger)
+                              IAppLogger appLogger,
+                              IMapper mapper)
         {
             _SignInManager = signInManager;
             _inventoryService = inventoryService;
             _localizer = localizer;
             _appLogger = appLogger;
+            _mapper = mapper;
 
             MinSectionWidth = GlobalConstants.MinSectionWidth;
             MinSectionHeight = GlobalConstants.MinSectionHeight;
@@ -68,7 +72,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
             _appLogger.LogMessage(_localizer["WarningInvalidUser"], LogLevel.Warning);
         }
         
-        public IActionResult OnPostSubmitForm([FromBody] List<InventorySection> sectionList, string inventoryName) 
+        public IActionResult OnPostSubmitForm([FromBody] List<InventorySectionViewModel> sectionListVM, string inventoryName) 
         {
 
             if (!ModelState.IsValid)
@@ -88,7 +92,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 var UserId = User.Claims.ToList().FirstOrDefault(c=>c.Type.Contains("nameidentifier"))?.Value;
                 
                 UserViewModel user = new() { Name = userName, UserId = UserId };
-               
+                var sectionList = _mapper.Map<List<InventorySection>>(sectionListVM);
                 var inventory = _inventoryService.CreateOrUpdateInventory(user, inventoryName, sectionList);
 
                 _appLogger.LogMessage(_localizer["InfoRepositoryCreateOrUpdateSuccess"], LogLevel.Information);
