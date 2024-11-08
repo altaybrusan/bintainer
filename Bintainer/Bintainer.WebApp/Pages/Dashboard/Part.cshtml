@@ -677,7 +677,7 @@
         });
         $('#updateAttribute').on('click', function (event) {
             event.preventDefault();
-            var partName = $('#searchPartName').val();
+            var partName = $('#searchPartName').val().trim();
             var productAttributes = {};
             $('#productAttributeTable tr').each(function () {
                 var row = $(this);
