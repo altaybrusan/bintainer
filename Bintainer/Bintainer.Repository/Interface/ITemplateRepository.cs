@@ -11,7 +11,7 @@ namespace Bintainer.Repository.Interface
 {
     public interface ITemplateRepository
     {
-        public Dictionary<int,string?> GetTemplatesOfUser(string userId);
+        public List<PartTemplateInfo> GetUserTemplatesInfo(string userId);
         public PartAttributeTemplate? GetAttributeTemplateById(int? templateId);
         public PartAttributeTemplate? GetAttributeTemplateByName(string partName, string userId);
         public PartAttributeTemplate? CreateAttributeTemplateByName(string partName, string userId);

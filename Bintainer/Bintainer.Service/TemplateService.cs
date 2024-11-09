@@ -36,12 +36,12 @@ namespace Bintainer.Service
             _localizer = localizer;
             _mapper = mapper;
         }
-        public Response<Dictionary<int, string?>> GetTemplateByUserId(string userId)
+        public Response<List<PartTemplateInfo>> GetUserAttributeTemplatesInfo(string userId)
         {
             try
             {
-                var response = _templateRepository.GetTemplatesOfUser(userId);
-                return new Response<Dictionary<int, string?>>()
+                var response = _templateRepository.GetUserTemplatesInfo(userId);
+                return new Response<List<PartTemplateInfo>>()
                 {
                     IsSuccess = true,
                     Result = response
@@ -49,7 +49,7 @@ namespace Bintainer.Service
             }
             catch (Exception ex)
             {
-                return new Response<Dictionary<int, string?>>()
+                return new Response<List<PartTemplateInfo>>()
                 {
                     IsSuccess = false,
                     Message = ex.Message

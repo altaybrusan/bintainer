@@ -22,11 +22,21 @@ namespace Bintainer.Repository.Service
         }
         public Dictionary<int, string> AttributeTemplatesTable { get; set; } = new Dictionary<int, string>();
 
-        public Dictionary<int, string?> GetTemplatesOfUser(string userId)
+        public List<PartTemplateInfo> GetUserTemplatesInfo(string userId)
         {
             return _dbContext.PartAttributeTemplates
                               .Where(t => t.UserId == userId && t.TemplateName != null)
-                              .ToDictionary(t => t.Id, t => t.TemplateName);
+                              .Select(p => new PartTemplateInfo()
+                              {
+                                  GuidId = p.GuidId,
+                                  TemplateName = p.TemplateName != null ? p.TemplateName.Trim() : null,
+                                  PartAttributes = p.PartAttributes.Select(a => new PartAttributeInfo()
+                                  {
+                                      GuidId = a.GuidId,
+                                      Name = a.Name != null ? a.Name.Trim() : null,
+                                      Value = a.Value != null ? a.Value.Trim() : null,
+                                  }).ToList(),
+                              }).ToList();
 
 
         }
