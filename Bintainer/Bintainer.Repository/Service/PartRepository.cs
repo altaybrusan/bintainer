@@ -29,7 +29,7 @@ namespace Bintainer.Repository.Service
                                          .ThenInclude(b => b.Bin)
                                          .ThenInclude(b => b.BinSubspaces)
                                          .Include(p => p.OrderPartAssociations)
-                                         .Include(p => p.AttributeTemplates)
+                                         .Include(p => p.Template)
                                          .ThenInclude(p => p.PartAttributes)
                                          .Where(p => p.Name.Contains(partName) && p.UserId == userId)                                    
                                          .FirstOrDefault();
@@ -42,12 +42,12 @@ namespace Bintainer.Repository.Service
                                          .ThenInclude(b => b.Bin)
                                          .ThenInclude(b => b.BinSubspaces)
                                          .Include(p => p.OrderPartAssociations)
-                                         .Include(p => p.AttributeTemplates)
+                                         .Include(p => p.Template)
                                          .ThenInclude(p => p.PartAttributes)
                                          .Where(p => p.Name.Contains(partName) && p.UserId == userId)
                                          .FirstOrDefault();
 
-            var partAttributeTemplate = part?.AttributeTemplates.FirstOrDefault();
+            var partAttributeTemplate = part?.Template;
             
             if(partAttributeTemplate is null)
                 return null;

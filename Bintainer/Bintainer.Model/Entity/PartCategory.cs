@@ -13,6 +13,8 @@ public partial class PartCategory
 
     public string UserId { get; set; } = null!;
 
+    public Guid? GuidId { get; set; }
+
     public virtual ICollection<PartCategory> InverseParentCategory { get; set; } = new List<PartCategory>();
 
     public virtual PartCategory? ParentCategory { get; set; }

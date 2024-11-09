@@ -11,8 +11,11 @@
     [SupplierUri] NCHAR(150) NULL,
     [UserId] NVARCHAR (450) NOT NULL,
     [OrderId] INT NULL,
+    [TemplateId] INT NULL,
+    [GuidId] UNIQUEIDENTIFIER DEFAULT NEWID(), 
     CONSTRAINT [FK_Part_PartCategory] FOREIGN KEY ([CategoryId]) REFERENCES [PartCategory]([Id]) ON DELETE SET NULL,
     CONSTRAINT [FK_Part_PartPackage] FOREIGN KEY ([PackageId]) REFERENCES [PartPackage]([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_Part_PartAttributeTemplate] FOREIGN KEY ([TemplateId])  REFERENCES [PartAttributeTemplate]([Id])ON DELETE SET NULL,       
     CONSTRAINT [FK_Part_AspNetUsers] FOREIGN KEY ([UserId])  REFERENCES [AspNetUsers]([Id])ON DELETE NO ACTION,       
 )
 GO

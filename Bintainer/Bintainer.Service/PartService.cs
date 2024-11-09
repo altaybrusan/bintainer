@@ -109,7 +109,7 @@ namespace Bintainer.Service
                         
                     };
                 }
-                var result = part.AttributeTemplates?.FirstOrDefault()?.PartAttributes?
+                var result = part.Template?.PartAttributes?
                                         .Select(attr => new PartAttributeViewModel()
                                         {
                                             Name = attr.Name != null ? attr.Name.Trim() : null,
@@ -195,7 +195,7 @@ namespace Bintainer.Service
                 var attributes = request.Attributes.ToPartAttributeList(attributeTemplate);
                 _templateRepository.SaveAttributes(attributes);
 
-                part.AttributeTemplates.Add(attributeTemplate);
+                part.Template = attributeTemplate;
                 _partRepository.UpdatePart(part);
 
                 PartAttributeTemplate partAttributeTemplate = null;
@@ -242,7 +242,7 @@ namespace Bintainer.Service
                 }
 
                 // Get existing part attributes from the first AttributeTemplate
-                var existingAttributes = part.AttributeTemplates.FirstOrDefault()?.PartAttributes.ToList();
+                var existingAttributes = part.Template?.PartAttributes.ToList();
                 if (existingAttributes == null)
                     existingAttributes = new List<PartAttribute>();
 
@@ -269,7 +269,7 @@ namespace Bintainer.Service
                         {
                             Name = incomingAttribute.Key.Trim(),
                             Value = incomingAttribute.Value.Trim(),
-                            TemplateId = part.AttributeTemplates.FirstOrDefault()?.Id ?? 0 // Ensure TemplateId is set correctly
+                            TemplateId = part.Template?.Id ?? 0 // Ensure TemplateId is set correctly
                         });
                     }
                 }

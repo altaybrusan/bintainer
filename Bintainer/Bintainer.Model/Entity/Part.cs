@@ -27,19 +27,25 @@ public partial class Part
 
     public int? OrderId { get; set; }
 
+    public int? TemplateId { get; set; }
+
+    public Guid? GuidId { get; set; }
+
     public virtual PartCategory? Category { get; set; }
 
     public virtual ICollection<OrderPartAssociation> OrderPartAssociations { get; set; } = new List<OrderPartAssociation>();
 
     public virtual PartPackage Package { get; set; } = null!;
 
+    public virtual ICollection<PartAttribute> PartAttributes { get; set; } = new List<PartAttribute>();
+
     public virtual ICollection<PartBinAssociation> PartBinAssociations { get; set; } = new List<PartBinAssociation>();
 
     public virtual ICollection<PartLabel> PartLabels { get; set; } = new List<PartLabel>();
 
-    public virtual AspNetUser User { get; set; } = null!;
+    public virtual PartAttributeTemplate? Template { get; set; }
 
-    public virtual ICollection<PartAttributeTemplate> AttributeTemplates { get; set; } = new List<PartAttributeTemplate>();
+    public virtual AspNetUser User { get; set; } = null!;
 
     public virtual ICollection<PartGroup> Groups { get; set; } = new List<PartGroup>();
 }

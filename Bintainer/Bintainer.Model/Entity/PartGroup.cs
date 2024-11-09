@@ -11,6 +11,8 @@ public partial class PartGroup
 
     public string UserId { get; set; } = null!;
 
+    public Guid? GuidId { get; set; }
+
     public virtual AspNetUser User { get; set; } = null!;
 
     public virtual ICollection<Part> Parts { get; set; } = new List<Part>();

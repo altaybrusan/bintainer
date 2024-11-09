@@ -4,6 +4,7 @@
     [Name] NCHAR(75) NULL, 
     [ParentCategoryId] INT NULL,   
     [UserId] NVARCHAR (450) NOT NULL,
+    [GuidId] UNIQUEIDENTIFIER DEFAULT NEWID(),
     CONSTRAINT [FK_PartCategory_AspNetUsers] FOREIGN KEY ([UserId])  REFERENCES [AspNetUsers]([ID]),
     CONSTRAINT [FK_PartCategory_ParentCategory] FOREIGN KEY ([ParentCategoryId]) REFERENCES [PartCategory]([Id])
 )
