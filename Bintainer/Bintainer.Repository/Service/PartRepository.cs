@@ -30,6 +30,7 @@ namespace Bintainer.Repository.Service
                                          .ThenInclude(b => b.BinSubspaces)
                                          .Include(p => p.OrderPartAssociations)
                                          .Include(p => p.AttributeTemplates)
+                                         .ThenInclude(p => p.PartAttributes)
                                          .Where(p => p.Name.Contains(partName) && p.UserId == userId)                                    
                                          .FirstOrDefault();
             return part;
@@ -181,6 +182,12 @@ namespace Bintainer.Repository.Service
             _dbContext.PartBinAssociations.UpdateRange(associations);
             _dbContext.SaveChanges();
             return associations;
+        }
+
+
+        public List<string> GetPartNameList(string userId)
+        {
+            return _dbContext.Parts.Select(p => p.Name.Trim()).ToList();
         }
     }
 }

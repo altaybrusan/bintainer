@@ -21,5 +21,6 @@ namespace Bintainer.Repository.Interface
         public bool TryInsertPartIntoBin(List<int> targetIndices, string label, ref Part part, ref Bin bin);
         public void UpdatePartQuantityInsideSubspace(BinSubspace subspace, int partId, int partQuantity);
         public List<PartBinAssociation>? UpdatePartBinassociations(List<PartBinAssociation>? associations);
+        public List<string> GetPartNameList(string userId);
     }
 }

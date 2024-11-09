@@ -25,5 +25,6 @@ namespace Bintainer.Service.Interface
         public Response<List<PartBinAssociation>?> TryAdjustPartQuantity(AdjustQuantityRequest request,string userId);
         public int? FindCategoryIdByPath(List<PartCategory> Categories, List<string> path);
         //public PartGroup? GetPartGroup(string name, string userId);
+        public Response<List<string>?> GetPartNames(string userId);
     }
 }

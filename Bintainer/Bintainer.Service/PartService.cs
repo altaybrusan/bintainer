@@ -462,8 +462,28 @@ namespace Bintainer.Service
                     Result = null
                 };
             }
+        }
 
-
+        public Response<List<string>?> GetPartNames(string userId)
+        {
+            try
+            {
+                var result = _partRepository.GetPartNameList(userId);
+                return new Response<List<string>?>()
+                {
+                    IsSuccess = true,
+                    Result = result
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<List<string>?>()
+                {
+                    IsSuccess = true,
+                    Message = _localizer["ErrorFailedAttributeTemplatedRemove"]
+                };
+            }
         }
 
 

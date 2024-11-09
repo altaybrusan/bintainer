@@ -141,6 +141,9 @@
   <data name="ErrorFailedSavingPartCategories" xml:space="preserve">
     <value>Failed saving part categories.</value>
   </data>
+  <data name="ErrorFailedToLoadPartNames" xml:space="preserve">
+    <value>Failed to load part names.</value>
+  </data>
   <data name="ErrorFailToRetriveAttributes" xml:space="preserve">
     <value>Failed to retrive part attributes.</value>
   </data>

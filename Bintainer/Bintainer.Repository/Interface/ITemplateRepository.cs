@@ -29,5 +29,6 @@ namespace Bintainer.Repository.Interface
         public void RemoveAttributeTemplate(string userId,int attributeId);
 
 
+
     }
 }

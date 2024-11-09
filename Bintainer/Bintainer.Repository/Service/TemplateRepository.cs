@@ -136,5 +136,5 @@ namespace Bintainer.Repository.Service
 			_dbContext.PartAttributeTemplates.Where(t => t.Id == templateId && userId == userId)?.ExecuteDelete();
 			_dbContext.SaveChanges();
 		}
-	}
+    }
 }

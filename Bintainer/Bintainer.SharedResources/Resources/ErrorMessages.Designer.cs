@@ -133,6 +133,15 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to load part names..
+        /// </summary>
+        public static string ErrorFailedToLoadPartNames {
+            get {
+                return ResourceManager.GetString("ErrorFailedToLoadPartNames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to retrive part attributes..
         /// </summary>
         public static string ErrorFailToRetriveAttributes {

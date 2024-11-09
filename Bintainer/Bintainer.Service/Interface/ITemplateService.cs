@@ -14,7 +14,7 @@ namespace Bintainer.Service.Interface
     public interface ITemplateService
     {
         public Response<Dictionary<int,string?>> GetTemplateByUserId(string userId);
-        public Response<List<CategoryViewModel>?> GetPartCategories(string userId);
+        public Response<List<CategoryViewModel>?> GetPartCategories(string userId);        
         public Response<List<PartAttributeViewModel>> GetPartAttributes(int tableId);
         public void EnsureRootNodeExists(string userId);
         public Response<Dictionary<int, string>> GetAttributeTemplates(string userId);

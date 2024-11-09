@@ -28,7 +28,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public List<PartPackage> Packages { get; set; } = new List<PartPackage>();
 
         public List<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
-        public List<Part> Part { get; set; } = new List<Part>();
+        public List<string> PartNames { get; set; } = new List<string>();
         
         public List<PartGroup> Group { get; set; } = new List<PartGroup>();
         public Dictionary<int,string?> AttributeTemplatesTable { get; set; } = new Dictionary<int, string>();
@@ -79,7 +79,8 @@ namespace Bintainer.WebApp.Pages.Dashboard
 			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
             
             AttributeTemplatesTable = _templateService.GetTemplateByUserId(userId).Result;
-            Categories = _templateService.GetPartCategories(userId).Result;             
+            Categories = _templateService.GetPartCategories(userId).Result;  
+            PartNames = _partService.GetPartNames(userId).Result;
         }
 
         public IActionResult OnPostRetrievePartAttributeDetails(string partNumber) 
