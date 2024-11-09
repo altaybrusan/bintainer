@@ -83,12 +83,12 @@ namespace Bintainer.WebApp.Pages.Dashboard
             PartNames = _partService.GetPartNames(userId).Result;
         }
 
-        public IActionResult OnPostRetrievePartAttributeDetails(string partNumber) 
+        public IActionResult OnPostRetrievePart(string partNumber) 
         {
             try
             {
                 var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-                var response = _partService.GetPartAttributes(partNumber,userId);
+                var response = _partService.GetPartByName(partNumber,userId);
                 if (response is null)
                     return new OkResult();
 

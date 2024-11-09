@@ -235,8 +235,8 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="autocomplete">
-                                        <input type="text" class="form-control input-sharp" id="updatePartList" placeholder="Part Name" data-autocomplete-options="updatePartListData" required="required">
-                                        <div id="updatePartListData" style="display:none;">
+                                        <input type="text" class="form-control input-sharp" id="updatePartNameList" placeholder="Part Name" data-autocomplete-options="updatePartNameListData" required="required">
+                                        <div id="updatePartNameListData" style="display:none;">
                                             @Html.Raw(Json.Serialize(Model.PartNames.Select(p => p.Trim())))
                                         </div>
                                     </div>
@@ -695,6 +695,23 @@
         $('#searchPartBtn').on('click', function (event) {
             event.preventDefault();
             searchPart(); // Trigger the search
+        });
+        
+        
+        $('#updatePartNameList').on('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                loadPartForUpdate(); // Trigger the search on Enter key press
+            }
+        });
+        $('#updatePartNameList').on('keyup', function () {
+            var partName = $(this).val();
+            if (partName.length === 0) {
+                $('#addAttribute').prop('disabled', true);
+                $('#updateAttribute').prop('disabled', true);
+                var table = $('#searchedProductSpecTable');
+                table.find('tbody').empty(); // Clear table if input is empty
+            }
         });
         // Disable buttons if the input is cleared
         // Event handler for pressing "Enter" in the input field
@@ -1187,6 +1204,52 @@
                 }
             });
         });
+
+        function loadPartForUpdate() {
+            var number = $('#updatePartNameList').val().trim();
+            var token = $('input[name="__RequestVerificationToken"]').val(); // Extract CSRF token
+            var table = $('#updateProductSpecTable'); // Select the table
+            table.find('tbody').empty(); // Clear previous table rows
+
+            if (number.length === 0) {
+                alert('Please enter a valid part number.');
+                return;
+            }
+
+            $.ajax({
+                url: '/dashboard/Part?handler=RetrievePart&partNumber=' + number,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN", token);
+                },
+                contentType: "application/json; charset=utf-8",
+                type: 'Post',
+                success: function (response) {
+                    if (table.length) { // Check if the table exists
+                        $('#updatePartName').val(response.partName || '');
+                        $('#updateDescription').val(response.description || '');
+                        $('#updateSupplier').val(response.supplier || '');
+                        $('#updatePackageInput').val(response.package || '');
+                        $('#updateGroupInput').val(response.group || '');
+
+                        // Populate the attributes table
+                        if (response.attributes && response.attributes.length > 0) {
+                            $.each(response.attributes, function (index, item) {
+                                appendRowToTable(table, item.name, item.value);
+                            });
+                        } 
+                        // Enable buttons if data is successfully fetched
+                        $('#addAttribute').prop('disabled', false);
+                        $('#updateAttribute').prop('disabled', false);
+                    } else {
+                        alert('No data found for the given part number.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('The part number is not valid.');
+                    console.error('Error:', error);
+                }
+            });
+        }
 
         function searchPart() {
             var number = $('#searchPartName').val().trim();
