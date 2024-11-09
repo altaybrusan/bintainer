@@ -14,7 +14,7 @@ namespace Bintainer.Service.Interface
     public interface IPartService
     {
 
-        public Response<Part?> GetPartByName(string partName,string userId);
+        public Response<PartViewModel?> GetPartByName(string partName,string userId);
         public Response<List<PartAttributeViewModel>?> GetPartAttributes(string partName,string userId);
         public Response<List<PartAttributeViewModel>?> MapPartAttributesToViewModel(string partName,string userId);
         public Response<Part?> CreatePartForUser(CreatePartRequest request, string userId);

@@ -45,12 +45,14 @@ namespace Bintainer.Service
             _mapper = mapper;
         }
 
-        public Response<Part?> GetPartByName(string partName, string userId) 
+        public Response<PartViewModel?> GetPartByName(string partName, string userId) 
         {
             try
             {
-                var result = _partRepository.GetPartByName(partName, userId);
-                return new Response<Part?>
+                var part = _partRepository.GetPartByName(partName, userId);
+                
+                var result = _mapper.Map<PartViewModel>(part);
+                return new Response<PartViewModel?>
                 {
                     IsSuccess = true,
                     Result = result
@@ -61,7 +63,7 @@ namespace Bintainer.Service
                 _appLogger.LogMessage(ex.Message, LogLevel.Error);
             }
 
-            return new Response<Part?>
+            return new Response<PartViewModel?>
             {
                 IsSuccess = false,
                 Result = null,
