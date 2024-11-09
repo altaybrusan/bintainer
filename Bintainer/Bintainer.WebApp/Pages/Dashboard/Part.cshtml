@@ -235,8 +235,8 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="autocomplete">
-                                        <input type="text" class="form-control input-sharp" id="searchPartName" placeholder="Part Name" data-autocomplete-options="searchPartNameData">
-                                        <div id="searchPartNameData" style="display:none;">
+                                        <input type="text" class="form-control input-sharp" id="updatePartList" placeholder="Part Name" data-autocomplete-options="updatePartListData" required="required">
+                                        <div id="updatePartListData" style="display:none;">
                                             @Html.Raw(Json.Serialize(Model.PartNames.Select(p => p.Trim())))
                                         </div>
                                     </div>
