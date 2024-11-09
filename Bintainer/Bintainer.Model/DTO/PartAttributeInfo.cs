@@ -10,5 +10,7 @@ namespace Bintainer.Model.DTO
     {
         public string? Name { get; set; }
         public string? Value { get; set; }
+        public Guid? GuidId { get; set; }
+
     }
 }
