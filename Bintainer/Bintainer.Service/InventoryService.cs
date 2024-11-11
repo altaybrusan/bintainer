@@ -17,12 +17,12 @@ namespace Bintainer.Service
     public class InventoryService : IInventoryService
     {
 
-        IInventoryRepository _inventoryRepository;
-        IBinService _binService;
-        IStringLocalizer<ErrorMessages> _strLocalizer;
-        IAppLogger _appLogger;
-        IMapper _mapper;
-        IUserRepository _userRepository;
+        readonly IInventoryRepository _inventoryRepository;
+        readonly IBinService _binService;
+        readonly IStringLocalizer<ErrorMessages> _strLocalizer;
+        readonly IAppLogger _appLogger;
+        readonly IMapper _mapper;
+        readonly IUserRepository _userRepository;
 
         public InventoryService(IBinService binService, 
                                 IInventoryRepository inventoryRepository,
@@ -39,29 +39,30 @@ namespace Bintainer.Service
             _userRepository = userRepository;
         }
 
-        public Response<InventorySection?> GetInventorySection(string? userId, int sectionId)
-        {
-            try
-            {
-                var result = _inventoryRepository.GetSection(userId, sectionId);
+        //public Response<InventorySection?> GetInventorySection(string? userId, int sectionId)
+        //{
+        //    try
+        //    {
+        //        var result = _inventoryRepository.GetSection(userId, sectionId);
 
-                return new Response<InventorySection?>()
-                {
-                    IsSuccess = true,
-                    Result = result
-                };
-            }
-            catch (Exception ex)
-            {
-                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+        //        return new Response<InventorySection?>()
+        //        {
+        //            IsSuccess = true,
+        //            Result = result
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _appLogger.LogMessage(ex.Message, LogLevel.Error);
               
-                return new Response<InventorySection?>()
-                {
-                    IsSuccess = false,
-                    Message = ex.Message
-                };
-            }
-        }
+        //        return new Response<InventorySection?>()
+        //        {
+        //            IsSuccess = false,
+        //            Message = ex.Message
+        //        };
+        //    }
+        //}
+        
         public Response<Bin?> GetBinFrom(InventorySection? section, int coordinateX, int coordinateY) 
         {
             try
@@ -132,6 +133,7 @@ namespace Bintainer.Service
                 };
             }           
         }
+        
         public Response<Inventory?> CreateOrUpdateInventory(UserViewModel userViewModel, string inventoryName, List<InventorySection>? sectionList = null)
         {
             try

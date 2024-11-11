@@ -82,7 +82,7 @@ namespace Bintainer.Repository.Service
                                 .Where(opa => opa.OrderId == o.Id)
                                 .Select(opa => new PartSummary
                                 {
-                                    PartName = opa.Part.Name,
+                                    PartName = opa.Part.Number,
                                     Quantity = opa.Quantity
                                 }).ToList()
                 })

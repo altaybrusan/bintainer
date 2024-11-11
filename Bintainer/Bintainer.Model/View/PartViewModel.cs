@@ -11,7 +11,7 @@ namespace Bintainer.Model.View
     {
         public int Id { get; set; }
 
-        public string Name { get; set; } = null!;
+        public string Number { get; set; } = null!;
 
         public string? Description { get; set; }
 
@@ -23,13 +23,13 @@ namespace Bintainer.Model.View
 
         public string UserId { get; set; } = null!;
 
-        public PartCategory? Category { get; set; }
+        public CategoryViewModel? Category { get; set; }
 
-        public PartPackage Package { get; set; } = null!;
+        public PartPackageViewModel Package { get; set; } = null!;
         
         public ICollection<PartAttributeViewModel>? Attributes { get; set; }  
         
-        public ICollection<PartGroup> Groups { get; set; }
+        public ICollection<PartGroupViewModel> Groups { get; set; }
 
     }
 }

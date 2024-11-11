@@ -84,15 +84,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-8" style="margin-left: 10px;">
-                    <form id="myForm" class="well form-horizontal" method="post">
+                    <form id="createPartForm" class="well form-horizontal" method="post">
                         <fieldset>
                             <legend><h2>Part</h2></legend>
                             <hr />
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="control-label">Part Name</label>
-                                        <input id="partName" name="partName" placeholder="e.g., 2N2222A" class="form-control  input-sharp" required="required" type="text">
+                                        <label class="control-label">Part number</label>
+                                        <input id="partNumber" name="partNumber" placeholder="e.g., 2N2222A" class="form-control  input-sharp" required="required" type="text">
                                     </div>
                                     <div class="form-group">
                                         <label class="control-label">Description</label>
@@ -123,7 +123,7 @@
                             <div class="row">
                                 <div class="form-group">
                                     <label class="control-label">Category</label>
-                                    <div class="category-treeview"></div>
+                                    <div class="create-part-category-treeview"></div>
                                     @*                                         <select id="categorySelect" class="form-select form-select-sm"
                                     required="required"
                                     asp-items="@(new SelectList(Model.Category,nameof(CategoryViewModel.Id),nameof(CategoryViewModel.Title)))">
@@ -139,7 +139,7 @@
                                 <div class="col-4">
                                     <select id="templateList" class="form-select form-select-lg mb-3 w-100"
                                             aria-label=".form-select-lg example"
-                                            asp-items="@(new SelectList(Model.AttributeTemplatesTable,"Key","Value"))"
+                                            asp-items="@(new SelectList(Model.AttributeTemplatesList,"GuidId","TemplateName"))"
                                             target-table="attributeTable">
                                         <option selected value="">Templates</option>
                                     </select>
@@ -230,14 +230,14 @@
                             <div class="row align-items-center">
                                 <div class="col-md-2">
                                     <div class="row">
-                                        <label for="partName" class="form-label">Part name</label>
+                                        <label for="partNumber" class="form-label">Part number</label>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="autocomplete">
-                                        <input type="text" class="form-control input-sharp" id="updatePartNameList" placeholder="Part Name" data-autocomplete-options="updatePartNameListData" required="required">
-                                        <div id="updatePartNameListData" style="display:none;">
-                                            @Html.Raw(Json.Serialize(Model.PartNames.Select(p => p.Trim())))
+                                        <input type="text" class="form-control input-sharp" id="searchPartNumberForUpdate" placeholder="Part number" data-autocomplete-options="updatepartNumberListData" required="required">
+                                        <div id="updatepartNumberListData" style="display:none;">
+                                            @Html.Raw(Json.Serialize(Model.PartNumbers.Select(p => p.Trim())))
                                         </div>
                                     </div>
                                 </div>
@@ -259,8 +259,8 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="control-label">Part Name</label>
-                                        <input id="updatePartName" name="updatePartName" class="form-control  input-sharp" type="text">
+                                        <label class="control-label">Part number</label>
+                                        <input id="updatepartNumber" name="updatepartNumber" class="form-control  input-sharp" type="text">
                                     </div>
                                     <div class="form-group">
                                         <label class="control-label">Description</label>
@@ -290,7 +290,7 @@
                             <div class="row">
                                 <div class="form-group">
                                     <label class="control-label">Category</label>
-                                    <div class="category-treeview"></div>
+                                    <div id="update-part-category-treeview" class="category-treeview"></div>
                                 </div>
                             </div>
                         </fieldset>
@@ -333,9 +333,9 @@
                                     <div class="row align-items-center">
                                         <label class="control-label">Part</label>
                                         <div class="autocomplete">
-                                            <input type="text" class="form-control input-sharp" id="arrangePartList" placeholder="Part Name" data-autocomplete-options="arrangePartListData" required="required">
+                                            <input type="text" class="form-control input-sharp" id="arrangePartList" placeholder="Part number" data-autocomplete-options="arrangePartListData" required="required">
                                             <div id="arrangePartListData" style="display:none;">
-                                                @Html.Raw(Json.Serialize(Model.PartNames.Select(p => p.Trim())))
+                                                @Html.Raw(Json.Serialize(Model.PartNumbers.Select(p => p.Trim())))
                                             </div>
                                         </div>
                                     </div>
@@ -411,7 +411,7 @@
                             <table class="table" id="searchedProductSpecTable">
                                 <thead>
                                     <tr>
-                                        <th>Part Name</th>
+                                        <th>Part number</th>
                                         <th>Section</th>
                                         <th>Coordinate (X)</th>
                                         <th>Coordinate (Y)</th>
@@ -443,9 +443,9 @@
                                 <div class="form-group">
                                     <label class="control-label">Part</label>
                                     <div class="autocomplete">
-                                        <input type="text" class="form-control input-sharp" id="usePartName" placeholder="Part Name" data-autocomplete-options="partNamesData">
-                                        <div id="partNamesData" style="display:none;">
-                                            @Html.Raw(Json.Serialize(Model.PartNames.Select(p => p.Trim())))
+                                        <input type="text" class="form-control input-sharp" id="usepartNumber" placeholder="Part number" data-autocomplete-options="partNumbersData">
+                                        <div id="partNumbersData" style="display:none;">
+                                            @Html.Raw(Json.Serialize(Model.PartNumbers.Select(p => p.Trim())))
                                         </div>
                                     </div>
                                 </div>
@@ -567,16 +567,27 @@
                   DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault
               }));
 
-        const myTree = new DinampTreeEditor('.category-treeview')
-            .setData(data)
-            .set({ // Set the options
+        const creatPartTree = new DinampTreeEditor('.create-part-category-treeview')
+                                  .setData(data)
+                                  .set({ // Set the options
                 radios: true,
                 editable: false,
                 checkboxes: false,
                 oncheck: function (state, text, path) {
-                         selectedCategory =  path;
+                    selectedCategory = path;
                 }
-            });;
+            });
+
+        const updatePartTree = new DinampTreeEditor('#update-part-category-treeview')
+                                   .setData(data)
+                                   .set({ // Set the options
+                radios: true,
+                editable: false,
+                checkboxes: false,
+                oncheck: function (state, text, path) {
+                    selectedCategory = path;
+                }
+            });
 
         // Disable the buttons by default
         $('#addAttribute').prop('disabled', true);
@@ -584,7 +595,8 @@
 
         // Call the function initially
         $('#templateList').on('change', function (event) {
-            var selectedId = document.getElementById("templateList").value;
+            //var selectedId = document.getElementById("templateList").value;
+            var selectedId = $(this).val();
             var selectedText = $(this).find('option:selected').text();
             $('#attributeName').val(selectedText.trim());
             var targetTableId = $(this).attr('target-table'); // Get the ID from the target-table attribute
@@ -596,13 +608,13 @@
                     xhr.setRequestHeader("XSRF-TOKEN",
                         $('input:hidden[name="__RequestVerificationToken"]').val());
                 },
-                url: '/dashboard/template?handler=LoadAttributeTable&tableId=' + selectedId,
+                url: '/dashboard/template?handler=LoadTemplatesDefaultAttributes&templateGuid=' + selectedId,
                 contentType: 'application/json',
                 success: function (response) {
                     console.log('Data saved successfully:', response);
                     if (table.length) { // Check if the table exists
                         $.each(response, function (index, item) {
-                            appendRowToTable(table, item.name, item.value);
+                            appendRowToTable(table, item.name, item.value, item.guidId);
                         });                       
                     } else {
                         console.error('Table with ID "' + targetTableId + '" not found.');
@@ -674,7 +686,7 @@
                             }
                             if (item.category === "DetailedDescription" && item.value){
                                 $('#description').val(item.value);
-                                $('#partName').val(digiKeyPartNumber);
+                                $('#partNumber').val(digiKeyPartNumber);
 
                             }
 
@@ -687,26 +699,22 @@
                 },
                 error: function (xhr, status, error) {
                     // Handle any errors here
-                    alert('There is an error during the fetch. Please check if the Part Number is correct.');
+                    alert('There is an error during the fetch. Please check if the Part number is correct.');
                     console.error(error);
                 }
             });
         });
-        $('#searchPartBtn').on('click', function (event) {
-            event.preventDefault();
-            searchPart(); // Trigger the search
-        });
+       
         
-        
-        $('#updatePartNameList').on('keydown', function (event) {
+        $('#updatepartNumberList').on('keydown', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 loadPartForUpdate(); // Trigger the search on Enter key press
             }
         });
-        $('#updatePartNameList').on('keyup', function () {
-            var partName = $(this).val();
-            if (partName.length === 0) {
+        $('#updatepartNumberList').on('keyup', function () {
+            var partNumber = $(this).val();
+            if (partNumber.length === 0) {
                 $('#addAttribute').prop('disabled', true);
                 $('#updateAttribute').prop('disabled', true);
                 var table = $('#searchedProductSpecTable');
@@ -715,16 +723,20 @@
         });
         // Disable buttons if the input is cleared
         // Event handler for pressing "Enter" in the input field
-        $('#searchPartName').on('keydown', function (event) {
+        $('#searchPartBtn').on('click', function (event) {
+            event.preventDefault();
+            loadPartForUpdate(); // Trigger the search
+        });
+        $('#searchPartNumberForUpdate').on('keydown', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                searchPart(); // Trigger the search on Enter key press
+                loadPartForUpdate(); // Trigger the search on Enter key press
             }
         });
         // Disable buttons and clear table if input is cleared
-        $('#searchPartName').on('keyup', function () {
-            var partName = $(this).val().trim();
-            if (partName.length === 0) {
+        $('#searchPartNumberForUpdate').on('keyup', function () {
+            var partNumber = $(this).val().trim();
+            if (partNumber.length === 0) {
                 $('#addAttribute').prop('disabled', true);
                 $('#updateAttribute').prop('disabled', true);
                 var table = $('#searchedProductSpecTable');
@@ -744,7 +756,7 @@
         });
         $('#updateAttribute').on('click', function (event) {
             event.preventDefault();
-            var partName = $('#searchPartName').val().trim();
+            var partNumber = $('#searchPartNumberForUpdate').val().trim();
             var productAttributes = {};
             $('#productAttributeTable tr').each(function () {
                 var row = $(this);
@@ -761,7 +773,7 @@
                 },
                 url: '/dashboard/part?handler=UpdatePartAttribute',
                 contentType: 'application/json',
-                data: JSON.stringify({ attributes: productAttributes, partName: partName }),
+                data: JSON.stringify({ attributes: productAttributes, partNumber: partNumber }),
                 success: function (response) {
                     console.log('Data saved successfully:', response);
                     alert('Data saved successfully!');
@@ -783,27 +795,27 @@
                 return;
             }
 
-            var validator = $("#myForm").validate();
+            var validator = $("#createPartForm").validate();
             var isValid = validator.form();
             if (!isValid) {
                 return;                    
             }
             var token = $('input[name="__RequestVerificationToken"]').val();
             // Gather data from the form fields
-            var selectedIndex = $('#templateList').val();
+            var selectedGuid = $('#templateList').val();
             //var orderDate = $('#orderDate').val();
             var groupValue = $('#groupInput').val();
             var packageValue = $('#packageInput').val();
 
             var partData = {
-                PartName: $('#partName').val(),
+                PartNumber: $('#partNumber').val(),
                 Description: $('#description').val(),
                 Supplier: $('#supplier').val(),                                         
                 //OrderNumber: $('#order').val(),
                 //OrderQuantity: $('#orderQuantity').val(),
                 //CategoryId: $('#categorySelect').val(),
                 
-                AttributeTemplateId: selectedIndex ? parseInt(selectedIndex) : null,
+                AttributeTemplateGuid: selectedGuid.trim() === '' ? null : selectedGuid,
                 Attributes: {},
                 PathToCategory: selectedCategory
             };
@@ -841,11 +853,15 @@
                     console.log(response);
                     event.preventDefault(); // enable validation
                     alert(response.message); // Show success message
+
+                    selectedCategory = null;
+                    creatPartTree.clear();
+
                     // Optionally, you can redirect or show a success message
                     if (response.message && response.message.includes("success")) 
                     {
                         // Reset the form
-                        $('#myForm')[0].reset();
+                        $('#createPartForm')[0].reset();
                         selectedCategory = null;
                         $('#attributeTable tbody').empty();
                         $('#templateList').val('');
@@ -1037,7 +1053,7 @@
         $('#arrangePartBtn').on('click', function (event) {
             event.preventDefault();
 
-            var partName = $('#arrangePartList').val();
+            var partNumber = $('#arrangePartList').val();
             var sectionId = parseInt($('#sectionSelect').val()); // Convert to int
             var xPosition = parseInt($('input[name="x-position"]').val()); // Convert to int
             var yPosition = parseInt($('input[name="y-position"]').val()); // Convert to int
@@ -1058,7 +1074,7 @@
             }
 
             var data = {
-                PartName: partName,
+                partNumber: partNumber,
                 SectionId: sectionId,
                 CoordinateX: xPosition,
                 CoordinateY: yPosition,
@@ -1069,7 +1085,7 @@
                 FillAllQuantity: fillAllQuantity
             };
 
-            if (!partName || !sectionId || !xPosition || !yPosition || (!isFilled && Object.keys(subspaceQuantities).length === 0)) {
+            if (!partNumber || !sectionId || !xPosition || !yPosition || (!isFilled && Object.keys(subspaceQuantities).length === 0)) {
                 alert("Please fill all the required fields.");
                 return;
             }
@@ -1118,18 +1134,18 @@
         
         $('#usePartBtn').on('click', function (event) {
             event.preventDefault();
-            var partName = $('#usePartName').val().trim();
+            var partNumber = $('#usepartNumber').val().trim();
             var token = $('input[name="__RequestVerificationToken"]').val(); // Extract CSRF token
             var table = $('#usePartTable'); // Select the table
             table.find('tbody').empty(); // Clear previous table rows
 
-            if (partName.length === 0) {
-                alert('Please enter a valid part name.');
+            if (partNumber.length === 0) {
+                alert('Please enter a valid part number.');
                 return;
             }
 
             $.ajax({
-                url: '/dashboard/Part?handler=UsePart&partName=' + partName,
+                url: '/dashboard/Part?handler=UsePart&partNumber=' + partNumber,
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN", token);
                 },
@@ -1140,7 +1156,7 @@
                         if (response.length > 0) {
                             $.each(response, function (index, item) {
                                 var newRow = '<tr>' +
-                                    '<td>' + item.partName + '</td>' +
+                                    '<td>' + item.partNumber + '</td>' +
                                     '<td>' + item.section + '</td>' +
                                     '<td>' + item.coordinateX + '</td>' +
                                     '<td>' + item.coordinateY + '</td>' +
@@ -1150,7 +1166,7 @@
                                     // Add the numeric up-down for the Use column
                                     '<td><input type="number" class="use-input" min="0" max="' + item.quantity +
                                     '" data-subspace-indices="' + item.subspaceIndices +
-                                    '" data-bin-id="' + item.binId + '" data-part-name="' + item.partName + '" data-quantity="' + item.quantity + '"></td>' +
+                                    '" data-bin-id="' + item.binId + '" data-part-name="' + item.partNumber + '" data-quantity="' + item.quantity + '"></td>' +
 
                                     '</tr>';
                                 table.find('tbody').append(newRow);
@@ -1165,7 +1181,7 @@
                                 if (e.key === "Enter") {
                                     var quantityUsed = parseInt($(this).val(), 10);
                                     var binId = parseInt($(this).data('bin-id'), 10);
-                                    var partName = $(this).data('part-name');
+                                    var partNumber = $(this).data('part-name');
                                     var quantity = parseInt($(this).data('quantity'), 10);
                                     var subspaceIndices = $(this).data('subspace-indices');
 
@@ -1177,7 +1193,7 @@
                                             xhr.setRequestHeader("XSRF-TOKEN", token);
                                         },
                                         contentType: 'application/json; charset=utf-8',
-                                        data: JSON.stringify({ partName: partName, binId: binId, quantityUsed: quantityUsed, subspaceIndices: subspaceIndices, quantity: quantity }),
+                                        data: JSON.stringify({ partNumber: partNumber, binId: binId, quantityUsed: quantityUsed, subspaceIndices: subspaceIndices, quantity: quantity }),
                                         success: function (response) {
                                             alert('Quantity updated successfully');
                                             // Optionally, update the row's quantity in the UI
@@ -1206,7 +1222,7 @@
         });
 
         function loadPartForUpdate() {
-            var number = $('#updatePartNameList').val().trim();
+            var number = $('#searchPartNumberForUpdate').val().trim();
             var token = $('input[name="__RequestVerificationToken"]').val(); // Extract CSRF token
             var table = $('#updateProductSpecTable'); // Select the table
             table.find('tbody').empty(); // Clear previous table rows
@@ -1225,18 +1241,23 @@
                 type: 'Post',
                 success: function (response) {
                     if (table.length) { // Check if the table exists
-                        $('#updatePartName').val(response.partName || '');
+                        $('#updatepartNumber').val(response.number || ''); // Use 'number' instead of 'partNumber'
                         $('#updateDescription').val(response.description || '');
                         $('#updateSupplier').val(response.supplier || '');
-                        $('#updatePackageInput').val(response.package || '');
-                        $('#updateGroupInput').val(response.group || '');
+                        $('#updatePackageInput').val(response.package.name || ''); // Show the package name
+
+                        const groupNames = response.groups && response.groups.length > 0
+                            ? response.groups.map(group => group.name).join(', ')
+                            : '';
+                        $('#updateGroupInput').val(groupNames);
 
                         // Populate the attributes table
                         if (response.attributes && response.attributes.length > 0) {
                             $.each(response.attributes, function (index, item) {
                                 appendRowToTable(table, item.name, item.value);
                             });
-                        } 
+                        }
+
                         // Enable buttons if data is successfully fetched
                         $('#addAttribute').prop('disabled', false);
                         $('#updateAttribute').prop('disabled', false);
@@ -1251,8 +1272,9 @@
             });
         }
 
-        function searchPart() {
-            var number = $('#searchPartName').val().trim();
+
+        function searchPart() {//updatepartNumberList
+            var number = $('#searchPartNumberForUpdate').val().trim();
             var token = $('input[name="__RequestVerificationToken"]').val(); // Extract CSRF token
             var table = $('#searchedProductSpecTable'); // Select the table
             table.find('tbody').empty(); // Clear previous table rows

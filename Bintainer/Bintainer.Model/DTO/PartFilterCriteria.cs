@@ -8,7 +8,7 @@ namespace Bintainer.Model.DTO
 {
     public class PartFilterCriteria
     {
-        public string? Name { get; set; }
+        public string? Number { get; set; }
         public string? Supplier { get; set; }
         public string? UserId { get; set; }
     }

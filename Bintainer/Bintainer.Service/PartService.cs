@@ -49,7 +49,7 @@ namespace Bintainer.Service
         {
             try
             {
-                var part = _partRepository.GetPartByName(partName, userId);
+                var part = _partRepository.GetPart(partName, userId);
                 
                 var result = _mapper.Map<PartViewModel>(part);
                 return new Response<PartViewModel?>
@@ -73,81 +73,19 @@ namespace Bintainer.Service
 
         }
 
-        public Response<List<PartAttributeViewModel>?> GetPartAttributes(string partName, string userId) 
-        {
-            try
-            {            
-                var attributes = _partRepository.GetPartAttributes(partName, userId);
-                return new Response<List<PartAttributeViewModel>?>()
-                {
-                    IsSuccess = true,
-                    Result = _mapper.Map<List<PartAttributeViewModel>>(attributes)
-                };
-            }
-            catch (Exception ex)
-            {
-                _appLogger.LogMessage(ex.Message, LogLevel.Error);
-                return new Response<List<PartAttributeViewModel>?>()
-                {
-                    IsSuccess = false,
-                    Message = _localizer["ErrorFailToRetriveAttributes"]
-                };
-            }
-        }
-        public Response<List<PartAttributeViewModel>?> MapPartAttributesToViewModel(string partName,string userId) 
-        {
-            try
-            {
-                Part? part = _partRepository.GetPartByName(partName, userId);
-                if (part is null)
-                {
-                    return new Response<List<PartAttributeViewModel>?>()
-                    {
-                        IsSuccess = true,
-                        Result = null,
-                        Message= _localizer["WarningPartNotFound"]
-                        
-                    };
-                }
-                var result = part.Template?.PartAttributes?
-                                        .Select(attr => new PartAttributeViewModel()
-                                        {
-                                            Name = attr.Name != null ? attr.Name.Trim() : null,
-                                            Value = attr.Value != null ? attr.Value.Trim() : null
-                                        }).ToList();
-                return new Response<List<PartAttributeViewModel>?>()
-                {
-                    IsSuccess = true,
-                    Result = result
-                };
-            }
-            catch (Exception ex)
-            {
-                _appLogger.LogMessage(ex.Message,LogLevel.Error);
-                return new Response<List<PartAttributeViewModel>?>()
-                {
-                    IsSuccess = false,
-                    Message = ex.Message,
-                    Result = null
-                };
-            }
-
-        }
-
         public Response<Part?> CreatePartForUser(CreatePartRequest request, string userId) 
         {
             try
             {
                 PartFilterCriteria filter = new()
                 {
-                    Name = request.PartName,
+                    Number = request.PartNumber,
                     Supplier = request.Supplier,
                     UserId = userId
                 };
-                var parts = _partRepository.GetPartsByCriteria(filter);
+                var parts = _partRepository.GetParts(filter);
                 if (parts is not null && parts.Count > 0)
                 {
-                    //TODO: log event
                     _appLogger.LogMessage(_localizer["ErrorPartAlreadyExists"], LogLevel.Warning);
                     return new Response<Part?>()
                     {
@@ -158,33 +96,40 @@ namespace Bintainer.Service
 
                 }
 
-                Part part = new Part();
-                part.Name = request.PartName!.Trim();
+                Part part = new();
+                part.Number = request.PartNumber!.Trim();
                 part.Description = request.Description!.Trim();
 
-                var Categories = _templateRepository.GetPartCategories(userId);
-               
-                var categoryId = FindCategoryIdByPath(Categories, request.PathToCategory);
+                var Categories = _templateRepository.GetCategories(userId);               
+                var categoryId = ExtractCategoryIdFromPath(Categories, request.PathToCategory!);
                 part.CategoryId = categoryId;
-                
-                
+                                
                 part.UserId = userId;
                 part.Supplier = request.Supplier!.Trim();
 
+                List<PartGroup> groups = new List<PartGroup>();
+                if(request.Group is not null)
+                {
+                    string?[] groupNames = request.Group!.Split(',');
+                    groups = _partRepository.CreateOrUpdateGroup(groupNames,userId);
+                }
+                part.Groups = groups;
+
                 //TODO: links should be fetched here.
-                //TODO: check if undefined is acceptable or not
-                string packageName = string.IsNullOrEmpty(request.Package) ? "undefined" : request.Package.Trim();
-                var package = _partRepository.GetOrCreatePartPackage(packageName, userId);
+                string packageName = string.IsNullOrEmpty(request.Package) ? "NA" : request.Package.Trim();
+                var package = _partRepository.GetOrCreatePackage(packageName, userId);
                 part.Package = package;
 
-                var attributeTemplate = _templateRepository.GetAttributeTemplateById(request.AttributeTemplateId);
+                var attributeTemplate = _templateRepository.GetTemplate(request.AttributeTemplateGuid);
                 if (attributeTemplate is null)
                 {
-                    var defaultTemplate = _templateRepository.GetAttributeTemplateByName(request.PartName, userId);
+                    var defaultTemplate = _templateRepository.GetTemplate(request.PartNumber, userId);
                     if (defaultTemplate is null)
                     {
-                        // The part is fetched from external source (e.g., DigiKey)
-                        attributeTemplate = _templateRepository.CreateAttributeTemplateByName(request.PartName, userId);
+                        // The part is fetched from external source (e.g., DigiKey) or
+                        // no attribute is assigned to the part
+                        if(request.Attributes is not null && request.Attributes.Count>0)
+                            attributeTemplate = _templateRepository.CreateTemplate(request.PartNumber, userId);
                     }
                     else
                     {
@@ -193,12 +138,11 @@ namespace Bintainer.Service
                 }
 
                 var attributes = request.Attributes.ToPartAttributeList(attributeTemplate);
-                _templateRepository.SaveAttributes(attributes);
 
                 part.Template = attributeTemplate;
+                part.PartAttributes = attributes;
                 _partRepository.UpdatePart(part);
 
-                PartAttributeTemplate partAttributeTemplate = null;
 
                 //TODO: complete the order in new part registration form.
                 //if (!string.IsNullOrEmpty(request.OrderNumber))
@@ -229,7 +173,7 @@ namespace Bintainer.Service
         {
             try
             {
-                var part = _partRepository.GetPartByName(request.PartName, userId);
+                var part = _partRepository.GetPart(request.PartName, userId);
                 if (part is null)
                 {
                     return new Response<List<PartAttribute>?>()
@@ -242,7 +186,8 @@ namespace Bintainer.Service
                 }
 
                 // Get existing part attributes from the first AttributeTemplate
-                var existingAttributes = part.Template?.PartAttributes.ToList();
+
+                var existingAttributes = part.PartAttributes.ToList();
                 if (existingAttributes == null)
                     existingAttributes = new List<PartAttribute>();
 
@@ -269,7 +214,7 @@ namespace Bintainer.Service
                         {
                             Name = incomingAttribute.Key.Trim(),
                             Value = incomingAttribute.Value.Trim(),
-                            TemplateId = part.Template?.Id ?? 0 // Ensure TemplateId is set correctly
+                            //TemplateId = part.Template?.Id ?? 0 // Ensure TemplateId is set correctly
                         });
                     }
                 }
@@ -297,7 +242,7 @@ namespace Bintainer.Service
             try
             {
                 InventorySection? inventorySection = _inventoryRepository.GetSection(userId, arrangeRequest.SectionId);
-                Part? part = _partRepository.GetPartByName(arrangeRequest.PartName, userId);
+                Part? part = _partRepository.GetPart(arrangeRequest.PartName, userId);
 
                 if (inventorySection == null)
                 {
@@ -382,7 +327,7 @@ namespace Bintainer.Service
 
         public Response<List<PartUsageResponse>?> UsePart(string partName, string userId)
         {
-            Part? part = _partRepository.GetPartByName(partName, userId);
+            Part? part = _partRepository.GetPart(partName, userId);
             if (part is not null)
             {
                var result = GetPartUsageResponse(part);
@@ -412,7 +357,7 @@ namespace Bintainer.Service
                 List<int> subSpaces = ParseSubspaceIndices(request.SubspaceIndices);
                 int takeOut = request.QuantityUsed;
 
-                Part? part = _partRepository.GetPartByName(request.PartName, userId);
+                Part? part = _partRepository.GetPart(request.PartName, userId);
 
                 if (part is null)
                 {
@@ -528,7 +473,7 @@ namespace Bintainer.Service
                                {
                                    BinId = g.Key,
                                    Label = g.First().Bin.BinSubspaces.FirstOrDefault()?.Label?.Trim(),
-                                   PartName = g.First().Part.Name?.Trim(),
+                                   PartName = g.First().Part.Number?.Trim(),
                                    CoordinateX = g.First().Bin.CoordinateX,
                                    CoordinateY = g.First().Bin.CoordinateY,
                                    Section = g.First().Bin.Section?.SectionName?.Trim(),
@@ -602,14 +547,15 @@ namespace Bintainer.Service
             return bin;
         }
 
-        public int? FindCategoryIdByPath(List<PartCategory> Categories,List<string> path)
-        {           
+        private int? ExtractCategoryIdFromPath(List<PartCategory>? Categories,List<string> path)
+        {
+            if(Categories is null)
+                return null;
             return FindCategoryIdRecursively(Categories, path, 0);
         }
 
         private int? FindCategoryIdRecursively(List<PartCategory> categories, List<string> path, int level)
         {
-            // If we've reached the end of the path, return null
             if (level >= path.Count)
             {
                 return null;
@@ -617,15 +563,13 @@ namespace Bintainer.Service
 
             foreach (var category in categories)
             {
-                // Check if the current category name matches the path at the current level
                 if (category.Name?.Trim() == path[level])
                 {
-                    // If this is the last level in the path, return the Id
+
                     if (level == path.Count - 1)
                     {
                         return category.Id;
                     }
-                    // Otherwise, continue searching in the child categories
                     return FindCategoryIdRecursively(category.InverseParentCategory.ToList(), path, level + 1);
                 }
             }

@@ -56,9 +56,10 @@ namespace Bintainer.WebApp.Pages.Dashboard
 		}
 		
 	       
-		public IActionResult OnPostLoadAttributeTable(int tableId) 
+		public IActionResult OnPostLoadTemplatesDefaultAttributes(Guid templateGuid) 
 		{
-			var response = _templateService.GetPartAttributes(tableId);
+			
+			var response = _templateService.GetTemplatesDefaultAttributes(templateGuid);
 			if (!response.IsSuccess)
 				return new JsonResult(new { success = false, message = response.Message });
 

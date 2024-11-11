@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Bintainer.Model.Entity;
 
-
 public partial class PartAttributeTemplate
 {
     public int Id { get; set; }
@@ -14,7 +13,7 @@ public partial class PartAttributeTemplate
 
     public Guid? GuidId { get; set; }
 
-    public virtual ICollection<PartAttribute> PartAttributes { get; set; } = new List<PartAttribute>();
+    public virtual ICollection<PartAttributeDefinition> PartAttributeDefinitions { get; set; } = new List<PartAttributeDefinition>();
 
     public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
 

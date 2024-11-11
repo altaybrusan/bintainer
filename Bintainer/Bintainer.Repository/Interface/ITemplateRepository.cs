@@ -11,16 +11,16 @@ namespace Bintainer.Repository.Interface
 {
     public interface ITemplateRepository
     {
-        public List<PartTemplateInfo> GetUserTemplatesInfo(string userId);
-        public PartAttributeTemplate? GetAttributeTemplateById(int? templateId);
-        public PartAttributeTemplate? GetAttributeTemplateByName(string partName, string userId);
-        public PartAttributeTemplate? CreateAttributeTemplateByName(string partName, string userId);
+        public List<PartTemplateInfo> GetAttributeTemplateInfoList(string userId);
+        public PartAttributeTemplate? GetTemplate(Guid? templateGuid);
+        public PartAttributeTemplate? GetTemplate(string partName, string userId);
+        public PartAttributeTemplate? CreateTemplate(string partName, string userId);
         public void SaveAttributes(List<PartAttribute> attributes);
-        public List<PartCategory>? GetPartCategories(string userId);
+        public List<PartCategory>? GetCategories(string userId);
         public PartCategory? GetPartCategoryById(string userId);
         public PartCategory? GetCategory(int? id);
         public PartCategory? UpdateAndSaveCategory(PartCategory category);
-        public List<PartAttributeInfo> GetPartAttributeInfo(int tableId);
+        public List<PartAttributeInfo> GetTemplatesDefaultAttributesInfo(Guid templateGuid);
         public PartCategory AddAndSavePartCategory(PartCategory category);
         public void RemovePartCategory(int? id);
         public Dictionary<int, string> GetAttributeTemplates(string userId);

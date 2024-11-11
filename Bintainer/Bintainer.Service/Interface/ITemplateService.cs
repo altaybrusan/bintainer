@@ -13,9 +13,9 @@ namespace Bintainer.Service.Interface
 {
     public interface ITemplateService
     {
-        public Response<List<PartTemplateInfo>> GetUserAttributeTemplatesInfo(string userId);
+        public Response<List<PartTemplateInfo>> GetAttributeTemplateInfoList(string userId);
         public Response<List<CategoryViewModel>?> GetPartCategories(string userId);        
-        public Response<List<PartAttributeViewModel>> GetPartAttributes(int tableId);
+        public Response<List<PartAttributeViewModel>> GetTemplatesDefaultAttributes(Guid templateGuid);
         public void EnsureRootNodeExists(string userId);
         public Response<Dictionary<int, string>> GetAttributeTemplates(string userId);
         public Response<PartAttributeTemplate> SaveAttributeTemplate(CreateAttributeTemplateRequest request,string userId);

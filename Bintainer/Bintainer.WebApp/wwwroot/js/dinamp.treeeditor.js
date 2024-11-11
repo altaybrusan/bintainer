@@ -117,7 +117,7 @@ class DinampTreeEditor {
     }
   }
 
-    addElement(el, parentNode = null) {
+  addElement(el, parentNode = null) {
     var $newNode;
     if(parentNode.is("ul"))
       $newNode = $("<li class='item'><div class='itemParent' id='"+el.id+"' ><span class='preIcon'></span><p contenteditable='true'>"+el.title+"</p><span class='afterIcon'></span></div></li>");
@@ -136,8 +136,7 @@ class DinampTreeEditor {
       el.children.forEach(element => this.addElement(element, $chContainer));
     }
   }
-
-
+  
 //EVENT LISTENERS BEGIN HERE
   unbindListenders() {
     $(this.mainNode+" p").off();
@@ -336,4 +335,18 @@ class DinampTreeEditor {
       (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
   }
+
+  clear() {
+        // Check if there is a selected node
+        const selectedNode = $(this.mainNode + " .preIcon.checked");
+
+        // If a selected node is found, uncheck it
+        if (selectedNode.length > 0) {
+            selectedNode.removeClass("checked");
+        }
+
+        // Optionally, you can also rebind listeners if needed after the state change
+        this.rebindListeners();
+    }
+
 }

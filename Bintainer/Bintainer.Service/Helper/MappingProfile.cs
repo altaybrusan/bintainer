@@ -21,13 +21,15 @@ namespace Bintainer.Service.Helper
             CreateMap<InventorySectionViewModel, InventorySection>();
             CreateMap<PartAttribute, PartAttributeViewModel>();
             CreateMap<Part, PartViewModel>();
- 
-            
+            CreateMap<PartGroup, PartGroupViewModel>();
+            CreateMap<PartPackage, PartPackageViewModel>();
+
+
 
             //CreateMap<UserViewModel, AspNetUser>()
             //    .ForMember(dest => dest.UserName, src => src.MapFrom(mbr => mbr.Name))
             //    .ForMember(dest => dest.Id, src => src.MapFrom(mbr => mbr.UserId));
-            
+
         }
     }
 }

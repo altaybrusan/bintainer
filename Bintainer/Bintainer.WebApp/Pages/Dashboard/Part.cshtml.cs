@@ -2,6 +2,7 @@ using Amazon.Runtime.Internal;
 using Amazon.SimpleEmail.Model.Internal.MarshallTransformations;
 using Azure;
 using Azure.Core;
+using Bintainer.Model.DTO;
 using Bintainer.Model.Entity;
 using Bintainer.Model.Request;
 using Bintainer.Model.View;
@@ -28,10 +29,10 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public List<PartPackage> Packages { get; set; } = new List<PartPackage>();
 
         public List<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
-        public List<string> PartNames { get; set; } = new List<string>();
+        public List<string> PartNumbers { get; set; } = new List<string>();
         
         public List<PartGroup> Group { get; set; } = new List<PartGroup>();
-        public Dictionary<int,string?> AttributeTemplatesTable { get; set; } = new Dictionary<int, string>();
+        public List<PartTemplateInfo> AttributeTemplatesList { get; set; }
 
         public List<InventorySection> Sections { get; set; } = new();
         public Inventory Inventory { get; set; } = new();
@@ -78,36 +79,10 @@ namespace Bintainer.WebApp.Pages.Dashboard
         {
 			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
             
-            AttributeTemplatesTable = _templateService.GetTemplateByUserId(userId).Result;
+            AttributeTemplatesList = _templateService.GetAttributeTemplateInfoList(userId).Result;
             Categories = _templateService.GetPartCategories(userId).Result;  
-            PartNames = _partService.GetPartNames(userId).Result;
+            PartNumbers = _partService.GetPartNames(userId).Result;
         }
-
-        public IActionResult OnPostRetrievePart(string partNumber) 
-        {
-            try
-            {
-                var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-                var response = _partService.GetPartByName(partNumber,userId);
-                if (response is null)
-                    return new OkResult();
-
-                return new JsonResult(response.Result);
-
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-        }
-        
-        public async Task OnPostFetchDigikey(string digiKeyPartNumber) 
-        {
-			var result = await _digikeyService.GetProductDetailsAsync(digiKeyPartNumber);            
-		}
-
         public IActionResult OnPostCreatePart([FromBody]CreatePartRequest request) 
         {
             if (!ModelState.IsValid) 
@@ -131,6 +106,31 @@ namespace Bintainer.WebApp.Pages.Dashboard
             var response = _partService.CreatePartForUser(request, UserId);
             return new JsonResult(new { message = response.Message }) { StatusCode = 200 };                      
         }
+
+        public IActionResult OnPostRetrievePart(string partNumber) 
+        {
+            try
+            {
+                var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+                var response = _partService.GetPartByName(partNumber,userId);
+                if (response is null)
+                    return new OkResult();
+                var test = new JsonResult(response.Result);
+                return new JsonResult(response.Result);
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        
+        public async Task OnPostFetchDigikey(string digiKeyPartNumber) 
+        {
+			var result = await _digikeyService.GetProductDetailsAsync(digiKeyPartNumber);            
+		}
 
         public IActionResult OnPostUpdatePartAttribute([FromBody] UpdateAttributeRequest updatedRequest) 
         {

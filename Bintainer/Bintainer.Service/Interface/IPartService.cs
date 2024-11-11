@@ -15,16 +15,12 @@ namespace Bintainer.Service.Interface
     {
 
         public Response<PartViewModel?> GetPartByName(string partName,string userId);
-        public Response<List<PartAttributeViewModel>?> GetPartAttributes(string partName,string userId);
-        public Response<List<PartAttributeViewModel>?> MapPartAttributesToViewModel(string partName,string userId);
         public Response<Part?> CreatePartForUser(CreatePartRequest request, string userId);
         public Response<List<PartAttribute>?> UpdatePartAttributes(UpdateAttributeRequest request,string userId);
         public Response<PartGroup> AddPartIntoGroup(Part part, string groupName, string userId);
         public void ArrangePartRequest(ArrangePartRequest arrangeRequest, string userId);
         public Response<List<PartUsageResponse>?> UsePart(string partName, string userId);
         public Response<List<PartBinAssociation>?> TryAdjustPartQuantity(AdjustQuantityRequest request,string userId);
-        public int? FindCategoryIdByPath(List<PartCategory> Categories, List<string> path);
-        //public PartGroup? GetPartGroup(string name, string userId);
         public Response<List<string>?> GetPartNames(string userId);
     }
 }

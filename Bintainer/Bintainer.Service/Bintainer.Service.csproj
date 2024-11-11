@@ -23,4 +23,8 @@
     <ProjectReference Include="..\Bintainer.SharedResources\Bintainer.SharedResources.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extention\" />
+  </ItemGroup>
+
 </Project>

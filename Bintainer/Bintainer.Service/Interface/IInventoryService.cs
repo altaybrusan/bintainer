@@ -11,7 +11,7 @@ namespace Bintainer.Service.Interface
 {
     public interface IInventoryService
     {
-        public Response<InventorySection?> GetInventorySection(string? userId, int sectionId);
+        //public Response<InventorySection?> GetInventorySection(string? userId, int sectionId);
         public Response<Bin?> GetBinFrom(InventorySection? section, int coordinateX, int coordinateY);
         public Response<Bin?> CreateBin(InventorySection section, int coordinateX, int coordinateY);
         public Response<Inventory?> GetInventory(string admin);

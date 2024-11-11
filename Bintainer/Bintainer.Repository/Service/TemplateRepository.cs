@@ -22,7 +22,7 @@ namespace Bintainer.Repository.Service
         }
         public Dictionary<int, string> AttributeTemplatesTable { get; set; } = new Dictionary<int, string>();
 
-        public List<PartTemplateInfo> GetUserTemplatesInfo(string userId)
+        public List<PartTemplateInfo> GetAttributeTemplateInfoList(string userId)
         {
             return _dbContext.PartAttributeTemplates
                               .Where(t => t.UserId == userId && t.TemplateName != null)
@@ -30,32 +30,35 @@ namespace Bintainer.Repository.Service
                               {
                                   GuidId = p.GuidId,
                                   TemplateName = p.TemplateName != null ? p.TemplateName.Trim() : null,
-                                  PartAttributes = p.PartAttributes.Select(a => new PartAttributeInfo()
-                                  {
-                                      GuidId = a.GuidId,
-                                      Name = a.Name != null ? a.Name.Trim() : null,
-                                      Value = a.Value != null ? a.Value.Trim() : null,
-                                  }).ToList(),
+                                  PartAttributes = p.PartAttributeDefinitions
+                                                    .Select(a => new PartAttributeInfo()
+                                                    {
+                                                        GuidId = a.GuidId,
+                                                        Name = a.Name != null ? a.Name.Trim() : null,
+                                                        Value = a.Value != null ? a.Value.Trim() : null
+                                                    }).ToList(),
                               }).ToList();
 
 
         }
 
-        public PartAttributeTemplate? GetAttributeTemplateById(int? templateId)
+        public PartAttributeTemplate? GetTemplate(Guid? templateGuid)
         {
-            if (templateId is null)
+            if (templateGuid == null) 
+            {
                 return null;
-            return _dbContext.PartAttributeTemplates.Where(t => t.Id == templateId).FirstOrDefault();
+            }
+            return _dbContext.PartAttributeTemplates.Where(t => t.GuidId == templateGuid).FirstOrDefault();
         }
 
-        public PartAttributeTemplate? GetAttributeTemplateByName(string partName, string userId)
+        public PartAttributeTemplate? GetTemplate(string partName, string userId)
         {
             string trimmedPartName = partName.Trim();
             string trimmedUserId = userId.Trim();
             return _dbContext.PartAttributeTemplates.FirstOrDefault(t => t.TemplateName == trimmedPartName && t.UserId.Trim() == trimmedUserId);
         }
 
-        public PartAttributeTemplate? CreateAttributeTemplateByName(string partName, string userId)
+        public PartAttributeTemplate? CreateTemplate(string partName, string userId)
         {
             string trimmedPartName = partName.Trim();
             var attributeTemplate = new PartAttributeTemplate() { TemplateName = trimmedPartName, UserId = userId };
@@ -70,7 +73,7 @@ namespace Bintainer.Repository.Service
             _dbContext.SaveChanges();
         }
         
-        public List<PartCategory>? GetPartCategories(string userId)
+        public List<PartCategory>? GetCategories(string userId)
         {
             return _dbContext.PartCategories.Where(p => p.UserId == userId).ToList();
         }
@@ -80,14 +83,23 @@ namespace Bintainer.Repository.Service
             return _dbContext.PartCategories.Where(p => p.UserId == userId).FirstOrDefault();
         }
 
-        public List<PartAttributeInfo> GetPartAttributeInfo(int tableId)
+        public List<PartAttributeInfo> GetTemplatesDefaultAttributesInfo(Guid templateGuid)
         {
-            var resultList = _dbContext.PartAttributes
-                                       .Where(t => t.TemplateId == tableId)
-                                       .Select(attribute => new PartAttributeInfo() { Name = attribute.Name, Value = attribute.Value })
+            var resultList = _dbContext.PartAttributeTemplates
+                                       .Include(temp => temp.PartAttributeDefinitions) 
+                                       .Where(temp => temp.GuidId == templateGuid) 
+                                       .SelectMany(temp => temp.PartAttributeDefinitions)
+                                       .Select(att => new PartAttributeInfo
+                                       {
+                                           GuidId = att.GuidId,
+                                           Name = att.Name,
+                                           Value = att.Value
+                                       })
                                        .ToList();
+
             return resultList;
         }
+
 
         public PartCategory? GetCategory(int? id)
         {
@@ -142,7 +154,7 @@ namespace Bintainer.Repository.Service
 
 		public void RemoveAttributeTemplate(string userId, int templateId)
 		{
-			_dbContext.PartAttributes.Where(a => a.TemplateId == templateId && userId == userId)?.ExecuteDelete();
+			//_dbContext.PartAttributes.Where(a => a.TemplateId == templateId && userId == userId)?.ExecuteDelete();
 			_dbContext.PartAttributeTemplates.Where(t => t.Id == templateId && userId == userId)?.ExecuteDelete();
 			_dbContext.SaveChanges();
 		}

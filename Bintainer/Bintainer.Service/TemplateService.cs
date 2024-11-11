@@ -36,11 +36,11 @@ namespace Bintainer.Service
             _localizer = localizer;
             _mapper = mapper;
         }
-        public Response<List<PartTemplateInfo>> GetUserAttributeTemplatesInfo(string userId)
+        public Response<List<PartTemplateInfo>> GetAttributeTemplateInfoList(string userId)
         {
             try
             {
-                var response = _templateRepository.GetUserTemplatesInfo(userId);
+                var response = _templateRepository.GetAttributeTemplateInfoList(userId);
                 return new Response<List<PartTemplateInfo>>()
                 {
                     IsSuccess = true,
@@ -61,7 +61,7 @@ namespace Bintainer.Service
         {
             try
             {
-                var categories = _templateRepository.GetPartCategories(userId);
+                var categories = _templateRepository.GetCategories(userId);
                 var result = BuildCategoryTree(categories);
 
                 return new Response<List<CategoryViewModel>?>()
@@ -81,11 +81,11 @@ namespace Bintainer.Service
             }
         }
 
-        public Response<List<PartAttributeViewModel>> GetPartAttributes(int tableId)
+        public Response<List<PartAttributeViewModel>> GetTemplatesDefaultAttributes(Guid templateGuid)
         {
             try
             {
-                var attributes = _templateRepository.GetPartAttributeInfo(tableId);
+                var attributes = _templateRepository.GetTemplatesDefaultAttributesInfo(templateGuid);
                 var result = _mapper.Map<List<PartAttributeViewModel>>(attributes);
                 return new Response<List<PartAttributeViewModel>>()
                 { 
@@ -202,8 +202,8 @@ namespace Bintainer.Service
 
                 foreach (var item in request.Attributes)
                 {
-                    var attribute = new PartAttribute() { Name = item.Key, Value = item.Value };
-                    table.PartAttributes.Add(attribute);
+                    var attribute = new PartAttributeDefinition() { Name = item.Key, Value = item.Value };
+                    table.PartAttributeDefinitions.Add(attribute);
                 }
                 _templateRepository.AddAndSavePartAttribute(table);
 
@@ -229,7 +229,7 @@ namespace Bintainer.Service
         {
             try
             {
-                var original = _templateRepository.GetPartCategories(userId);
+                var original = _templateRepository.GetCategories(userId);
                 var mappedOriginal = _mapper.Map<List<CategoryViewModel>>(original);
                 CategoryViewModelComparer comparer = new CategoryViewModelComparer(mappedOriginal, categories);
                 var AddedItems = comparer.Added;

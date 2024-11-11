@@ -7,3 +7,6 @@
     CONSTRAINT [FK_PartAttributeTemplate_AspNetUsers] FOREIGN KEY ([UserId])  REFERENCES [AspNetUsers]([ID])
 
 )
+GO
+CREATE NONCLUSTERED INDEX IDX_PartAttributeTemplate_GuidId ON [dbo].[PartAttributeTemplate] ([GuidId]);
+

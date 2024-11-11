@@ -17,7 +17,7 @@
         <div class="autocomplete" style="width:300px;">
             <input type="text" class="form-control input-sharp" id="searchPartName" placeholder="Part Name" data-autocomplete-options="partNamesData">
             <div id="partNamesData" style="display:none;">
-                @Html.Raw(Json.Serialize(Model.Part.Select(p => p.Name.Trim())))
+                @Html.Raw(Json.Serialize(Model.Part.Select(p => p.Number.Trim())))
             </div>
         </div>        
     </div>

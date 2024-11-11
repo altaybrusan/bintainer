@@ -4,7 +4,7 @@ namespace Bintainer.Model.Request
 {
     public class CreatePartRequest
     {
-        public string? PartName { get; set; }
+        public string? PartNumber { get; set; }
         public string? Description { get; set; }
         public string? Supplier { get; set; }
         public string? Package { get; set; } = string.Empty;
@@ -14,7 +14,7 @@ namespace Bintainer.Model.Request
         public string? OrderQuantity { get; set; }
         public string? FootprintUrl { get; set; }
         public string? PartUrl { get; set; }
-        public int? AttributeTemplateId { get; set; }
+        public Guid? AttributeTemplateGuid { get; set; }
         public DateTime? OrderDate { get; set; }
         public Dictionary<string, string>? Attributes { get; set; }
         public List<string?>? PathToCategory { get; set; } // Add the Path property

@@ -44,6 +44,8 @@ public partial class BintainerDbContext : DbContext
 
     public virtual DbSet<PartAttribute> PartAttributes { get; set; }
 
+    public virtual DbSet<PartAttributeDefinition> PartAttributeDefinitions { get; set; }
+
     public virtual DbSet<PartAttributeTemplate> PartAttributeTemplates { get; set; }
 
     public virtual DbSet<PartBinAssociation> PartBinAssociations { get; set; }
@@ -126,7 +128,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<Bin>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Bin__3214EC074F11E01B");
+            entity.HasKey(e => e.Id).HasName("PK__Bin__3214EC0796C0FA57");
 
             entity.ToTable("Bin", tb => tb.HasTrigger("CheckBinCoordinates"));
 
@@ -137,7 +139,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<BinSubspace>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__BinSubsp__3214EC07C9B6CD78");
+            entity.HasKey(e => e.Id).HasName("PK__BinSubsp__3214EC07F3C4DE19");
 
             entity.ToTable("BinSubspace");
 
@@ -182,7 +184,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC076AC5B309");
+            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC076C127BA1");
 
             entity.ToTable("Order");
 
@@ -225,30 +227,25 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<Part>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC07F35F9B2E");
+            entity.HasKey(e => e.Id).HasName("PK__Part__3214EC07F1E612B4");
 
             entity.ToTable("Part");
 
-            entity.Property(e => e.DatasheetUri)
-                .HasMaxLength(150)
-                .IsFixedLength();
+            entity.HasIndex(e => e.GuidId, "IDX_Part_GuidId");
+
+            entity.Property(e => e.DatasheetUri).HasMaxLength(150);
             entity.Property(e => e.Description)
                 .HasMaxLength(150)
                 .IsFixedLength();
             entity.Property(e => e.GuidId).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.ImageUri)
-                .HasMaxLength(150)
-                .IsFixedLength();
-            entity.Property(e => e.Name)
+            entity.Property(e => e.ImageUri).HasMaxLength(150);
+            entity.Property(e => e.Number)
                 .HasMaxLength(100)
                 .IsFixedLength();
             entity.Property(e => e.Supplier)
                 .HasMaxLength(100)
-                .HasDefaultValueSql("('default')")
-                .IsFixedLength();
-            entity.Property(e => e.SupplierUri)
-                .HasMaxLength(150)
-                .IsFixedLength();
+                .HasDefaultValueSql("('default')");
+            entity.Property(e => e.SupplierUri).HasMaxLength(150);
             entity.Property(e => e.UserId).HasMaxLength(450);
 
             entity.HasOne(d => d.Category).WithMany(p => p.Parts)
@@ -293,28 +290,37 @@ public partial class BintainerDbContext : DbContext
         {
             entity.ToTable("PartAttribute");
 
+            entity.HasIndex(e => e.GuidId, "IDX_PartAttribute_GuidId");
+
             entity.Property(e => e.GuidId).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.Name)
-                .HasMaxLength(50)
-                .IsFixedLength();
-            entity.Property(e => e.Value)
-                .HasMaxLength(150)
-                .IsFixedLength();
+            entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.Value).HasMaxLength(150);
 
             entity.HasOne(d => d.Part).WithMany(p => p.PartAttributes)
                 .HasForeignKey(d => d.PartId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_PartAttribute_Part");
+        });
 
-            entity.HasOne(d => d.Template).WithMany(p => p.PartAttributes)
+        modelBuilder.Entity<PartAttributeDefinition>(entity =>
+        {
+            entity.ToTable("PartAttributeDefinition");
+
+            entity.HasIndex(e => e.GuidId, "IDX_PartAttributeDefinition_GuidId");
+
+            entity.Property(e => e.GuidId).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.Value).HasMaxLength(150);
+
+            entity.HasOne(d => d.Template).WithMany(p => p.PartAttributeDefinitions)
                 .HasForeignKey(d => d.TemplateId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PartAttribute_PartAttributeTemplate");
+                .HasConstraintName("FK_PartAttributeDefinition_PartAttributeTemplate");
         });
 
         modelBuilder.Entity<PartAttributeTemplate>(entity =>
         {
             entity.ToTable("PartAttributeTemplate");
+
+            entity.HasIndex(e => e.GuidId, "IDX_PartAttributeTemplate_GuidId");
 
             entity.Property(e => e.GuidId).HasDefaultValueSql("(newid())");
             entity.Property(e => e.TemplateName)
@@ -355,9 +361,7 @@ public partial class BintainerDbContext : DbContext
             entity.ToTable("PartCategory");
 
             entity.Property(e => e.GuidId).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.Name)
-                .HasMaxLength(75)
-                .IsFixedLength();
+            entity.Property(e => e.Name).HasMaxLength(75);
             entity.Property(e => e.UserId).HasMaxLength(450);
 
             entity.HasOne(d => d.ParentCategory).WithMany(p => p.InverseParentCategory)
@@ -375,9 +379,7 @@ public partial class BintainerDbContext : DbContext
             entity.ToTable("PartGroup");
 
             entity.Property(e => e.GuidId).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.Name)
-                .HasMaxLength(150)
-                .IsFixedLength();
+            entity.Property(e => e.Name).HasMaxLength(150);
             entity.Property(e => e.UserId).HasMaxLength(450);
 
             entity.HasOne(d => d.User).WithMany(p => p.PartGroups)
@@ -388,7 +390,7 @@ public partial class BintainerDbContext : DbContext
 
         modelBuilder.Entity<PartLabel>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC0720815839");
+            entity.HasKey(e => e.Id).HasName("PK__PartLabe__3214EC07F4F58D00");
 
             entity.ToTable("PartLabel");
 

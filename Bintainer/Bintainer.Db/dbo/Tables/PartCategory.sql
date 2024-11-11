@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[PartCategory]
 (
 	[Id] INT NOT NULL CONSTRAINT PK_PartCategory PRIMARY KEY IDENTITY(10000,1), 
-    [Name] NCHAR(75) NULL, 
+    [Name] NVARCHAR(75) NULL, 
     [ParentCategoryId] INT NULL,   
     [UserId] NVARCHAR (450) NOT NULL,
     [GuidId] UNIQUEIDENTIFIER DEFAULT NEWID(),

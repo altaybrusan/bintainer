@@ -19,7 +19,7 @@ namespace Bintainer.Service.Extention
             {
                 Name = attr.Key,
                 Value = attr.Value,
-                Template = template
+                //Template = template
             }).ToList();
         }
     }

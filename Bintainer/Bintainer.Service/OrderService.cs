@@ -41,17 +41,18 @@ namespace Bintainer.Service
                 order.Supplier = request.Supplier;
                 order.UserId = userId;
                
-                foreach (var item in request.Parts)
-                {
-                    Part? part = _partRepository.GetPartById(item.PartId);
-                    if (part is not null)
-                    {
-                        OrderPartAssociation association = new OrderPartAssociation();
-                        association.PartId = part.Id;
-                        association.Quantity = item.Quantity;
-                        order.OrderPartAssociations.Add(association);
-                    }
-                }
+                //TODO: update this
+                //foreach (var item in request.Parts)
+                //{
+                //    Part? part = _partRepository.GetPart(item);
+                //    if (part is not null)
+                //    {
+                //        OrderPartAssociation association = new OrderPartAssociation();
+                //        association.PartId = part.Id;
+                //        association.Quantity = item.Quantity;
+                //        order.OrderPartAssociations.Add(association);
+                //    }
+                //}
                 
                 _orderRepository.AddAndSaveOrder(order);
                 

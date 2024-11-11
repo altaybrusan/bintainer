@@ -23,54 +23,31 @@ namespace Bintainer.Repository.Service
             _dbContext = dbcontext;
         }
         
-        public Part? GetPartByName(string partName, string userId)
+        public Part? GetPart(string partNumber, string userId)
         {
             Part? part = _dbContext.Parts.Include(p => p.PartBinAssociations)
                                          .ThenInclude(b => b.Bin)
                                          .ThenInclude(b => b.BinSubspaces)
                                          .Include(p => p.OrderPartAssociations)
-                                         .Include(p => p.Template)
-                                         .ThenInclude(p => p.PartAttributes)
-                                         .Where(p => p.Name.Contains(partName) && p.UserId == userId)                                    
+                                         .Include(p => p.PartAttributes)
+                                         .Include(p => p.Category)
+                                         .Include(p => p.Package)
+                                         .Include(p => p.Groups)
+                                         .Where(p => p.Number.Contains(partNumber) && p.UserId == userId)
                                          .FirstOrDefault();
             return part;
         }
-
-        public List<PartAttribute>? GetPartAttributes(string partName, string userId)
-        {
-            Part? part = _dbContext.Parts.Include(p => p.PartBinAssociations)
-                                         .ThenInclude(b => b.Bin)
-                                         .ThenInclude(b => b.BinSubspaces)
-                                         .Include(p => p.OrderPartAssociations)
-                                         .Include(p => p.Template)
-                                         .ThenInclude(p => p.PartAttributes)
-                                         .Where(p => p.Name.Contains(partName) && p.UserId == userId)
-                                         .FirstOrDefault();
-
-            var partAttributeTemplate = part?.Template;
-            
-            if(partAttributeTemplate is null)
-                return null;
-            
-            return partAttributeTemplate.PartAttributes.ToList();
-            
-        }
-
-        public Part? GetPartById(int partId) 
-        {
-            return _dbContext.Parts.FirstOrDefault(c => c.Id == partId);
-        }
-
-        public List<Part> GetPartsByCriteria(PartFilterCriteria criteria)
+                
+        public List<Part> GetParts(PartFilterCriteria criteria)
         {
             
             var parameter = Expression.Parameter(typeof(Part), "p");
             Expression filterExpression = Expression.Constant(true);
                   
-            if (!string.IsNullOrEmpty(criteria.Name))
+            if (!string.IsNullOrEmpty(criteria.Number))
             {
-                var nameProperty = Expression.Property(parameter, "Name");
-                var nameValue = Expression.Constant(criteria.Name);
+                var nameProperty = Expression.Property(parameter, "Number");
+                var nameValue = Expression.Constant(criteria.Number);
                 var nameEquals = Expression.Equal(nameProperty, nameValue);
 
                 filterExpression = Expression.AndAlso(filterExpression, nameEquals);
@@ -99,7 +76,7 @@ namespace Bintainer.Repository.Service
             return _dbContext.Parts.Where(lambda).ToList();
         }
 
-        public PartPackage GetOrCreatePartPackage(string packageName, string userId) 
+        public PartPackage GetOrCreatePackage(string packageName, string userId) 
         {
             PartPackage? package = _dbContext.PartPackages.FirstOrDefault(p => p.Name == packageName && p.UserId == userId);
 
@@ -121,44 +98,45 @@ namespace Bintainer.Repository.Service
             }
             return part;
         }
+        
         public PartGroup? GetPartGroup(string name, string userId) 
         {
             return _dbContext.PartGroups.Where(g => g.Name == name && g.UserId == userId).FirstOrDefault();
 
         }
 
-        public bool TryInsertPartIntoBin(List<int> targetIndices, string label, ref Part part, ref Bin bin)
-        {
-            foreach (int subSpaceIndex in targetIndices)
-            {
-                var targetSubspace = bin.BinSubspaces.Where(s => s.SubspaceIndex == subSpaceIndex).FirstOrDefault();
-                if (targetSubspace is null)
-                {
-                    // the bin's subspace is not already used
-                    targetSubspace = new BinSubspace()
-                    {
-                        SubspaceIndex = subSpaceIndex,
-                        Label = label
-                    };
-                    bin.BinSubspaces.Add(targetSubspace);
-                }
-                else
-                {
-                    int partId = part.Id;
-                    int binId = bin.Id;
-                    int subspaceId = targetSubspace.Id;
-                    if (_dbContext.PartBinAssociations.Where(a => a.PartId == partId && a.SubspaceId == subspaceId && a.BinId == binId).Any())
-                    {
-                        // the incomming part is same as already on
-                    }
-                    else
-                    {
+        //public bool TryInsertPartIntoBin(List<int> targetIndices, string label, ref Part part, ref Bin bin)
+        //{
+        //    foreach (int subSpaceIndex in targetIndices)
+        //    {
+        //        var targetSubspace = bin.BinSubspaces.Where(s => s.SubspaceIndex == subSpaceIndex).FirstOrDefault();
+        //        if (targetSubspace is null)
+        //        {
+        //            // the bin's subspace is not already used
+        //            targetSubspace = new BinSubspace()
+        //            {
+        //                SubspaceIndex = subSpaceIndex,
+        //                Label = label
+        //            };
+        //            bin.BinSubspaces.Add(targetSubspace);
+        //        }
+        //        else
+        //        {
+        //            int partId = part.Id;
+        //            int binId = bin.Id;
+        //            int subspaceId = targetSubspace.Id;
+        //            if (_dbContext.PartBinAssociations.Where(a => a.PartId == partId && a.SubspaceId == subspaceId && a.BinId == binId).Any())
+        //            {
+        //                // the incomming part is same as already on
+        //            }
+        //            else
+        //            {
 
-                    }
-                }
-            }
-            return true;
-        }
+        //            }
+        //        }
+        //    }
+        //    return true;
+        //}
 
         public void UpdatePartQuantityInsideSubspace(BinSubspace subspace, int partId, int partQuantity)
         {
@@ -184,10 +162,34 @@ namespace Bintainer.Repository.Service
             return associations;
         }
 
-
         public List<string> GetPartNameList(string userId)
         {
-            return _dbContext.Parts.Select(p => p.Name.Trim()).ToList();
+            return _dbContext.Parts.Select(p => p.Number.Trim()).ToList();
+        }
+
+        public List<PartGroup> CreateOrUpdateGroup(string?[] groupNames, string userId)
+        {
+            List<PartGroup> result = new List<PartGroup>();
+            foreach (var groupName in groupNames) 
+            {
+                var existingGroup = _dbContext.PartGroups.Where(p => p.UserId == userId && p.Name!.Contains(groupName!)).FirstOrDefault();
+                if (existingGroup is null) 
+                {
+                    PartGroup newGroup = new() 
+                    {
+                        Name = groupName,                       
+                        UserId = userId,
+                    };
+                    result.Add(newGroup);
+                    _dbContext.PartGroups.Add(newGroup);
+                    _dbContext.SaveChanges(true);
+                }
+                else 
+                {
+                    result.Add(existingGroup);
+                }
+            }
+            return result;
         }
     }
 }
