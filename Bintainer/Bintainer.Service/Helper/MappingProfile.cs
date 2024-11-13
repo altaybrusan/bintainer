@@ -17,7 +17,10 @@ namespace Bintainer.Service.Helper
         {
             CreateMap<FilterOrderRequest, FilterOrderRequestModel>();
             CreateMap<PartAttributeInfo, PartAttributeViewModel>();
-            CreateMap<PartCategory, CategoryViewModel>();
+            CreateMap<PartCategory, CategoryViewModel>()
+                .ForMember(dest => dest.Title, src => src.MapFrom(mbr => mbr.Name))
+                .ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.InverseParentCategory))
+                .ForMember(dest => dest.FlattenedHierarchy, opt => opt.MapFrom(src => GetFlattenedCategory(src)));
             CreateMap<InventorySectionViewModel, InventorySection>();
             CreateMap<PartAttribute, PartAttributeViewModel>();
             CreateMap<Part, PartViewModel>();
@@ -30,6 +33,18 @@ namespace Bintainer.Service.Helper
             //    .ForMember(dest => dest.UserName, src => src.MapFrom(mbr => mbr.Name))
             //    .ForMember(dest => dest.Id, src => src.MapFrom(mbr => mbr.UserId));
 
+        }
+        private string GetFlattenedCategory(PartCategory category)
+        {
+            var categoryNames = new List<string>();
+            while (category != null)
+            {
+                if (!string.IsNullOrEmpty(category.Name))
+                    categoryNames.Insert(0, category.Name);
+
+                category = category.ParentCategory;
+            }
+            return string.Join(" > ", categoryNames);
         }
     }
 }

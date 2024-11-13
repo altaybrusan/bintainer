@@ -52,6 +52,8 @@ namespace Bintainer.Service
                 var part = _partRepository.GetPart(partName, userId);
                 
                 var result = _mapper.Map<PartViewModel>(part);
+                var attributes = _mapper.Map<List<PartAttributeViewModel>>(part.PartAttributes);
+                result.Attributes = attributes;
                 return new Response<PartViewModel?>
                 {
                     IsSuccess = true,

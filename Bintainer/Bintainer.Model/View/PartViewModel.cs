@@ -30,6 +30,8 @@ namespace Bintainer.Model.View
         public ICollection<PartAttributeViewModel>? Attributes { get; set; }  
         
         public ICollection<PartGroupViewModel> Groups { get; set; }
+              
+
 
     }
 }

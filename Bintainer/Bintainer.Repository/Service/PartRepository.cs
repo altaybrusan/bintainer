@@ -2,6 +2,7 @@
 using Bintainer.Model;
 using Bintainer.Model.DTO;
 using Bintainer.Model.Entity;
+using Bintainer.Model.View;
 using Bintainer.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -22,22 +23,33 @@ namespace Bintainer.Repository.Service
         {
             _dbContext = dbcontext;
         }
-        
+
         public Part? GetPart(string partNumber, string userId)
         {
-            Part? part = _dbContext.Parts.Include(p => p.PartBinAssociations)
-                                         .ThenInclude(b => b.Bin)
-                                         .ThenInclude(b => b.BinSubspaces)
-                                         .Include(p => p.OrderPartAssociations)
-                                         .Include(p => p.PartAttributes)
-                                         .Include(p => p.Category)
-                                         .Include(p => p.Package)
-                                         .Include(p => p.Groups)
-                                         .Where(p => p.Number.Contains(partNumber) && p.UserId == userId)
-                                         .FirstOrDefault();
+            var part = _dbContext.Parts
+                .Include(p => p.PartBinAssociations)
+                    .ThenInclude(b => b.Bin)
+                    .ThenInclude(b => b.BinSubspaces)
+                .Include(p => p.OrderPartAssociations)
+                .Include(p => p.PartAttributes)
+                .Include(p => p.Package)
+                .Include(p => p.Groups)
+                // Load the category hierarchy recursively
+                .Include(p => p.Category)
+                    .ThenInclude(c => c.ParentCategory)
+                .Where(p => p.Number.Contains(partNumber) && p.UserId == userId)
+                .FirstOrDefault();
+
+            // Load the full parent category hierarchy
+            if (part?.Category != null)
+            {
+                part.Category = LoadFullCategoryHierarchy(part.Category);
+            }
+
             return part;
         }
-                
+
+
         public List<Part> GetParts(PartFilterCriteria criteria)
         {
             
@@ -191,5 +203,20 @@ namespace Bintainer.Repository.Service
             }
             return result;
         }
+
+        private PartCategory LoadFullCategoryHierarchy(PartCategory category)
+        {
+            while (category.ParentCategory != null)
+            {
+                category.ParentCategory = _dbContext.PartCategories
+                    .Include(c => c.ParentCategory)
+                    .FirstOrDefault(c => c.Id == category.ParentCategory.Id);
+
+                category = category.ParentCategory;
+            }
+            return category;
+        }
+
+
     }
 }

@@ -287,9 +287,17 @@
                         <fieldset>
                             <legend><h2>Category</h2></legend>
                             <hr />
+                              <div class="row">
+                                <div class="col-md-6">
+                                    <label for="updateCategory" class="form-label"><i>Current category</i></label>
+                                    <span id="updateCategory" class="form-control input-sharp"></span>
+                                </div>
+                               </div>
+                            <div class="mb-4"></div>
                             <div class="row">
                                 <div class="form-group">
-                                    <label class="control-label">Category</label>
+                                    <label class="control-label"><i>Update category to</i></label>
+                                    <div class="mb-4"></div>
                                     <div id="update-part-category-treeview" class="category-treeview"></div>
                                 </div>
                             </div>
@@ -1240,12 +1248,18 @@
                 contentType: "application/json; charset=utf-8",
                 type: 'Post',
                 success: function (response) {
-                    if (table.length) { // Check if the table exists
-                        $('#updatepartNumber').val(response.number || ''); // Use 'number' instead of 'partNumber'
+                    if (response) { // Check if response is not null
+                        // Populate the form fields with data
+                        $('#updatepartNumber').val(response.number || '');
                         $('#updateDescription').val(response.description || '');
                         $('#updateSupplier').val(response.supplier || '');
-                        $('#updatePackageInput').val(response.package.name || ''); // Show the package name
+                        $('#updatePackageInput').val(response.package?.name || '');
 
+                        // Flatten the category hierarchy
+                        const flattenedCategory = flattenCategory(response.category);
+                        $('#updateCategory').text(flattenedCategory);
+
+                        // Populate the groups
                         const groupNames = response.groups && response.groups.length > 0
                             ? response.groups.map(group => group.name).join(', ')
                             : '';
@@ -1254,7 +1268,7 @@
                         // Populate the attributes table
                         if (response.attributes && response.attributes.length > 0) {
                             $.each(response.attributes, function (index, item) {
-                                appendRowToTable(table, item.name, item.value);
+                                appendRowToTable(table, item.name, item.value, item.guidId);
                             });
                         }
 
@@ -1270,7 +1284,18 @@
                     console.error('Error:', error);
                 }
             });
+
         }
+
+        function flattenCategory(category) {
+            let categories = [];
+            while (category) {
+                categories.push(category.title);
+                category = category.children && category.children.length > 0 ? category.children[0] : null;
+            }
+            return categories.join(' > ');
+        }
+
 
 
         function searchPart() {//updatepartNumberList

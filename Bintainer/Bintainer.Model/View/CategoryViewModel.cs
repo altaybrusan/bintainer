@@ -14,5 +14,6 @@ namespace Bintainer.Model.View
         public Guid? GuidId { get; set; }
         public string UserId { get; set; } = null!;
         public List<CategoryViewModel>? Children { get; set; } = new();
+        public string? FlattenedHierarchy { get; set; } // New property to hold the flattened hierarchy
     }
 }

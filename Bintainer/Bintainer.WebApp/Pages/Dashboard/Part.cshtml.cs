@@ -115,7 +115,6 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 var response = _partService.GetPartByName(partNumber,userId);
                 if (response is null)
                     return new OkResult();
-                var test = new JsonResult(response.Result);
                 return new JsonResult(response.Result);
 
             }
