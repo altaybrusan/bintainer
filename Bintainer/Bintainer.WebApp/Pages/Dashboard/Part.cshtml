@@ -225,8 +225,8 @@
     <div id="update-part" class="tab-pane fade" role="tabpanel" aria-labelledby="update-tab"> 
         <div class="container">
             <div class="row">
-                <div class="col-md-8" style="margin-left: 10px;">
-                    <form>
+                <div class="col-md-9" style="margin-left: 10px;">
+                    <form id="searchPartForUpdateForm" class="well form-horizontal" method="post">
                         <fieldset>
                             <legend><h2>Search part</h2></legend>
                             <hr />
@@ -239,8 +239,8 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="autocomplete">
-                                            <input type="text" class="form-control input-sharp" id="searchPartNumberForUpdate" placeholder="Part number" data-autocomplete-options="updatepartNumberListData" required="required">
-                                            <div id="updatepartNumberListData" style="display:none;">
+                                            <input type="text" class="form-control input-sharp" id="searchPartNumberForUpdate" placeholder="Part number" data-autocomplete-options="updatePartNumberListData" required="required">
+                                            <div id="updatePartNumberListData" style="display:none;">
                                                 @Html.Raw(Json.Serialize(Model.PartNumbers.Select(p => p.Trim())))
                                             </div>
                                         </div>
@@ -254,31 +254,31 @@
                         <div class="mb-4"></div>
                     </form>
                     <div id="part-details-section" class="collapse">
-                        <form class="row" method="post" asp-page-handler="RetrievePartAttributeDetails">
+                        <form id="updatePartForm" class="well form-horizontal" method="post">
                             <fieldset>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">Part number</label>
-                                            <input id="updatepartNumber" name="updatepartNumber" class="form-control  input-sharp" type="text">
+                                            <input id="updatePartNumber" name="updatePartNumber" class="form-control  input-sharp" type="text" required="required">
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label">Description</label>
-                                            <input id="updateDescription" name="updateDescription" class="form-control  input-sharp" type="text">
+                                            <input id="updatePartDescription" name="updatePartDescription" class="form-control  input-sharp" type="text">
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label">Supplier</label>
-                                            <input id="updateSupplier" name="updateSupplier" class="form-control  input-sharp" type="text">
+                                            <input id="updatePartSupplier" name="updatePartSupplier" class="form-control  input-sharp" type="text">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">Package/Footprint</label>
-                                            <input type="text" class="form-control  input-sharp autocomplete" id="updatePackageInput" />
+                                            <input type="text" class="form-control  input-sharp autocomplete" id="updatePartPackageInput" required="required" />
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label">Group</label>
-                                            <input type="text" class="form-control  input-sharp autocomplete" id="updateGroupInput" />
+                                            <input type="text" class="form-control  input-sharp autocomplete" id="updatePartGroupInput" />
                                         </div>
                                     </div>
                                 </div>
@@ -289,8 +289,8 @@
                                 <hr />
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <label for="updateCategory" class="form-label"><i>Current category</i></label>
-                                        <span id="updateCategory" class="form-control input-sharp"></span>
+                                        <label for="updatePartCurrentCategory" class="form-label"><i>Current category</i></label>
+                                        <span id="updatePartCurrentCategory" class="form-control input-sharp"></span>
                                     </div>
                                 </div>
                                 <div class="mb-4"></div>
@@ -307,7 +307,7 @@
                                 <legend><h2>Attributes</h2></legend>
                                 <hr />
                                 <div style="margin-bottom: 20px;"></div>
-                                <table class="table" id="updateProductSpecTable">
+                                <table class="table" id="updatePartAttributeTable">
                                     <thead>
                                         <tr>
                                             <th>Product Attribute</th>
@@ -318,8 +318,8 @@
                                     <tbody id="updateProductAttributeTable"></tbody>
                                 </table>
                                 <div class="button-row align-items-start">
-                                    <button class="btn btn-primary me-2 ms-2" id="addAttribute" target-table="updateProductSpecTable" style="height:30px">Add Row</button>
-                                    <button class="btn btn-primary me-2 ms-2" id="updateAttribute" target-table="updateProductSpecTable" style="height:30px">Update</button>
+                                    <button class="btn btn-primary me-2 ms-2" id="addAttributeToUpdateTable" target-table="updatePartAttributeTable" style="height:30px">Add Row</button>
+                                    <button class="btn btn-primary me-2 ms-2" id="updateAttribute" target-table="updatePartAttributeTable" style="height:30px">Update</button>
                                 </div>
                             </fieldset>
                             <div class="button-row align-items-end justify-content-end mt-5">
@@ -571,7 +571,8 @@
 
     $(document).ready(function () {
 
-        let selectedCategory = null;
+        let selectedCategoryForCreatePart = null;
+        let selectedCategoryForUpdatePart = null;
 
         var data = @Html.Raw(JsonSerializer.Serialize(Model.Categories, new JsonSerializerOptions
               {
@@ -582,30 +583,27 @@
         const creatPartTree = new DinampTreeEditor('.create-part-category-treeview')
                                   .setData(data)
                                   .set({ // Set the options
-                radios: true,
-                editable: false,
-                checkboxes: false,
-                oncheck: function (state, text, path) {
-                    selectedCategory = path;
+                                        radios: true,
+                                        editable: false,
+                                        checkboxes: false,
+                                        oncheck: function (state, text, path) {
+                                        selectedCategoryForCreatePart = path;
                 }
             });
 
         const updatePartTree = new DinampTreeEditor('#update-part-category-treeview')
                                    .setData(data)
                                    .set({ // Set the options
-                radios: true,
-                editable: false,
-                checkboxes: false,
-                oncheck: function (state, text, path) {
-                    selectedCategory = path;
-                }
-            });
+                                            radios: true,
+                                            editable: false,
+                                            checkboxes: false,
+                                            oncheck: function (state, text, path) {
+                                            selectedCategoryForUpdatePart = path;
+                                            }});
 
-        // Disable the buttons by default
-        $('#addAttribute').prop('disabled', true);
+        $('#addAttributeToUpdateTable').prop('disabled', true);
         $('#updateAttribute').prop('disabled', true);
 
-        // Call the function initially
         $('#templateList').on('change', function (event) {
             //var selectedId = document.getElementById("templateList").value;
             var selectedId = $(this).val();
@@ -718,16 +716,16 @@
         });
        
         
-        $('#updatepartNumberList').on('keydown', function (event) {
+        $('#updatePartNumberList').on('keydown', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 loadPartForUpdate(); // Trigger the search on Enter key press
             }
         });
-        $('#updatepartNumberList').on('keyup', function () {
+        $('#updatePartNumberList').on('keyup', function () {
             var partNumber = $(this).val();
             if (partNumber.length === 0) {
-                $('#addAttribute').prop('disabled', true);
+                $('#addAttributeToUpdateTable').prop('disabled', true);
                 $('#updateAttribute').prop('disabled', true);
                 var table = $('#searchedProductSpecTable');
                 table.find('tbody').empty(); // Clear table if input is empty
@@ -749,21 +747,100 @@
         $('#searchPartNumberForUpdate').on('keyup', function () {
             var partNumber = $(this).val().trim();
             if (partNumber.length === 0) {
-                $('#addAttribute').prop('disabled', true);
+                $('#addAttributeToUpdateTable').prop('disabled', true);
                 $('#updateAttribute').prop('disabled', true);
                 var table = $('#searchedProductSpecTable');
                 table.find('tbody').empty(); // Clear table if input is empty
             }
         });
-        
-        $('#addAttribute').on('click', function (event) {
+        $('#updatePartBtn').on('click', function () {
+            event.preventDefault();
+            var guidId = $('#searchPartNumberForUpdate').data('guidid');
+
+            var validator = $("#updatePartForm").validate();
+            var isValid = validator.form();
+            if (!isValid) {
+                return;
+            }
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            var groupValue = $('#updatePartGroupInput').val();
+            var packageValue = $('#updatePartPackageInput').val();
+            var partData = {
+                PartNumber: $('#updatePartNumber').val()?.trim(),
+                Description: $('#updatePartDescription').val()?.trim(),
+                Supplier: $('#updatePartSupplier').val()?.trim(),
+                GuidId: guidId,
+                Attributes: {},
+                PathToCategory: selectedCategoryForUpdatePart
+            };
+            if (groupValue) {
+                partData.Group = groupValue.trim();
+            }
+            if (packageValue) {
+                partData.Package = packageValue.trim();
+            }
+
+            var attributesList = [];
+            partData.Attributes = attributesList;
+            // Iterate over each row in the table to collect attribute details
+            $('#updatePartAttributeTable tbody tr').each(function () {
+                var row = $(this);
+                var guid = row.data('guid'); // Read the data-guid attribute from the row
+                var attributeName = row.find('.dtable-col1 input').val()?.trim();
+                var attributeValue = row.find('.dtable-col2 input').val()?.trim();
+
+                // Check if both attribute name and value are provided
+                if (attributeName) {
+                    attributesList.push({
+                        guidId: guid || null, // If guid is undefined, set it to null
+                        name: attributeName,
+                        value: attributeValue || null
+                    });
+                }
+            });
+            $.ajax({
+                url: '/dashboard/Part?handler=UpdatePart',
+                type: 'Post',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(partData),
+                headers: {
+                    'XSRF-TOKEN': token // Include the CSRF token in the request header
+                },
+                success: function (response) {
+                    // Handle successful response
+                    console.log(response);
+                    event.preventDefault(); // enable validation
+                    alert(response.message); // Show success message
+
+                    selectedCategoryForUpdatePart = null;
+                    creatPartTree.clear();
+                                     
+                    if (response.message && response.message.includes("success")) {
+                        // Reset the form
+                        $('#searchPartForUpdateForm')[0].reset();
+                        $('#updatePartForm')[0].reset();
+                        selectedCategoryForCreatePart = null;
+                        $('#updatePartAttributeTable tbody').empty();
+                        $('#updatePartCurrentCategory').empty();
+                    }
+                    $('#part-details-section').collapse('hide');
+                },
+                error: function (xhr, status, error) {
+                    // Handle error response
+                    console.error('Error:', error);
+                    // Optionally, you can show an error message
+                }
+            });
+        });
+        $('#addAttributeToUpdateTable').on('click', function (event) {
             event.preventDefault(); // Prevent default form submission behavior
-            //var targetTableId = $(this).attr('searchedProductSpecTable'); // Get the ID from the target-table attribute
-            var table = $('#searchedProductSpecTable'); // Select the table using the ID
+            //var targetTableId = $(this).attr('updatePartAttributeTable'); // Get the ID from the target-table attribute
+            var table = $('#updatePartAttributeTable'); // Select the table using the ID
             if (table.length) { // Check if the table exists
                 appendRowToTable(table); // Call the function with the table jQuery object
             } else {
-                console.error('Table with ID searchedProductSpecTable not found.');
+                console.error('Table with ID updatePartAttributeTable not found.');
             }
         });
         $('#updateAttribute').on('click', function (event) {
@@ -801,7 +878,7 @@
          
             event.preventDefault();
 
-            if (selectedCategory == null) 
+            if (selectedCategoryForCreatePart == null) 
             {
                 alert("Please select a category");
                 return;
@@ -829,7 +906,7 @@
                 
                 AttributeTemplateGuid: selectedGuid.trim() === '' ? null : selectedGuid,
                 Attributes: {},
-                PathToCategory: selectedCategory
+                PathToCategory: selectedCategoryForCreatePart
             };
             if (groupValue) {
                 partData.Group = groupValue;
@@ -866,7 +943,7 @@
                     event.preventDefault(); // enable validation
                     alert(response.message); // Show success message
 
-                    selectedCategory = null;
+                    selectedCategoryForCreatePart = null;
                     creatPartTree.clear();
 
                     // Optionally, you can redirect or show a success message
@@ -874,7 +951,7 @@
                     {
                         // Reset the form
                         $('#createPartForm')[0].reset();
-                        selectedCategory = null;
+                        selectedCategoryForCreatePart = null;
                         $('#attributeTable tbody').empty();
                         $('#templateList').val('');
                     }
@@ -1185,7 +1262,7 @@
                             });
 
                             // Enable buttons if data is successfully fetched
-                            $('#addAttribute').prop('disabled', false);
+                            $('#addAttributeToUpdateTable').prop('disabled', false);
                             $('#updateAttribute').prop('disabled', false);
 
                             // Add event listener for numeric input
@@ -1236,7 +1313,7 @@
         function loadPartForUpdate() {
             var number = $('#searchPartNumberForUpdate').val().trim();
             var token = $('input[name="__RequestVerificationToken"]').val(); // Extract CSRF token
-            var table = $('#updateProductSpecTable'); // Select the table
+            var table = $('#updatePartAttributeTable'); // Select the table
             table.find('tbody').empty(); // Clear previous table rows
 
             $('#part-details-section').collapse('hide'); // Initially hide the details section
@@ -1256,22 +1333,26 @@
                 success: function (response) {
                     if (response) { // Check if response is not null
                         // Populate the form fields with data
-                        $('#updatepartNumber').val(response.number || '');
-                        $('#updateDescription').val(response.description || '');
-                        $('#updateSupplier').val(response.supplier || '');
-                        $('#updatePackageInput').val(response.package?.name || '');
+                        $('#updatePartNumber').val(response.number || '');
+                        $('#updatePartDescription').val(response.description || '');
+                        $('#updatePartSupplier').val(response.supplier || '');
+                        $('#updatePartPackageInput').val(response.package?.name || '');
+
+                        // Store the GuidId in the input field as a custom data attribute
+                        $('#searchPartNumberForUpdate').data('guidid', response.guidId);
 
                         // Flatten the category hierarchy
                         const flattenedCategory = flattenCategory(response.category);
-                        $('#updateCategory').text(flattenedCategory);
+                        $('#updatePartCurrentCategory').text(flattenedCategory);
 
                         // Populate the groups
                         const groupNames = response.groups && response.groups.length > 0
                             ? response.groups.map(group => group.name).join(', ')
                             : '';
-                        $('#updateGroupInput').val(groupNames);
+                        $('#updatePartGroupInput').val(groupNames);
 
                         // Populate the attributes table
+                        const table = $('#updatePartAttributeTable');
                         if (response.attributes && response.attributes.length > 0) {
                             $.each(response.attributes, function (index, item) {
                                 appendRowToTable(table, item.name, item.value, item.guidId);
@@ -1279,7 +1360,7 @@
                         }
 
                         // Enable buttons if data is successfully fetched
-                        $('#addAttribute').prop('disabled', false);
+                        $('#addAttributeToUpdateTable').prop('disabled', false);
                         $('#updateAttribute').prop('disabled', false);
 
                         // Show the part details section after data is fetched successfully
@@ -1307,7 +1388,7 @@
 
 
 
-        function searchPart() {//updatepartNumberList
+        function searchPart() {//updatePartNumberList
             var number = $('#searchPartNumberForUpdate').val().trim();
             var token = $('input[name="__RequestVerificationToken"]').val(); // Extract CSRF token
             var table = $('#searchedProductSpecTable'); // Select the table
@@ -1332,7 +1413,7 @@
                                 appendRowToTable(table, item.name, item.value);
                             });
                             // Enable buttons if data is successfully fetched
-                            $('#addAttribute').prop('disabled', false);
+                            $('#addAttributeToUpdateTable').prop('disabled', false);
                             $('#updateAttribute').prop('disabled', false);
                         } else {
                             alert('No attributes found for the given part number.');

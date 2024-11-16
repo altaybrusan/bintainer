@@ -15,7 +15,8 @@ namespace Bintainer.Service.Interface
     {
 
         public Response<PartViewModel?> GetPartByName(string partName,string userId);
-        public Response<Part?> CreatePartForUser(CreatePartRequest request, string userId);
+        public Response<Part?> CreatePart(CreatePartRequest request, string userId);
+        public Response<Part?> UpdatePart(UpdatePartRequest request, string userId);
         public Response<List<PartAttribute>?> UpdatePartAttributes(UpdateAttributeRequest request,string userId);
         public Response<PartGroup> AddPartIntoGroup(Part part, string groupName, string userId);
         public void ArrangePartRequest(ArrangePartRequest arrangeRequest, string userId);

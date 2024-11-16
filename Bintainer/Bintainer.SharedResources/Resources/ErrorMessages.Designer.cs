@@ -214,6 +214,15 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Part does not exist..
+        /// </summary>
+        public static string ErrorPartDoesNotExist {
+            get {
+                return ResourceManager.GetString("ErrorPartDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The part is missing..
         /// </summary>
         public static string ErrorPartMissing {
@@ -282,6 +291,15 @@ namespace Bintainer.SharedResources.Resources {
         public static string InfoPartCreatedSuccessfully {
             get {
                 return ResourceManager.GetString("InfoPartCreatedSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Part has been successfully updated..
+        /// </summary>
+        public static string InfoPartUpdatedSuccessfully {
+            get {
+                return ResourceManager.GetString("InfoPartUpdatedSuccessfully", resourceCulture);
             }
         }
         

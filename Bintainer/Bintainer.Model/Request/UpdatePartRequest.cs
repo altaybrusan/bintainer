@@ -1,9 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Bintainer.Model.View;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Bintainer.Model.Request
 {
-    public class CreatePartRequest
+    public class UpdatePartRequest
     {
+        public Guid? GuidId { get; set; }
         public string? PartNumber { get; set; }
         public string? Description { get; set; }
         public string? Supplier { get; set; }
@@ -15,7 +21,7 @@ namespace Bintainer.Model.Request
         public string? PartUrl { get; set; }
         public Guid? AttributeTemplateGuid { get; set; }
         public DateTime? OrderDate { get; set; }
-        public Dictionary<string, string>? Attributes { get; set; }
-        public List<string?>? PathToCategory { get; set; } // Add the Path property
+        public List<PartAttributeViewModel>? Attributes { get; set; }
+        public List<string?>? PathToCategory { get; set; }
     }
 }

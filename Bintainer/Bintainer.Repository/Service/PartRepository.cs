@@ -49,6 +49,28 @@ namespace Bintainer.Repository.Service
             return part;
         }
 
+        public Part? GetPart(Guid partGuidId) 
+        {
+            var part = _dbContext.Parts.Where(p => p.GuidId == partGuidId)
+                                       .Include(p => p.PartBinAssociations)
+                                           .ThenInclude(b => b.Bin)
+                                           .ThenInclude(b => b.BinSubspaces)
+                                       .Include(p => p.OrderPartAssociations)
+                                       .Include(p => p.PartAttributes)
+                                       .Include(p => p.Package)
+                                       .Include(p => p.Groups)
+                                       .Include(p => p.Category)
+                                           .ThenInclude(c => c.ParentCategory)
+                                       .Where(p => p.GuidId == partGuidId)
+                                       .FirstOrDefault();
+            if (part?.Category != null)
+            {
+                part.Category = LoadFullCategoryHierarchy(part.Category);
+            }
+            return part;
+        }
+
+
 
         public List<Part> GetParts(PartFilterCriteria criteria)
         {

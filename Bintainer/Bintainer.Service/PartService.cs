@@ -75,7 +75,7 @@ namespace Bintainer.Service
 
         }
 
-        public Response<Part?> CreatePartForUser(CreatePartRequest request, string userId) 
+        public Response<Part?> CreatePart(CreatePartRequest request, string userId) 
         {
             try
             {
@@ -170,6 +170,130 @@ namespace Bintainer.Service
                 };
             }
         }
+
+        public Response<Part?> UpdatePart(UpdatePartRequest request, string userId)
+        {
+            try
+            {
+                var part = _partRepository.GetPart(request.GuidId!.Value);
+                if (part is null)
+                {
+                    _appLogger.LogMessage(_localizer["WarningPartNotFound"], LogLevel.Warning);
+                    return new Response<Part?>()
+                    {
+                        IsSuccess = false,
+                        Result = null,
+                        Message = _localizer["WarningPartNotFound"]
+                    };
+
+                }                             
+                
+                part.Number = request.PartNumber!.Trim();
+                part.Description = request.Description!.Trim();
+
+                if(request.PathToCategory != null && request.PathToCategory.Count > 0) 
+                {
+                    var Categories = _templateRepository.GetCategories(userId);
+                    var categoryId = ExtractCategoryIdFromPath(Categories, request.PathToCategory!);
+                    part.CategoryId = categoryId;
+                }
+
+                part.UserId = userId;
+                part.Supplier = request.Supplier!.Trim();
+
+                List<PartGroup> groups = new List<PartGroup>();
+                if (request.Group is not null)
+                {
+                    string?[] groupNames = request.Group!.Split(',');
+                    groups = _partRepository.CreateOrUpdateGroup(groupNames, userId);
+                }
+                part.Groups = groups;
+
+                string packageName = string.IsNullOrEmpty(request.Package) ? "NA" : request.Package.Trim();
+                var package = _partRepository.GetOrCreatePackage(packageName, userId);
+                part.Package = package;
+
+                UpdatePartAttributes(request.Attributes, ref part);
+                                
+                _partRepository.UpdatePart(part);
+
+
+                return new Response<Part?>()
+                {
+                    IsSuccess = true,
+                    Result = part,
+                    Message = _localizer["InfoPartCreatedSuccessfully"]
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<Part?>()
+                {
+                    IsSuccess = false,
+                    Result = null,
+                    Message = ex.Message
+                };
+            }
+        }
+        private void UpdatePartAttributes(List<PartAttributeViewModel> updatedAttributes, ref Part part)
+        {
+            // Create a dictionary for efficient lookup of updated attributes by GuidId
+            var updatedAttributesDict = updatedAttributes
+                .Where(attr => attr.GuidId.HasValue)
+                .ToDictionary(attr => attr.GuidId.Value, attr => attr);
+
+            // Find attributes that should be deleted (existing in part but not in updatedAttributes)
+            var attributesToDelete = part.PartAttributes
+                .Where(existingAttr => existingAttr.GuidId.HasValue && !updatedAttributesDict.ContainsKey(existingAttr.GuidId.Value))
+                .ToList();
+
+            // Remove those attributes from part.PartAttributes
+            foreach (var attrToDelete in attributesToDelete)
+            {
+                part.PartAttributes.Remove(attrToDelete);
+            }
+
+            // Update existing attributes or add new ones
+            foreach (var updatedAttr in updatedAttributes)
+            {
+                if (updatedAttr.GuidId.HasValue)
+                {
+                    // Check if this attribute already exists in part.PartAttributes
+                    var existingAttr = part.PartAttributes
+                        .FirstOrDefault(attr => attr.GuidId.HasValue && attr.GuidId.Value == updatedAttr.GuidId.Value);
+
+                    if (existingAttr != null)
+                    {
+                        // Update the existing attribute
+                        existingAttr.Name = updatedAttr.Name;
+                        existingAttr.Value = updatedAttr.Value;
+                    }
+                    else
+                    {
+                        // Add new attribute if not found
+                        part.PartAttributes.Add(new PartAttribute
+                        {
+                            GuidId = updatedAttr.GuidId,
+                            Name = updatedAttr.Name,
+                            Value = updatedAttr.Value,
+                            PartId = part.Id
+                        });
+                    }
+                }
+                else
+                {
+                    // If GuidId is null, add as a new attribute
+                    part.PartAttributes.Add(new PartAttribute
+                    {
+                        Name = updatedAttr.Name,
+                        Value = updatedAttr.Value,
+                        PartId = part.Id
+                    });
+                }
+            }
+        }
+
 
         public Response<List<PartAttribute>?> UpdatePartAttributes(UpdateAttributeRequest request, string userId)
         {

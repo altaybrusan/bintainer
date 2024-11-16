@@ -5,6 +5,7 @@ using Azure.Core;
 using Bintainer.Model.DTO;
 using Bintainer.Model.Entity;
 using Bintainer.Model.Request;
+using Bintainer.Model.Template;
 using Bintainer.Model.View;
 using Bintainer.Service;
 using Bintainer.Service.Interface;
@@ -103,8 +104,27 @@ namespace Bintainer.WebApp.Pages.Dashboard
             }
 
             var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-            var response = _partService.CreatePartForUser(request, UserId);
+            var response = _partService.CreatePart(request, UserId);
             return new JsonResult(new { message = response.Message }) { StatusCode = 200 };                      
+        }
+
+        public IActionResult OnPostUpdatePart([FromBody] UpdatePartRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                _appLogger.LogModelError(nameof(OnPostCreatePart), ModelState);
+
+                return BadRequest(new
+                {
+                    success = false,
+                    message = _localizer["ErrorModelStateError"],
+                });
+            }
+            var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+
+            var response = _partService.UpdatePart(request, UserId);
+            return new JsonResult(new { message = response.Message }) { StatusCode = 200 };
+
         }
 
         public IActionResult OnPostRetrievePart(string partNumber) 

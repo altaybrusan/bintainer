@@ -168,6 +168,9 @@
   <data name="ErrorPartAlreadyExists" xml:space="preserve">
     <value>The part is already present.</value>
   </data>
+  <data name="ErrorPartDoesNotExist" xml:space="preserve">
+    <value>Part does not exist.</value>
+  </data>
   <data name="ErrorPartMissing" xml:space="preserve">
     <value>The part is missing.</value>
   </data>
@@ -191,6 +194,9 @@
   </data>
   <data name="InfoPartCreatedSuccessfully" xml:space="preserve">
     <value>Part has been successfully created.</value>
+  </data>
+  <data name="InfoPartUpdatedSuccessfully" xml:space="preserve">
+    <value>Part has been successfully updated.</value>
   </data>
   <data name="InfoRepositoryCreateOrUpdateSuccess" xml:space="preserve">
     <value>Repository creation or update completed successfully.</value>

@@ -9,7 +9,7 @@ namespace Bintainer.Model.View
 {
     public class PartViewModel
     {
-        public int Id { get; set; }
+        public Guid GuidId { get; set; }
 
         public string Number { get; set; } = null!;
 

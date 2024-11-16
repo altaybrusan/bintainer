@@ -11,6 +11,7 @@ namespace Bintainer.Repository.Interface
 {
     public interface IPartRepository
     {
+        public Part? GetPart(Guid partGuidId);
         public Part? GetPart(string partNumber,string userId);
         public Part? UpdatePart(Part? part);
         public List<Part> GetParts(PartFilterCriteria criteria);
