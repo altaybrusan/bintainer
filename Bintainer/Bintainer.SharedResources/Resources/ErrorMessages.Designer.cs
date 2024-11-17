@@ -115,6 +115,15 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error failed to arrange part..
+        /// </summary>
+        public static string ErrorFailedPartArrange {
+            get {
+                return ResourceManager.GetString("ErrorFailedPartArrange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to load part..
         /// </summary>
         public static string ErrorFailedPartLoading {
@@ -282,6 +291,15 @@ namespace Bintainer.SharedResources.Resources {
         public static string InfoAttributeTemplatedRemoved {
             get {
                 return ResourceManager.GetString("InfoAttributeTemplatedRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Part has been successfully arranged in bin..
+        /// </summary>
+        public static string InfoPartArrangSuccessfully {
+            get {
+                return ResourceManager.GetString("InfoPartArrangSuccessfully", resourceCulture);
             }
         }
         

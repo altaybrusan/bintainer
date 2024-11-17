@@ -362,7 +362,7 @@ namespace Bintainer.Service
             }         
         }
 
-        public void ArrangePartRequest(ArrangePartRequest arrangeRequest, string userId)
+        public Response<string> ArrangePartRequest(ArrangePartRequest arrangeRequest, string userId)
         {
             try
             {
@@ -373,7 +373,12 @@ namespace Bintainer.Service
                 if (inventorySection == null)
                 {
                     _appLogger.LogMessage("ErrorInventorySectionMissing");
-                    return;                   
+                    return new Response<string>()
+                    {
+                        IsSuccess = false,
+                        Message = _localizer["ErrorInventorySectionMissing"],
+                        Result = string.Empty,
+                    };
                 }
 
                 var response = _inventoryService.GetBinFrom(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY);
@@ -394,12 +399,29 @@ namespace Bintainer.Service
                 if (part is null)
                 {
                     _appLogger.LogMessage("ErrorInvalidPartDetails");
-                    return ;
+                    return new Response<string>()
+                    {
+                        IsSuccess = false,
+                        Message = _localizer["ErrorInvalidPartDetails"],
+                        Result = string.Empty,
+                    };
                 }
+                return new Response<string>()
+                {
+                    IsSuccess = false,
+                    Message = _localizer["InfoPartArrangSuccessfully"],
+                    Result = string.Empty,
+                };
             }
             catch (Exception ex)
             {
                 _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<string>()
+                {
+                    IsSuccess = false,
+                    Message = _localizer["ErrorFailedPartArrange"],
+                    Result = string.Empty,
+                };
             }
         }
 
@@ -567,7 +589,7 @@ namespace Bintainer.Service
             Dictionary<int, int>? subspaceQuantity = new Dictionary<int, int>();
             if (arrangeRequest.IsFilled)
             {
-                var response = _binService.DistributeQuantityAcrossSubspaces(bin, arrangeRequest.FillAllQuantity.Value); ;
+                var response = _binService.DistributeQuantityAcrossSubspaces(bin, arrangeRequest.FillAllQuantity.Value);
                 if (response.IsSuccess)
                     subspaceQuantity = response.Result;
                 else

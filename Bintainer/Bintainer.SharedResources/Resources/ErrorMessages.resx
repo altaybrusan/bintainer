@@ -135,6 +135,9 @@
   <data name="ErrorFailedAttributeTemplatedRemove" xml:space="preserve">
     <value>Failed to remove attribute template.</value>
   </data>
+  <data name="ErrorFailedPartArrange" xml:space="preserve">
+    <value>Error failed to arrange part.</value>
+  </data>
   <data name="ErrorFailedPartLoading" xml:space="preserve">
     <value>Failed to load part.</value>
   </data>
@@ -191,6 +194,9 @@
   </data>
   <data name="InfoAttributeTemplatedRemoved" xml:space="preserve">
     <value>Attribute template removed successfully.</value>
+  </data>
+  <data name="InfoPartArrangSuccessfully" xml:space="preserve">
+    <value>Part has been successfully arranged in bin.</value>
   </data>
   <data name="InfoPartCreatedSuccessfully" xml:space="preserve">
     <value>Part has been successfully created.</value>

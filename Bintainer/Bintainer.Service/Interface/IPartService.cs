@@ -19,7 +19,7 @@ namespace Bintainer.Service.Interface
         public Response<Part?> UpdatePart(UpdatePartRequest request, string userId);
         public Response<List<PartAttribute>?> UpdatePartAttributes(UpdateAttributeRequest request,string userId);
         public Response<PartGroup> AddPartIntoGroup(Part part, string groupName, string userId);
-        public void ArrangePartRequest(ArrangePartRequest arrangeRequest, string userId);
+        public Response<string> ArrangePartRequest(ArrangePartRequest arrangeRequest, string userId);
         public Response<List<PartUsageResponse>?> UsePart(string partName, string userId);
         public Response<List<PartBinAssociation>?> TryAdjustPartQuantity(AdjustQuantityRequest request,string userId);
         public Response<List<string>?> GetPartNames(string userId);
