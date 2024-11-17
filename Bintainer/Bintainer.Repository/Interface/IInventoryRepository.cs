@@ -10,6 +10,7 @@ namespace Bintainer.Repository.Interface
     public interface IInventoryRepository
     {
         public Inventory? GetInventory(string admin);
+        public Inventory? GetInventoryById(string userId);
         public Inventory? GetUserInventoryByUserId(string userId);
         public List<InventorySection>? GetAllInventorySections(int inventoryId);
         public InventorySection? GetSection(string userId, int sectionId);

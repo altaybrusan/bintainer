@@ -39,30 +39,30 @@ namespace Bintainer.Service
             _userRepository = userRepository;
         }
 
-        //public Response<InventorySection?> GetInventorySection(string? userId, int sectionId)
-        //{
-        //    try
-        //    {
-        //        var result = _inventoryRepository.GetSection(userId, sectionId);
+        public Response<InventorySection?> GetInventorySection(string? userId, int sectionId)
+        {
+            try
+            {
+                var result = _inventoryRepository.GetSection(userId, sectionId);
 
-        //        return new Response<InventorySection?>()
-        //        {
-        //            IsSuccess = true,
-        //            Result = result
-        //        };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _appLogger.LogMessage(ex.Message, LogLevel.Error);
-              
-        //        return new Response<InventorySection?>()
-        //        {
-        //            IsSuccess = false,
-        //            Message = ex.Message
-        //        };
-        //    }
-        //}
-        
+                return new Response<InventorySection?>()
+                {
+                    IsSuccess = true,
+                    Result = result
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+
+                return new Response<InventorySection?>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+            }
+        }
+
         public Response<Bin?> GetBinFrom(InventorySection? section, int coordinateX, int coordinateY) 
         {
             try
@@ -133,7 +133,29 @@ namespace Bintainer.Service
                 };
             }           
         }
-        
+
+        public Response<Inventory?> GetInventoryById(string userId)
+        {
+            try
+            {
+                var inventory = _inventoryRepository.GetInventoryById(userId);
+                return new Response<Inventory?>()
+                {
+                    IsSuccess = true,
+                    Result = inventory
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<Inventory?>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+            }
+        }
+
         public Response<Inventory?> CreateOrUpdateInventory(UserViewModel userViewModel, string inventoryName, List<InventorySection>? sectionList = null)
         {
             try

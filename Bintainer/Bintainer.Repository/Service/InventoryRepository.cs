@@ -41,6 +41,14 @@ namespace Bintainer.Repository.Service
             return _dbContext.Inventories.Where(i => i.Admin == admin).Include(i => i.InventorySections).Include(i=>i.User).FirstOrDefault();
         }
 
+        public Inventory? GetInventoryById(string? userId)
+        {
+            return _dbContext.Inventories.Where(i => i.UserId == userId)
+                                         .Include(i => i.InventorySections)
+                                         .Include(i => i.User)
+                                         .FirstOrDefault();
+        }
+
         public Inventory? GetUserInventoryByUserId(string userId)
         {
             return _dbContext.Inventories.FirstOrDefault(i => i.User.Id == userId);
