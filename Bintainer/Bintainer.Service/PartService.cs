@@ -20,7 +20,7 @@ namespace Bintainer.Service
     {
         private readonly IPartRepository _partRepository;
         private readonly ITemplateRepository _templateRepository;
-        private readonly IInventoryRepository _inventoryRepository;
+        //private readonly IInventoryRepository _inventoryRepository;
         private readonly IInventoryService _inventoryService;
         private readonly IBinService _binService;
         private readonly IStringLocalizer<ErrorMessages> _localizer;
@@ -28,7 +28,7 @@ namespace Bintainer.Service
         private readonly IMapper _mapper;
         public PartService(IPartRepository partRepository,
                            ITemplateRepository templateRepository,
-                           IInventoryRepository inventoryRepository,
+                           //IInventoryRepository inventoryRepository,
                            IInventoryService inventoryService,
                            IBinService binService,
                            IStringLocalizer<ErrorMessages> stringLocalizer,
@@ -37,7 +37,6 @@ namespace Bintainer.Service
         {
             _partRepository = partRepository;
             _templateRepository = templateRepository;
-            _inventoryRepository = inventoryRepository;
             _inventoryService = inventoryService;
             _binService = binService;
             _localizer = stringLocalizer;
@@ -367,8 +366,9 @@ namespace Bintainer.Service
         {
             try
             {
-                InventorySection? inventorySection = _inventoryRepository.GetSection(userId, arrangeRequest.SectionId);
-                Part? part = _partRepository.GetPart(arrangeRequest.PartName, userId);
+                var sectionResponse = _inventoryService.GetInventorySection(userId, arrangeRequest.SectionId);
+                InventorySection? inventorySection = sectionResponse.IsSuccess && string.IsNullOrEmpty(sectionResponse.Message) ? sectionResponse.Result : throw new Exception(sectionResponse.Message);
+                Part? part = _partRepository.GetPart(arrangeRequest.PartNumber, userId);
 
                 if (inventorySection == null)
                 {

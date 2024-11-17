@@ -31,26 +31,29 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         public List<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
         public List<string> PartNumbers { get; set; } = new List<string>();
-        
         public List<PartGroup> Group { get; set; } = new List<PartGroup>();
         public List<PartTemplateInfo> AttributeTemplatesList { get; set; }
 
-        public List<InventorySection> Sections { get; set; } = new();
+        //public List<InventorySection> Sections { get; set; } = new();
+        
         public Inventory Inventory { get; set; } = new();
 
         private readonly DigikeyService _digikeyService;
         private readonly ITemplateService _templateService;
         private readonly IPartService _partService;
+        private readonly IInventoryService _inventoryService;
         private readonly IAppLogger _appLogger;
         private readonly IStringLocalizer _localizer;
         public PartModel(ITemplateService templateService, 
                          IPartService partService,
+                         IInventoryService inventoryService,
                          IAppLogger appLogger,
                          IStringLocalizer<ErrorMessages> sringLocalizer,
                          DigikeyService digikeyServices)
         {
             _templateService = templateService;
             _partService = partService;
+            _inventoryService = inventoryService;
             _digikeyService = digikeyServices;
             _appLogger = appLogger;
             _localizer = sringLocalizer;
@@ -79,10 +82,15 @@ namespace Bintainer.WebApp.Pages.Dashboard
         public void OnGet()
         {
 			var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-            
+            var response = _inventoryService.GetInventoryById(userId);
+            if (!response.IsSuccess) 
+            {
+                return;// new JsonResult(new { message = "Could not load the page." }) { StatusCode = 500 };
+            }
             AttributeTemplatesList = _templateService.GetAttributeTemplateInfoList(userId).Result;
             Categories = _templateService.GetPartCategories(userId).Result;  
             PartNumbers = _partService.GetPartNames(userId).Result;
+            Inventory = response.Result;
         }
         public IActionResult OnPostCreatePart([FromBody]CreatePartRequest request) 
         {
