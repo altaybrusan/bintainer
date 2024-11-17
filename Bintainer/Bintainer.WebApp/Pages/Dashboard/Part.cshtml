@@ -318,8 +318,7 @@
                                     <tbody id="updateProductAttributeTable"></tbody>
                                 </table>
                                 <div class="button-row align-items-start">
-                                    <button class="btn btn-primary me-2 ms-2" id="addAttributeToUpdateTable" target-table="updatePartAttributeTable" style="height:30px">Add Row</button>
-                                    <button class="btn btn-primary me-2 ms-2" id="updateAttribute" target-table="updatePartAttributeTable" style="height:30px">Update</button>
+                                    <button class="btn btn-primary me-2 ms-2" id="addAttributeToUpdateTable" target-table="updatePartAttributeTable" style="height:30px">Add Row</button>                               
                                 </div>
                             </fieldset>
                             <div class="button-row align-items-end justify-content-end mt-5">
@@ -582,7 +581,7 @@
 
         const creatPartTree = new DinampTreeEditor('.create-part-category-treeview')
                                   .setData(data)
-                                  .set({ // Set the options
+                                  .set({
                                         radios: true,
                                         editable: false,
                                         checkboxes: false,
@@ -593,7 +592,7 @@
 
         const updatePartTree = new DinampTreeEditor('#update-part-category-treeview')
                                    .setData(data)
-                                   .set({ // Set the options
+                                   .set({
                                             radios: true,
                                             editable: false,
                                             checkboxes: false,
@@ -714,8 +713,7 @@
                 }
             });
         });
-       
-        
+               
         $('#updatePartNumberList').on('keydown', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
@@ -1331,39 +1329,27 @@
                 contentType: "application/json; charset=utf-8",
                 type: 'POST',
                 success: function (response) {
-                    if (response) { // Check if response is not null
-                        // Populate the form fields with data
+                    if (response) {
+
                         $('#updatePartNumber').val(response.number || '');
                         $('#updatePartDescription').val(response.description || '');
                         $('#updatePartSupplier').val(response.supplier || '');
                         $('#updatePartPackageInput').val(response.package?.name || '');
-
-                        // Store the GuidId in the input field as a custom data attribute
                         $('#searchPartNumberForUpdate').data('guidid', response.guidId);
-
-                        // Flatten the category hierarchy
                         const flattenedCategory = flattenCategory(response.category);
                         $('#updatePartCurrentCategory').text(flattenedCategory);
-
-                        // Populate the groups
                         const groupNames = response.groups && response.groups.length > 0
                             ? response.groups.map(group => group.name).join(', ')
                             : '';
                         $('#updatePartGroupInput').val(groupNames);
-
-                        // Populate the attributes table
                         const table = $('#updatePartAttributeTable');
                         if (response.attributes && response.attributes.length > 0) {
                             $.each(response.attributes, function (index, item) {
                                 appendRowToTable(table, item.name, item.value, item.guidId);
                             });
                         }
-
-                        // Enable buttons if data is successfully fetched
                         $('#addAttributeToUpdateTable').prop('disabled', false);
                         $('#updateAttribute').prop('disabled', false);
-
-                        // Show the part details section after data is fetched successfully
                         $('#part-details-section').collapse('show');
                     } else {
                         alert('No data found for the given part number.');
@@ -1376,7 +1362,6 @@
             });
         }
 
-
         function flattenCategory(category) {
             let categories = [];
             while (category) {
@@ -1386,13 +1371,11 @@
             return categories.join(' > ');
         }
 
-
-
-        function searchPart() {//updatePartNumberList
+        function searchPart() {
             var number = $('#searchPartNumberForUpdate').val().trim();
-            var token = $('input[name="__RequestVerificationToken"]').val(); // Extract CSRF token
-            var table = $('#searchedProductSpecTable'); // Select the table
-            table.find('tbody').empty(); // Clear previous table rows
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            var table = $('#searchedProductSpecTable'); 
+            table.find('tbody').empty(); 
 
             if (number.length === 0) {
                 alert('Please enter a valid part number.');

@@ -67,11 +67,11 @@ namespace Bintainer.Repository.Service
             return attributeTemplate;
         }
 
-        public void SaveAttributes(List<PartAttribute> attributes)
-        {
-            _dbContext.PartAttributes.AddRange(attributes);
-            _dbContext.SaveChanges();
-        }
+        //public void SaveAttributes(List<PartAttribute> attributes)
+        //{
+        //    _dbContext.PartAttributes.AddRange(attributes);
+        //    _dbContext.SaveChanges();
+        //}
         
         public List<PartCategory>? GetCategories(string userId)
         {

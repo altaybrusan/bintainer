@@ -156,7 +156,7 @@ namespace Bintainer.Service
                 {
                     IsSuccess = true,
                     Result = part,
-                    Message = _localizer["InfoPartCreatedSuccessfully"]
+                    Message = _localizer["InfoPartUpdatedSuccessfully"]
                 };
             }
             catch (Exception ex)

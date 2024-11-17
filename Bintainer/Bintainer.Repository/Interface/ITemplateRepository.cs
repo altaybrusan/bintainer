@@ -15,7 +15,7 @@ namespace Bintainer.Repository.Interface
         public PartAttributeTemplate? GetTemplate(Guid? templateGuid);
         public PartAttributeTemplate? GetTemplate(string partName, string userId);
         public PartAttributeTemplate? CreateTemplate(string partName, string userId);
-        public void SaveAttributes(List<PartAttribute> attributes);
+        //public void SaveAttributes(List<PartAttribute> attributes);
         public List<PartCategory>? GetCategories(string userId);
         public PartCategory? GetPartCategoryById(string userId);
         public PartCategory? GetCategory(int? id);
@@ -27,8 +27,6 @@ namespace Bintainer.Repository.Interface
         public PartAttributeTemplate AddAndSavePartAttribute(PartAttributeTemplate partAttribute);
         public void SaveChanges();
         public void RemoveAttributeTemplate(string userId,int attributeId);
-
-
 
     }
 }
