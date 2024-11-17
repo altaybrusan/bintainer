@@ -8,7 +8,7 @@ namespace Bintainer.Model.Request
 {
     public class ArrangePartRequest
     {
-        public string? PartName { get; set; }
+        public string? PartNumber { get; set; }
         public int SectionId { get; set; }
         public int CoordinateX { get; set; }
         public int CoordinateY { get; set; }
