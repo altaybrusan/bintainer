@@ -20,24 +20,28 @@ namespace Bintainer.Model.View
             Unchanged = new List<CategoryViewModel>();
             Updated = new List<CategoryViewModel>();
 
-            CompareLists(original, updated, null);
+            // Collect all IDs from the updated list including nested children
+            var updatedIds = GetAllIds(updated);
+
+            // Start the comparison
+            CompareLists(original, updated, null, updatedIds);
         }
 
-        private void CompareLists(List<CategoryViewModel> original, List<CategoryViewModel> updated, int? parentId)
+        private void CompareLists(List<CategoryViewModel> original, List<CategoryViewModel> updated, int? parentId, HashSet<int> updatedIds)
         {
             var originalDict = original.ToDictionary(item => item.Id ?? -1);
 
+            // Process updated items
             foreach (var item in updated)
             {
-
-                if (!originalDict.ContainsKey(item.Id ?? -1))
+                if (!originalDict.ContainsKey(item.Id ?? -1)) // New item
                 {
                     item.ParentId = parentId;
                     Added.Add(item);
                 }
-                else
+                else // Existing item
                 {
-                    var originalItem = originalDict.ContainsKey(item.Id ?? -1) ? originalDict[item.Id ?? -1] : null;
+                    var originalItem = originalDict[item.Id ?? -1];
                     if (IsUpdated(originalItem, item))
                     {
                         Updated.Add(new CategoryViewModel { Title = item.Title, Id = item.Id });
@@ -46,19 +50,24 @@ namespace Bintainer.Model.View
                     {
                         Unchanged.Add(new CategoryViewModel { Title = originalItem.Title, Id = item.Id });
                     }
-                    originalDict.Remove(item.Id ?? -1);
-                }
 
+                    // Remove from dictionary to prevent marking as deleted later
+                    originalDict.Remove(item.Id ?? -1);
+
+                    // Recursively check children
+                    if (item.Children != null && originalItem.Children != null)
+                    {
+                        CompareLists(originalItem.Children, item.Children, item.Id, updatedIds);
+                    }
+                }
             }
 
-            Deleted.AddRange(originalDict.Values);
-
-            foreach (var originalItem in original)
+            // Process remaining items in the original list as deleted (only if they aren't present in the updated hierarchy)
+            foreach (var remainingItem in originalDict.Values)
             {
-                var updatedChild = updated.FirstOrDefault(u => u.Id == originalItem.Id);
-                if (updatedChild != null)
+                if (!updatedIds.Contains(remainingItem.Id ?? -1))
                 {
-                    CompareLists(originalItem.Children, updatedChild?.Children ?? new List<CategoryViewModel>(), originalItem.Id); // Pass parent ID
+                    Deleted.Add(remainingItem);
                 }
             }
         }
@@ -67,5 +76,26 @@ namespace Bintainer.Model.View
         {
             return original.Title != updated.Title;
         }
+
+        private HashSet<int> GetAllIds(List<CategoryViewModel> categories)
+        {
+            var ids = new HashSet<int>();
+            CollectIds(categories, ids);
+            return ids;
+        }
+
+        private void CollectIds(List<CategoryViewModel> categories, HashSet<int> ids)
+        {
+            foreach (var category in categories)
+            {
+                if (category.Id.HasValue)
+                    ids.Add(category.Id.Value);
+
+                if (category.Children != null && category.Children.Count > 0)
+                    CollectIds(category.Children, ids);
+            }
+        }
     }
+
+
 }

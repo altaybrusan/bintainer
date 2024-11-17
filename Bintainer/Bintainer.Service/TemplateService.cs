@@ -225,7 +225,7 @@ namespace Bintainer.Service
         }
 
         //TODO: needs rewrite
-        public Response<List<CategoryViewModel>> SavePartCategory(List<CategoryViewModel> categories, string userId) 
+        public Response<List<CategoryViewModel>> SavePartCategory(List<CategoryViewModel> categories, string userId)
         {
             try
             {
@@ -256,7 +256,7 @@ namespace Bintainer.Service
 
                 return new Response<List<CategoryViewModel>>()
                 {
-                    IsSuccess = true,                    
+                    IsSuccess = true,
                     Result = mappedOriginal
                 };
 
@@ -271,10 +271,11 @@ namespace Bintainer.Service
                     Result = null
                 };
             }
- 
+
         }
 
-		public Response<string> RemoveAttributeTemplate(string userId, int templateId)
+
+        public Response<string> RemoveAttributeTemplate(string userId, int templateId)
 		{
             try
             {
