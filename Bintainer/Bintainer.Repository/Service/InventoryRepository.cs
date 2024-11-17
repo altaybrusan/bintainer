@@ -28,7 +28,10 @@ namespace Bintainer.Repository.Service
 
         public InventorySection? GetSection(string userId, int sectionId)
         {
-            return _dbContext.InventorySections.Where(i => i.Inventory.UserId == userId && i.Id == sectionId).FirstOrDefault();
+            return _dbContext.InventorySections
+                             .Include(x=>x.Bins)
+                             .Where(i => i.Inventory.UserId == userId && i.Id == sectionId)
+                             .FirstOrDefault();
         }
 
         public List<InventorySection>? GetAllInventorySections(int inventoryId)
