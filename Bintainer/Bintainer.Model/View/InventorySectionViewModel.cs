@@ -16,5 +16,6 @@ namespace Bintainer.Model.View
 		public int? Height { get; set; }
 
 		public int? SubspaceCount { get; set; }
-	}
+		public int? Id { get; set; }
+    }
 }
