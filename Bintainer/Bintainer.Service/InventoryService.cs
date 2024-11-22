@@ -63,6 +63,30 @@ namespace Bintainer.Service
             }
         }
 
+        public Response<InventorySection?> GetInventorySection(string? userId, string sectionName)
+        {
+            try
+            {
+                var result = _inventoryRepository.GetSection(userId, sectionName);
+
+                return new Response<InventorySection?>()
+                {
+                    IsSuccess = true,
+                    Result = result
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+
+                return new Response<InventorySection?>()
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+            }
+        }
+
         public Response<Bin?> GetBinFrom(InventorySection? section, int coordinateX, int coordinateY) 
         {
             try
