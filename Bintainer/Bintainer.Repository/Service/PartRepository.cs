@@ -186,7 +186,47 @@ namespace Bintainer.Repository.Service
 
             return;
         }
-        
+
+        public void RemovePartQuantity(Bin bin, Part part, Dictionary<int, int> subspaceQuantity, bool? isFillAll = false, int? quantity = null)
+        {
+            if (isFillAll.HasValue && isFillAll.Value== true) 
+            {
+                var assocs = _dbContext.PartBinAssociations.Where(a => a.PartId == part.Id && a.BinId == bin.Id).ToList();
+                foreach (var assoc in assocs) 
+                {
+                    assoc.Quantity = 0;
+                }
+                _dbContext.PartBinAssociations.UpdateRange(assocs);
+                _dbContext.SaveChanges(true);
+            }
+            else 
+            {
+                foreach (var index in subspaceQuantity.Keys)
+                {
+                    var subspace = bin.BinSubspaces.Where(s => s.SubspaceIndex == index).FirstOrDefault();
+                    var assoc = _dbContext.PartBinAssociations.Where(a => a.PartId == part.Id && a.BinId == bin.Id && a.SubspaceId == subspace.Id).FirstOrDefault();
+                    assoc.Quantity = 0;
+                    _dbContext.PartBinAssociations.Update(assoc);
+                    _dbContext.SaveChanges(true);
+                }
+            }
+        }
+
+        public void RemoveAllPartQuantityInsideBin(int partId, int binId, int? partQuantity) 
+        {
+            var assocs = _dbContext.PartBinAssociations.Where(a => a.PartId == partId && a.BinId == binId).ToList();
+            if (assocs is not null)
+            {
+                foreach (var assoc in assocs)
+                {
+                    assoc.Quantity = 0;
+                }
+                _dbContext.PartBinAssociations.UpdateRange(assocs);
+                _dbContext.SaveChanges();
+            }
+            return;
+        }
+
         public List<PartBinAssociation>? UpdatePartBinassociations(List<PartBinAssociation>? associations) 
         {
             if (associations is null)
