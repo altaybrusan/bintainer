@@ -1176,29 +1176,48 @@
                 return;
             }
 
-            // Add a new row to the table
-            var newRow = `<tr>
-            <td>${$.trim($('#arrangePartList').val())}</td>
-            <td>${$.trim($('#sectionSelect option:selected').text())}</td>
-            <td>${data.CoordinateX}</td>
-            <td>${data.CoordinateY}</td>
-            <td>
-                ${isFilled
-                    ? 'Filled All (' + fillAllQuantity + ')'
-                    : Object.keys(subspaceQuantities)
-                        .map(k => `(${k}, ${subspaceQuantities[k]})`)
-                        .join(', ')}
-            </td>
 
-            <td>${data.Label}</td>
-            <td>${data.Group}</td>
-            <td><button type="button" class="btn btn-danger btn-sm remove-row-btn">Remove</button></td>
-        </tr>`;
+            $.ajax({
+                url: '/dashboard/Part?handler=ArrangePart',
+                type: 'POST',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: JSON.stringify(data),
+                success: function (response) {
+                    // Add a new row to the table
+                    var newRow = `<tr>
+                    <td>${$.trim($('#arrangePartList').val())}</td>
+                    <td>${$.trim($('#sectionSelect option:selected').text())}</td>
+                    <td>${data.CoordinateX}</td>
+                    <td>${data.CoordinateY}</td>
+                    <td>
+                    ${isFilled
+                            ? 'Filled All (' + fillAllQuantity + ')'
+                            : Object.keys(subspaceQuantities)
+                                .map(k => `(${k}, ${subspaceQuantities[k]})`)
+                                .join(', ')}
+                                </td>
+                                <td>${data.Label}</td>
+                                <td>${data.Group}</td>
+                                <td><button type="button" class="btn btn-danger btn-sm remove-row-btn">Remove</button></td>
+                    </tr>`;
 
-            $('#partBinAssignmentTableBody').append(newRow);
+                    $('#partBinAssignmentTableBody').append(newRow);
 
-            // Reset form fields
-            resetFormFields();
+                    // Reset form fields
+                    resetFormFields();
+
+                },
+                error: function (xhr, status, error) {
+                    alert('Error: Unable to arrange part. Please try again.');
+                    console.error(error);
+                }
+            });
+
+
         });
 
         // Function to reset form fields
