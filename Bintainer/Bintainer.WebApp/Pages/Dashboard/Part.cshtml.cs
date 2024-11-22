@@ -203,6 +203,26 @@ namespace Bintainer.WebApp.Pages.Dashboard
             return BadRequest(new { message = "Invalid request." });
         }
 
+        public IActionResult OnPostDeleteArrangedItem([FromBody] RemoveArrangePartRequest removeRequest) 
+        {
+            if (ModelState.IsValid)
+            {
+                var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+
+                var deleteResult = _partService.RemoveArrangedPartRequest(removeRequest, userId);
+
+                if (removeRequest is null)
+                {
+                    //TODO: rephrase the message.
+                    return new JsonResult(new { message = "Could not find the part to be updated" }) { StatusCode = 200 };
+                }
+
+                return new JsonResult(new { message = "Part attributes updated successfully" }) { StatusCode = 200 };
+            }
+
+            return new OkResult();
+        }
+
         public IActionResult OnPostUsePart(string partName)
         {
             if (ModelState.IsValid) 

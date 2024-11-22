@@ -426,7 +426,7 @@
                                         <th>Section</th>
                                         <th>Coordinate (X)</th>
                                         <th>Coordinate (Y)</th>
-                                        <th>Subspace</th>
+                                        <th>Subspace(Qnt.)</th>
                                         <th>Label</th>
                                         <th>Group</th>
                                         <th>Action</th>
@@ -1137,25 +1137,23 @@
                 $('.subspace-quantity').val(0);  //Reset individual subspace quantities
             }
         });
+        // Arrange Part Button Click Event
         $('#arrangePartBtn').on('click', function (event) {
             event.preventDefault();
 
             var partNumber = $('#arrangePartList').val();
-            var sectionId = parseInt($('#sectionSelect').val()); // Convert to int
-            var xPosition = parseInt($('input[name="x-position"]').val()); // Convert to int
-            var yPosition = parseInt($('input[name="y-position"]').val()); // Convert to int
+            var sectionId = parseInt($('#sectionSelect').val());
+            var xPosition = parseInt($('input[name="x-position"]').val());
+            var yPosition = parseInt($('input[name="y-position"]').val());
 
             var subspaceQuantities = {};
-
-            // If Fill All is checked, collect the Fill All quantity
             var isFilled = $('#fillAll').prop('checked');
-            var fillAllQuantity = isFilled ? parseInt($('#fillAllQuantity').val()) : null; // Convert to int if filled
+            var fillAllQuantity = isFilled ? parseInt($('#fillAllQuantity').val()) : null;
 
             if (!isFilled) {
-                // Collect quantities for individual subspaces if Fill All is not checked
                 $('.subspace-checkbox:checked').each(function () {
-                    var subspaceId = parseInt($(this).val()); // Convert to int
-                    var quantity = parseInt($(this).siblings('.subspace-quantity').val()); // Convert to int
+                    var subspaceId = parseInt($(this).val());
+                    var quantity = parseInt($(this).siblings('.subspace-quantity').val());
                     subspaceQuantities[subspaceId] = quantity;
                 });
             }
@@ -1172,53 +1170,116 @@
                 FillAllQuantity: fillAllQuantity
             };
 
+            // Validation
             if (!partNumber || !sectionId || !xPosition || !yPosition || (!isFilled && Object.keys(subspaceQuantities).length === 0)) {
                 alert("Please fill all the required fields.");
                 return;
             }
 
-            $.ajax({
-                url: '/dashboard/Part?handler=ArrangePart',
-                type: 'POST',
-                contentType: 'application/json',
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("XSRF-TOKEN",
-                        $('input:hidden[name="__RequestVerificationToken"]').val());
-                },
-                data: JSON.stringify(data),
-                success: function (response) {
-                    var newRow = '<tr>' +
-                        '<td>' + $.trim($('#arrangePartList').val()) + '</td>' +
-                        '<td>' + $.trim($('#sectionSelect option:selected').text()) + '</td>' +
-                        '<td>' + data.CoordinateX + '</td>' +
-                        '<td>' + data.CoordinateY + '</td>' +
-                        '<td>' + (isFilled ? 'Filled All (' + fillAllQuantity + ')' : Object.keys(subspaceQuantities).map(k => 'Subspace ' + k + ': ' + subspaceQuantities[k]).join(', ')) + '</td>' +
-                        '<td>' + data.Label + '</td>' +
-                        '<td>' + data.Group + '</td>' +
-                        '<td><button type="button" class="btn btn-danger btn-sm remove-row-btn">Remove</button></td>' +
-                        '</tr>';
-                    $('#partBinAssignmentTableBody').append(newRow);
+            // Add a new row to the table
+            var newRow = `<tr>
+            <td>${$.trim($('#arrangePartList').val())}</td>
+            <td>${$.trim($('#sectionSelect option:selected').text())}</td>
+            <td>${data.CoordinateX}</td>
+            <td>${data.CoordinateY}</td>
+            <td>
+                ${isFilled
+                    ? 'Filled All (' + fillAllQuantity + ')'
+                    : Object.keys(subspaceQuantities)
+                        .map(k => `(${k}, ${subspaceQuantities[k]})`)
+                        .join(', ')}
+            </td>
 
-                    // Reset form fields
-                    $('#arrangePartList').val('');
-                    $('#sectionSelect').val('');
-                    $('input[name="x-position"]').val(1);
-                    $('input[name="y-position"]').val(1);
-                    $('#partGroup').val('');
-                    $('#subspaceLabel').val('');
-                    $('.subspace-checkbox').prop('checked', false).prop('disabled', false);
-                    $('.subspace-quantity').val(0).prop('disabled', true);
-                    $('#fillAll').prop('checked', false);
-                    $('#fillAllQuantity').val(0).prop('disabled', true);
+            <td>${data.Label}</td>
+            <td>${data.Group}</td>
+            <td><button type="button" class="btn btn-danger btn-sm remove-row-btn">Remove</button></td>
+        </tr>`;
 
-                },
-                error: function (xhr, status, error) {
-                    alert('Error: Unable to arrange part. Please try again.');
-                    console.error(error);
-                }
-            });
+            $('#partBinAssignmentTableBody').append(newRow);
+
+            // Reset form fields
+            resetFormFields();
         });
-        
+
+        // Function to reset form fields
+        function resetFormFields() {
+            $('#arrangePartList').val('');
+            $('#sectionSelect').val('');
+            $('input[name="x-position"]').val(1);
+            $('input[name="y-position"]').val(1);
+            $('#partGroup').val('');
+            $('#subspaceLabel').val('');
+            $('.subspace-checkbox').prop('checked', false).prop('disabled', false);
+            $('.subspace-quantity').val(0).prop('disabled', true);
+            $('#fillAll').prop('checked', false);
+            $('#fillAllQuantity').val(0).prop('disabled', true);
+        }
+
+        // Delete Button Click Event
+        $('#partBinAssignmentTableBody').on('click', '.remove-row-btn', function () {
+            if (confirm("Are you sure you want to delete this part?")) {
+                var $row = $(this).closest('tr'); // Get the row containing the button
+
+                try {
+                    // Collect basic data from the row
+                    var partData = {
+                        partNumber: $row.find('td:eq(0)').text().trim(),
+                        sectionName: $row.find('td:eq(1)').text().trim(),
+                        coordinateX: parseInt($row.find('td:eq(2)').text().trim()),
+                        coordinateY: parseInt($row.find('td:eq(3)').text().trim()),
+                        label: $row.find('td:eq(5)').text().trim(),
+                        group: $row.find('td:eq(6)').text().trim(),
+                        isFilled: false, // Default to false; will update below if needed
+                        fillAllQuantity: null,
+                        subspaceQuantities: {}
+                    };
+
+                    // Extract and parse Subspace or Fill All data from column 4
+                    var subspaceText = $row.find('td:eq(4)').text().trim();
+
+                    if (subspaceText.startsWith('Filled All')) {
+                        // If "Filled All" is selected
+                        partData.isFilled = true;
+                        var fillAllMatch = subspaceText.match(/\d+/); // Extract numeric quantity
+                        partData.fillAllQuantity = fillAllMatch ? parseInt(fillAllMatch[0]) : null;
+                    } else {
+                        // Parse SubspaceQuantities (e.g., "(1, 10), (3, 11)")
+                        var regex = /\((\d+),\s*(\d+)\)/g; // Matches (key, value) pairs
+                        var match;
+                        while ((match = regex.exec(subspaceText)) !== null) {
+                            partData.subspaceQuantities[parseInt(match[1])] = parseInt(match[2]);
+                        }
+                    }
+
+                    console.log("Data to send to backend:", partData);
+
+                    // Send an AJAX request to delete the data on the backend
+                    $.ajax({
+                        url: '/dashboard/Part?handler=DeleteArrangedItem', // Adjust the URL to match your backend endpoint
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(partData),
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                        success: function (response) {
+                            // If successful, remove the row from the table
+                            console.log("Delete successful:", response);
+                            $row.remove();
+                        },
+                        error: function (xhr, status, error) {
+                            alert('Error: Unable to delete part. Please try again.');
+                            console.error("Error Details:", status, error, xhr.responseText);
+                        }
+                    });
+                } catch (error) {
+                    alert("An error occurred while processing the delete request.");
+                    console.error("Exception Details:", error);
+                }
+            }
+        });
+
         $('#usePartBtn').on('click', function (event) {
             event.preventDefault();
             var partNumber = $('#usepartNumber').val().trim();
