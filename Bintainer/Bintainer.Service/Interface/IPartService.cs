@@ -21,7 +21,7 @@ namespace Bintainer.Service.Interface
         public Response<PartGroup> AddPartIntoGroup(Part part, string groupName, string userId);
         public Response<string> ArrangePartRequest(ArrangePartRequest arrangeRequest, string userId);
         public Response<string> RemoveArrangedPartRequest(RemoveArrangePartRequest arrangeRequest, string userId);
-        public Response<List<PartUsageResponse>?> UsePart(string partName, string userId);
+        public Response<List<PartUsageResponse>?> UsePart(string partNumber, string userId);
         public Response<List<PartBinAssociation>?> TryAdjustPartQuantity(AdjustQuantityRequest request,string userId);
         public Response<List<string>?> GetPartNames(string userId);
     }

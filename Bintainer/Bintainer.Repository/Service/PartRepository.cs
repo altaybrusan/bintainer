@@ -26,14 +26,17 @@ namespace Bintainer.Repository.Service
 
         public Part? GetPart(string partNumber, string userId)
         {
-            var part = _dbContext.Parts
-                .Include(p => p.PartBinAssociations)
+            var part = _dbContext.Parts                
+                .Include(p => p.PartBinAssociations)                    
+                    .ThenInclude(b => b.Bin)
+                    .ThenInclude(b=>b.Section)
+                    .Include(p => p.PartBinAssociations)
                     .ThenInclude(b => b.Bin)
                     .ThenInclude(b => b.BinSubspaces)
                 .Include(p => p.OrderPartAssociations)
                 .Include(p => p.PartAttributes)
                 .Include(p => p.Package)
-                .Include(p => p.Groups)
+                .Include(p => p.Groups)                
                 // Load the category hierarchy recursively
                 .Include(p => p.Category)
                     .ThenInclude(c => c.ParentCategory)

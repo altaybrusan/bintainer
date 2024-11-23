@@ -228,14 +228,14 @@ namespace Bintainer.WebApp.Pages.Dashboard
             return new OkResult();
         }
 
-        public IActionResult OnPostUsePart(string partName)
+        public IActionResult OnPostUsePart(string partNumber)
         {
             if (ModelState.IsValid) 
             {
                 try
                 {
                     var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-                    var response = _partService.UsePart(partName, userId);
+                    var response = _partService.UsePart(partNumber, userId);
                     return new JsonResult(response);
                 }
                 catch (Exception e)
@@ -265,7 +265,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
             }
 
             return BadRequest(ModelState);
-        } 
+        }
 
     }
 }

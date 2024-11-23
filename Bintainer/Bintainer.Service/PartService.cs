@@ -448,9 +448,9 @@ namespace Bintainer.Service
                 .ToList();
         }
 
-        public Response<List<PartUsageResponse>?> UsePart(string partName, string userId)
+        public Response<List<PartUsageResponse>?> UsePart(string partNumber, string userId)
         {
-            Part? part = _partRepository.GetPart(partName, userId);
+            Part? part = _partRepository.GetPart(partNumber, userId);
             if (part is not null)
             {
                var result = GetPartUsageResponse(part);
@@ -480,7 +480,7 @@ namespace Bintainer.Service
                 List<int> subSpaces = ParseSubspaceIndices(request.SubspaceIndices);
                 int takeOut = request.QuantityUsed;
 
-                Part? part = _partRepository.GetPart(request.PartName, userId);
+                Part? part = _partRepository.GetPart(request.PartNumber, userId);
 
                 if (part is null)
                 {

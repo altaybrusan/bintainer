@@ -1324,22 +1324,27 @@
                 contentType: "application/json; charset=utf-8",
                 type: 'POST',
                 success: function (response) {
+                    if (!response.isSuccess) {
+                        alert(response.Message || 'Failed to fetch data.');
+                        return;
+                    }
+
+                    var partUsageResponses = response.result;
+
                     if (table.length) { // Check if the table exists
-                        if (response.length > 0) {
-                            $.each(response, function (index, item) {
+                        if (partUsageResponses && partUsageResponses.length > 0) {
+                            $.each(partUsageResponses, function (index, item) {
                                 var newRow = '<tr>' +
-                                    '<td>' + item.partNumber + '</td>' +
+                                    '<td>' + item.partName + '</td>' +
                                     '<td>' + item.section + '</td>' +
                                     '<td>' + item.coordinateX + '</td>' +
                                     '<td>' + item.coordinateY + '</td>' +
                                     '<td>' + item.subspaceIndices + '</td>' + // Display subspaces as comma-separated indices
                                     '<td>' + item.label + '</td>' +
-                                    '<td>' + item.quantity + '</td>' +
-                                    // Add the numeric up-down for the Use column
+                                    '<td>' + item.quantity + '</td>' +                                   
                                     '<td><input type="number" class="use-input" min="0" max="' + item.quantity +
-                                    '" data-subspace-indices="' + item.subspaceIndices +
-                                    '" data-bin-id="' + item.binId + '" data-part-name="' + item.partNumber + '" data-quantity="' + item.quantity + '"></td>' +
-
+                                    '" data-subspace-indices="' + String(item.subspaceIndices) +
+                                    '" data-bin-id="' + item.binId + '" data-part-name="' + item.partName + '" data-quantity="' + item.quantity + '"></td>' +
                                     '</tr>';
                                 table.find('tbody').append(newRow);
                             });
@@ -1355,9 +1360,17 @@
                                     var binId = parseInt($(this).data('bin-id'), 10);
                                     var partNumber = $(this).data('part-name');
                                     var quantity = parseInt($(this).data('quantity'), 10);
-                                    var subspaceIndices = $(this).data('subspace-indices');
+                                    var subspaceIndices = String($(this).data('subspace-indices'));
+
+                                    if (isNaN(quantityUsed) || quantityUsed < 0 || quantityUsed > quantity) {
+                                        alert('Please enter a valid quantity within the allowed range.');
+                                        return;
+                                    }
+
+                                    var token = $('input[name="__RequestVerificationToken"]').val();
 
                                     // Perform AJAX request to send the quantity used to the backend
+                                    
                                     $.ajax({
                                         url: '/dashboard/Part?handler=AdjustQuantity',
                                         type: 'POST',
@@ -1365,11 +1378,17 @@
                                             xhr.setRequestHeader("XSRF-TOKEN", token);
                                         },
                                         contentType: 'application/json; charset=utf-8',
-                                        data: JSON.stringify({ partNumber: partNumber, binId: binId, quantityUsed: quantityUsed, subspaceIndices: subspaceIndices, quantity: quantity }),
-                                        success: function (response) {
+                                        data: JSON.stringify({
+                                            PartNumber: partNumber,
+                                            BinId: binId,
+                                            QuantityUsed: quantityUsed,
+                                            Quantity: quantity,
+                                            SubspaceIndices: subspaceIndices
+                                        }),
+                                        success: function (updateResponse) {
                                             alert('Quantity updated successfully');
-                                            // Optionally, update the row's quantity in the UI
-                                            $(e.target).closest('tr').find('td:nth-child(7)').text(response.newQuantity);
+                                            // Update the quantity in the Quantity column of the current row
+                                            $row.find('td:nth-child(7)').text(updateResponse.newQuantity);
                                         },
                                         error: function (xhr, status, error) {
                                             alert('Failed to update quantity');
@@ -1378,6 +1397,7 @@
                                     });
                                 }
                             });
+
 
                         } else {
                             alert('No attributes found for the given part number.');
