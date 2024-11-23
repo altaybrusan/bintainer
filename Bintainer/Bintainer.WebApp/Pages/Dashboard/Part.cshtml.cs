@@ -188,9 +188,14 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 try
                 {
                     var UserId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
-                    _partService.ArrangePartRequest(arrangeRequest, UserId);
+                    var response =_partService.ArrangePartRequest(arrangeRequest, UserId);
 
-                    return new OkResult();
+                    if (response is not null && response.IsSuccess) 
+                    {
+                        return new OkResult();
+                    }
+                    return BadRequest(new { message = response.Message });
+
                 }
                 catch (Exception e)
                 {
