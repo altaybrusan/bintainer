@@ -666,6 +666,7 @@ namespace Bintainer.Service
                 }
             }
         }
+        
         private List<PartUsageResponse> GetPartUsageResponse(Part part)
         {
             var response = part.PartBinAssociations
