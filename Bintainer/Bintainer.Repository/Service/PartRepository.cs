@@ -70,8 +70,6 @@ namespace Bintainer.Repository.Service
             return part;
         }
 
-
-
         public List<Part> GetParts(PartFilterCriteria criteria)
         {
             
@@ -267,7 +265,7 @@ namespace Bintainer.Repository.Service
             }
             return result;
         }
-
+                
         private PartCategory LoadFullCategoryHierarchy(PartCategory category)
         {
             while (category.ParentCategory != null)
