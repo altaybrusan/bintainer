@@ -30,6 +30,8 @@ namespace Bintainer.Repository.Service
         {
             return _dbContext.InventorySections
                              .Include(x=>x.Bins)
+                             .ThenInclude(b=>b.BinSubspaces)
+                             .ThenInclude(b=>b.PartBinAssociations)                             
                              .Where(i => i.Inventory.UserId == userId && i.Id == sectionId)
                              .FirstOrDefault();
         }
