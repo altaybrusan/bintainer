@@ -113,64 +113,6 @@ namespace Bintainer.Service
             }
         }
 
-        private List<CategoryViewModel> BuildCategoryTree(IEnumerable<PartCategory>? categories, int? parentId = null)
-        {
-            if (categories == null) return new List<CategoryViewModel>();
-
-            // Build the tree starting with root categories (ParentCategoryId == parentId)
-            var rootCategories = categories.Where(c => c.ParentCategoryId == parentId)
-                                           .Select(c => new CategoryViewModel
-                                           {
-                                               Title = c.Name?.Trim() ?? string.Empty,
-                                               Id = c.Id,
-                                               // Recursively build the children and set to null if the list is empty
-                                               Children = BuildCategoryTree(categories, c.Id)
-                                                           .ToList()
-                                                           .Any() ? BuildCategoryTree(categories, c.Id) : null
-                                           })
-                                           .ToList();
-
-            return rootCategories;
-        }
-
-
-
-        private void AddRootNode(string userId)
-        {
-            CategoryViewModel viewNode = new CategoryViewModel()
-            {
-                Title = "Root"
-            };
-            AddItem(viewNode, userId);
-
-        }
-        
-        private void DeleteItem(CategoryViewModel parent)
-        {
-            _templateRepository.RemovePartCategory(parent.Id);
-            foreach (var item in parent.Children)
-            {
-                DeleteItem(item);
-            }
-        }
-        
-        private void AddItem(CategoryViewModel nodeView, string userId, int? parentId = null)
-        {
-            PartCategory newCategory = new() { Name = nodeView.Title, UserId = userId };
-            if (parentId != null)
-            {
-                newCategory.ParentCategory = _templateRepository.GetCategory(parentId);
-            }
-
-            _templateRepository.AddAndSavePartCategory(newCategory);
-
-
-            foreach (var item in nodeView.Children)
-            {
-                AddItem(item, userId, newCategory.Id);
-            }
-        }
-
         public Response<Dictionary<int, string>> GetAttributeTemplates(string userId)
         {
             try
@@ -215,13 +157,13 @@ namespace Bintainer.Service
             }
             catch (Exception ex)
             {
-                _appLoger.LogMessage(ex.Message,LogLevel.Error);
+                _appLoger.LogMessage(ex.Message, LogLevel.Error);
                 return new Response<PartAttributeTemplate>()
                 {
                     IsSuccess = false,
                     Message = ex.Message
                 };
-            } 
+            }
         }
 
         //TODO: needs rewrite
@@ -274,9 +216,8 @@ namespace Bintainer.Service
 
         }
 
-
         public Response<string> RemoveAttributeTemplate(string userId, int templateId)
-		{
+        {
             try
             {
                 _templateRepository.RemoveAttributeTemplate(userId, templateId);
@@ -289,14 +230,75 @@ namespace Bintainer.Service
             catch (Exception ex)
             {
                 _appLoger.LogMessage(ex.Message, LogLevel.Error);
-				return new Response<string>()
-				{
-					IsSuccess = true,
-					Message = _localizer["ErrorFailedAttributeTemplatedRemove"]
-				};
-			}
+                return new Response<string>()
+                {
+                    IsSuccess = true,
+                    Message = _localizer["ErrorFailedAttributeTemplatedRemove"]
+                };
+            }
 
-		}
-               
+        }
+
+
+        #region Private
+        
+        private List<CategoryViewModel> BuildCategoryTree(IEnumerable<PartCategory>? categories, int? parentId = null)
+        {
+            if (categories == null) return new List<CategoryViewModel>();
+
+            // Build the tree starting with root categories (ParentCategoryId == parentId)
+            var rootCategories = categories.Where(c => c.ParentCategoryId == parentId)
+                                           .Select(c => new CategoryViewModel
+                                           {
+                                               Title = c.Name?.Trim() ?? string.Empty,
+                                               Id = c.Id,
+                                               // Recursively build the children and set to null if the list is empty
+                                               Children = BuildCategoryTree(categories, c.Id)
+                                                           .ToList()
+                                                           .Any() ? BuildCategoryTree(categories, c.Id) : null
+                                           })
+                                           .ToList();
+
+            return rootCategories;
+        }
+
+        private void AddRootNode(string userId)
+        {
+            CategoryViewModel viewNode = new CategoryViewModel()
+            {
+                Title = "Root"
+            };
+            AddItem(viewNode, userId);
+
+        }
+
+        private void DeleteItem(CategoryViewModel parent)
+        {
+            _templateRepository.RemovePartCategory(parent.Id);
+            foreach (var item in parent.Children)
+            {
+                DeleteItem(item);
+            }
+        }
+
+        private void AddItem(CategoryViewModel nodeView, string userId, int? parentId = null)
+        {
+            PartCategory newCategory = new() { Name = nodeView.Title, UserId = userId };
+            if (parentId != null)
+            {
+                newCategory.ParentCategory = _templateRepository.GetCategory(parentId);
+            }
+
+            _templateRepository.AddAndSavePartCategory(newCategory);
+
+
+            foreach (var item in nodeView.Children)
+            {
+                AddItem(item, userId, newCategory.Id);
+            }
+        }
+
+        #endregion
+
     }
 }
