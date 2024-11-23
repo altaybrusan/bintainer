@@ -1356,6 +1356,7 @@
                             // Add event listener for numeric input
                             $('.use-input').on('keydown', function (e) {
                                 if (e.key === "Enter") {
+                                    var $input = $(this); // Store reference to the input
                                     var quantityUsed = parseInt($(this).val(), 10);
                                     var binId = parseInt($(this).data('bin-id'), 10);
                                     var partNumber = $(this).data('part-name');
@@ -1386,9 +1387,17 @@
                                             SubspaceIndices: subspaceIndices
                                         }),
                                         success: function (updateResponse) {
-                                            alert('Quantity updated successfully');
-                                            // Update the quantity in the Quantity column of the current row
-                                            $row.find('td:nth-child(7)').text(updateResponse.newQuantity);
+                                            //alert('Quantity updated successfully');
+
+                                            // Access the row that contains the input
+                                            var $row = $input.closest('tr'); 
+
+                                            var currentQuantity = parseInt($row.find('td:nth-child(7)').text(), 10);
+                                            var usedQuantity = parseInt(quantityUsed, 10);
+                                            var updatedQuantity = currentQuantity - usedQuantity;
+
+                                            // Update the display in the 7th cell
+                                            $row.find('td:nth-child(7)').text(updatedQuantity);
                                         },
                                         error: function (xhr, status, error) {
                                             alert('Failed to update quantity');
