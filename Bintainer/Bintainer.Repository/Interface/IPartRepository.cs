@@ -16,8 +16,7 @@ namespace Bintainer.Repository.Interface
         public Part? UpdatePart(Part? part);
         public List<Part> GetParts(PartFilterCriteria criteria);
         public PartPackage GetOrCreatePackage(string packageName, string userId);
-        public PartGroup? GetPartGroup(string name, string userId);
-        //public bool TryInsertPartIntoBin(List<int> targetIndices, string label, ref Part part, ref Bin bin);
+        public PartGroup? GetPartGroup(string name, string userId);        
         public void UpdatePartQuantityInsideSubspace(BinSubspace subspace, int partId, int partQuantity);
         public void RemovePartQuantity(Bin bin, Part part, Dictionary<int, int> subspaceQuantity, bool? isFillAll = false, int? quantity = null);
         public List<PartBinAssociation>? UpdatePartBinassociations(List<PartBinAssociation>? associations);
