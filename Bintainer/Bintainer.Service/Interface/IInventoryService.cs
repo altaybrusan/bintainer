@@ -13,7 +13,7 @@ namespace Bintainer.Service.Interface
     {
         public Response<InventorySection?> GetInventorySection(string? userId, int sectionId);
         public Response<InventorySection?> GetInventorySection(string? userId, string sectionName);
-        public Response<Bin?> GetBinFrom(InventorySection? section, int coordinateX, int coordinateY);
+        public Response<Bin?> GetBin(InventorySection? section, int coordinateX, int coordinateY);
         public Response<Bin?> CreateBin(InventorySection section, int coordinateX, int coordinateY);
         public Response<Inventory?> GetInventory(string admin);
         public Response<Inventory?> GetInventoryById(string userId);

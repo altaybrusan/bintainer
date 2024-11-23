@@ -87,7 +87,7 @@ namespace Bintainer.Service
             }
         }
 
-        public Response<Bin?> GetBinFrom(InventorySection? section, int coordinateX, int coordinateY) 
+        public Response<Bin?> GetBin(InventorySection? section, int coordinateX, int coordinateY) 
         {
             try
             {
