@@ -1212,9 +1212,14 @@
 
                 },
                 error: function (xhr, status, error) {
-                    alert('Error: Unable to arrange part. Please try again.');
+                    let errorMessage = "An unexpected error occurred.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    alert(`Error: ${errorMessage}`);
                     console.error(error);
                 }
+
             });
 
 
