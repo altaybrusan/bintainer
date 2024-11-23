@@ -20,7 +20,6 @@ namespace Bintainer.Service
     {
         private readonly IPartRepository _partRepository;
         private readonly ITemplateRepository _templateRepository;
-        //private readonly IInventoryRepository _inventoryRepository;
         private readonly IInventoryService _inventoryService;
         private readonly IBinService _binService;
         private readonly IStringLocalizer<ErrorMessages> _localizer;
@@ -28,7 +27,6 @@ namespace Bintainer.Service
         private readonly IMapper _mapper;
         public PartService(IPartRepository partRepository,
                            ITemplateRepository templateRepository,
-                           //IInventoryRepository inventoryRepository,
                            IInventoryService inventoryService,
                            IBinService binService,
                            IStringLocalizer<ErrorMessages> stringLocalizer,
