@@ -180,6 +180,7 @@
                 var width = parseInt(row.find("input[name^='section-width']").val(), 10);
                 var height = parseInt(row.find("input[name^='section-height']").val(), 10);
                 var subspaceCount = parseInt(row.find("input[name^='bin-section']").val(), 10);
+                var sectionName = row.find("input[name^='section-name']").val().trim();
 
                 if (width < minSectionWidth || width > maxSectionWidth) {
                     alert(`Width must be between ${minSectionWidth} and ${maxSectionWidth}.`);
@@ -199,7 +200,7 @@
 
                 sectionList.push({
                     Id: row.attr("id"),
-                    SectionName: row.find("input[name^='section-name']").val(),
+                    SectionName: sectionName,
                     Width: width,
                     Height: height,
                     SubspaceCount: subspaceCount
@@ -207,6 +208,15 @@
             });
 
             if (!isValid) return;
+
+            // Check for duplicate section names
+            var sectionNames = sectionList.map(s => s.SectionName);
+            var duplicates = sectionNames.filter((name, index, self) => self.indexOf(name) !== index);
+
+            if (duplicates.length > 0) {
+                alert(`Duplicate section names found: ${duplicates.join(', ')}. Please ensure section names are unique.`);
+                return;
+            }
 
             $.ajax({
                 type: "POST",
@@ -227,6 +237,7 @@
                 }
             });
         });
+
     });
 </script>
 
