@@ -381,19 +381,27 @@ namespace Bintainer.Service
                     };
                 }
 
-                var response = _inventoryService.GetBinFrom(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY);
+                var response = _inventoryService.GetBin(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY);
                 Bin? bin = response.IsSuccess && string.IsNullOrEmpty(response.Message) ? response.Result : throw new Exception(response.Message);
                 
                 if (bin is not null && part is not null)
                 {
-                    ProcessArrangePartRequest(bin, part, arrangeRequest, userId);
+                    var processResponse = ProcessArrangePartRequest(bin, part, arrangeRequest, userId);
+                    if(processResponse.IsSuccess == false) 
+                    {
+                        return new Response<string>() { IsSuccess = false, Message = processResponse.Message };
+                    }
                 }
 
                 if (bin is null && part is not null)
                 {
                     response = _inventoryService.CreateBin(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY);
                     bin = response.IsSuccess && string.IsNullOrEmpty(response.Message) ? response.Result : throw new Exception(response.Message);
-                    ProcessArrangePartRequest(bin, part, arrangeRequest, userId);
+                    var processResponse = ProcessArrangePartRequest(bin, part, arrangeRequest, userId);
+                    if (processResponse.IsSuccess == false)
+                    {
+                        return new Response<string>() { IsSuccess = false, Message = processResponse.Message };
+                    }
                 }
 
                 if (part is null)
@@ -408,7 +416,7 @@ namespace Bintainer.Service
                 }
                 return new Response<string>()
                 {
-                    IsSuccess = false,
+                    IsSuccess = true,
                     Message = _localizer["InfoPartArrangSuccessfully"],
                     Result = string.Empty,
                 };
@@ -611,7 +619,7 @@ namespace Bintainer.Service
 
         #region Private
 
-        private void ProcessArrangePartRequest(Bin? bin, Part part, ArrangePartRequest arrangeRequest, string UserId)
+        private Response<string> ProcessArrangePartRequest(Bin? bin, Part part, ArrangePartRequest arrangeRequest, string UserId)
         {
             Dictionary<int, int>? subspaceQuantity = new Dictionary<int, int>();
             if (arrangeRequest.IsFilled)
@@ -620,17 +628,21 @@ namespace Bintainer.Service
                 if (response.IsSuccess)
                     subspaceQuantity = response.Result;
                 else
-                    return;
+                    return new Response<string>() { IsSuccess = false, Message = response.Message };
             }
             else
             {
                 subspaceQuantity = arrangeRequest.SubspaceQuantities;
             }
 
-            var updatedBin = InsertPartIntoBin(bin, part, subspaceQuantity, arrangeRequest.Label);
+            var updatedBin = InsertPartIntoBin(bin, part, subspaceQuantity, arrangeRequest.Label?.Trim());
+            if (updatedBin is null) 
+            {
+                return new Response<string> { IsSuccess = false, Message= _localizer["ErrorSubspaceInsertionFailed"] };
+            }
             _binService.UpdateBin(updatedBin);
 
-            if (arrangeRequest.Group is not null)
+            if (arrangeRequest.Group is not null && !string.IsNullOrEmpty(arrangeRequest.Group))
             {
                 var response = AddPartIntoGroup(part, arrangeRequest.Group, UserId);
                 var partGroup = response.IsSuccess && string.IsNullOrEmpty(response.Message) ? response.Result : throw new Exception(response.Message);
@@ -638,13 +650,18 @@ namespace Bintainer.Service
             }
             _partRepository.UpdatePart(part);
             _binService.UpdateBin(bin);
+            return new Response<string> 
+            {
+                IsSuccess = true,
+                Message = _localizer["InfoProcessArrangePartSuccessful"]
+            };
         }
 
         private void ProcessRemovePartRequest(Bin? bin, Part part, RemoveArrangePartRequest removeRequest, string UserId)
         {
 
             _partRepository.RemovePartQuantity(bin, part, removeRequest.SubspaceQuantities, removeRequest.IsFilled, removeRequest.FillAllQuantity);
-            if (removeRequest.Group is not null)
+            if (removeRequest.Group is not null && !string.IsNullOrEmpty(removeRequest.Group))
             {
                 var response = RemovePartFromGroup(part, removeRequest.Group, UserId);
                 var partGroup = response.IsSuccess && string.IsNullOrEmpty(response.Message) ? response.Result : throw new Exception(response.Message);
@@ -718,13 +735,14 @@ namespace Bintainer.Service
             return subspace;
         }
 
-        private Bin InsertPartIntoBin(Bin bin, in Part part, Dictionary<int, int>? subspaceQuantity, string label)
+        private Bin InsertPartIntoBin(Bin bin, in Part part, Dictionary<int, int>? subspaceQuantity, string? label)
         {
             int binId = bin.Id;
             int partId = part.Id;
             if (!IsSubspaceAvailableForPart(bin, part, subspaceQuantity?.Keys.ToList()))
             {
-                _appLogger.LogMessage(_localizer["ErrorSubspaceInsertionFailed"], LogLevel.Error);
+                _appLogger.LogMessage(_localizer["ErrorBinAlreadyFilledByAnotherComponent"], LogLevel.Error);
+                return null;
             }
             foreach (var subspaceIndex in subspaceQuantity.Keys)
             {
@@ -786,7 +804,7 @@ namespace Bintainer.Service
                     };
                 }
 
-                var response = _inventoryService.GetBinFrom(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY);
+                var response = _inventoryService.GetBin(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY);
                 Bin? bin = response.IsSuccess && string.IsNullOrEmpty(response.Message) ? response.Result : throw new Exception(response.Message);
 
                 if (bin is not null && part is not null)
