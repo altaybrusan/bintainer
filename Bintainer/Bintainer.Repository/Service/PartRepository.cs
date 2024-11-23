@@ -191,14 +191,7 @@ namespace Bintainer.Repository.Service
         {
             if (isFillAll.HasValue && isFillAll.Value== true) 
             {
-                //var assocs = _dbContext.PartBinAssociations.Where(a => a.PartId == part.Id && a.BinId == bin.Id).ToList();
                 var assocs = part.PartBinAssociations.Where(a => a.BinId == bin.Id).ToList();
-                //foreach (var assoc in assocs) 
-                //{
-                //    assoc.Quantity = 0;
-                //}
-                //_dbContext.PartBinAssociations.UpdateRange(assocs);
-
                 _dbContext.PartBinAssociations.RemoveRange(assocs);
                 _dbContext.SaveChanges(true);
                                 
@@ -218,16 +211,6 @@ namespace Bintainer.Repository.Service
                 _dbContext.BinSubspaces.RemoveRange(subSpaces);
                 _dbContext.SaveChanges(true);
 
-
-
-                //foreach (var index in subspaceQuantity.Keys)
-                //{
-                //    var subspace = bin.BinSubspaces.Where(s => s.SubspaceIndex == index).FirstOrDefault();
-                //    var assoc = _dbContext.PartBinAssociations.Where(a => a.PartId == part.Id && a.BinId == bin.Id && a.SubspaceId == subspace.Id).FirstOrDefault();
-                //    assoc.Quantity = 0;
-                //    _dbContext.PartBinAssociations.Update(assoc);
-                //    _dbContext.SaveChanges(true);
-                //}
             }
         }
 
