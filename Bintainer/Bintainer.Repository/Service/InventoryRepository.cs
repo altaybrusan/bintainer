@@ -51,7 +51,13 @@ namespace Bintainer.Repository.Service
 
         public Inventory? GetInventory(string? admin)
         {
-            return _dbContext.Inventories.Where(i => i.Admin == admin).Include(i => i.InventorySections).Include(i=>i.User).FirstOrDefault();
+            return _dbContext.Inventories.Where(i => i.Admin == admin)
+                                         .Include(i => i.InventorySections)
+                                            .ThenInclude(i=>i.Bins)
+                                                .ThenInclude(b=>b.PartBinAssociations)
+                                                .ThenInclude(b=>b.Subspace)
+                                         .Include(i=>i.User)
+                                         .FirstOrDefault();
         }
 
         public Inventory? GetInventoryById(string? userId)
@@ -103,6 +109,7 @@ namespace Bintainer.Repository.Service
 
             if(existingInventory.Name?.Trim() != requestModel.Name?.Trim())
                 existingInventory.Name = requestModel.Name;
+            
             // Find sections that exist in the database but not in the incoming inventory
             var sectionIds = requestModel.InventorySections.Select(s => s.Id).ToHashSet();
             var sectionsToRemove = existingInventory.InventorySections
@@ -112,6 +119,7 @@ namespace Bintainer.Repository.Service
             // Remove sections that are not in the incoming list
             foreach (var section in sectionsToRemove)
             {
+                RemoveAllBinsInsideSection(section);
                 _dbContext.InventorySections.Remove(section);
                 existingInventory.InventorySections.Remove(section);
             }
@@ -154,6 +162,29 @@ namespace Bintainer.Repository.Service
             _dbContext.SaveChanges(true);
             return section;
         }
- 
+
+
+        private List<Bin> RemoveAllBinsInsideSection(InventorySection section)
+        {
+
+            var binIds = section.Bins.Select(b => b.Id).ToHashSet();
+
+            var assocs = _dbContext.PartBinAssociations.Where(a => binIds.Contains(a.BinId)).ToList();
+            _dbContext.PartBinAssociations.RemoveRange(assocs);
+
+
+            var subspaces = _dbContext.BinSubspaces.Where(b => binIds.Contains(b.BinId!.Value)).ToList();
+            _dbContext.BinSubspaces.RemoveRange(subspaces);
+
+
+            //_dbContext.SaveChanges(true);
+
+            List<Bin> result = section.Bins.ToList();
+            _dbContext.Bins.RemoveRange(result);
+            _dbContext.SaveChanges(true);
+
+            return result;
+        }
+
     }
 }
