@@ -79,6 +79,15 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bin already filled by another component..
+        /// </summary>
+        public static string ErrorBinAlreadyFilledByAnotherComponent {
+            get {
+                return ResourceManager.GetString("ErrorBinAlreadyFilledByAnotherComponent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Bin is required to insert part into subspace..
         /// </summary>
         public static string ErrorBinCannotBeNull {
@@ -318,6 +327,15 @@ namespace Bintainer.SharedResources.Resources {
         public static string InfoPartUpdatedSuccessfully {
             get {
                 return ResourceManager.GetString("InfoPartUpdatedSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Process arrange part request succeeded..
+        /// </summary>
+        public static string InfoProcessArrangePartSuccessful {
+            get {
+                return ResourceManager.GetString("InfoProcessArrangePartSuccessful", resourceCulture);
             }
         }
         
