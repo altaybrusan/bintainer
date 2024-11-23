@@ -157,8 +157,14 @@
         });
 
         $(document).on("click", ".btnDelete", function () {
-            $(this).closest("tr").remove();
+            var row = $(this).closest("tr");
+            var sectionName = row.find("input[name='section-name']").val().trim();
+
+            if (confirm(`By deleting the section "${sectionName}", all parts inside that section would be removed. Are you sure?`)) {
+                row.remove();
+            }
         });
+
 
         $(document).on("input blur", "input[name^='section-width'], input[name^='section-height'], input[name^='bin-section']", function () {
             validateBounds($(this), parseInt($(this).attr("min"), 10), parseInt($(this).attr("max"), 10));
