@@ -556,6 +556,54 @@ namespace Bintainer.Service
             }
         }
 
+        public Response<string> RemoveArrangedPartRequest(RemoveArrangePartRequest arrangeRequest, string userId)
+        {
+            try
+            {
+                var sectionResponse = _inventoryService.GetInventorySection(userId, arrangeRequest.SectionName!);
+
+                InventorySection? inventorySection = sectionResponse.IsSuccess && string.IsNullOrEmpty(sectionResponse.Message) ? sectionResponse.Result : throw new Exception(sectionResponse.Message);
+                Part? part = _partRepository.GetPart(arrangeRequest.PartNumber, userId);
+
+                if (inventorySection == null)
+                {
+                    _appLogger.LogMessage("ErrorInventorySectionMissing");
+                    return new Response<string>()
+                    {
+                        IsSuccess = false,
+                        Message = _localizer["ErrorInventorySectionMissing"],
+                        Result = string.Empty,
+                    };
+                }
+
+                var response = _inventoryService.GetBin(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY);
+                Bin? bin = response.IsSuccess && string.IsNullOrEmpty(response.Message) ? response.Result : throw new Exception(response.Message);
+
+                if (bin is not null && part is not null)
+                {
+                    ProcessRemovePartRequest(bin, part, arrangeRequest, userId);
+                }
+
+
+                return new Response<string>()
+                {
+                    IsSuccess = false,
+                    Message = _localizer["InfoPartArrangSuccessfully"],
+                    Result = string.Empty,
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<string>()
+                {
+                    IsSuccess = false,
+                    Message = _localizer["ErrorFailedPartArrange"],
+                    Result = string.Empty,
+                };
+            }
+        }
+
 
         #region Private
 
@@ -780,55 +828,7 @@ namespace Bintainer.Service
             // If no matching category is found, return null
             return null;
         }
-
-        public Response<string> RemoveArrangedPartRequest(RemoveArrangePartRequest arrangeRequest, string userId)
-        {
-            try
-            {
-                var sectionResponse = _inventoryService.GetInventorySection(userId, arrangeRequest.SectionName!);
-
-                InventorySection? inventorySection = sectionResponse.IsSuccess && string.IsNullOrEmpty(sectionResponse.Message) ? sectionResponse.Result : throw new Exception(sectionResponse.Message);
-                Part? part = _partRepository.GetPart(arrangeRequest.PartNumber, userId);
-
-                if (inventorySection == null)
-                {
-                    _appLogger.LogMessage("ErrorInventorySectionMissing");
-                    return new Response<string>()
-                    {
-                        IsSuccess = false,
-                        Message = _localizer["ErrorInventorySectionMissing"],
-                        Result = string.Empty,
-                    };
-                }
-
-                var response = _inventoryService.GetBin(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY);
-                Bin? bin = response.IsSuccess && string.IsNullOrEmpty(response.Message) ? response.Result : throw new Exception(response.Message);
-
-                if (bin is not null && part is not null)
-                {
-                    ProcessRemovePartRequest(bin, part, arrangeRequest, userId);
-                }                             
-
-               
-                return new Response<string>()
-                {
-                    IsSuccess = false,
-                    Message = _localizer["InfoPartArrangSuccessfully"],
-                    Result = string.Empty,
-                };
-            }
-            catch (Exception ex)
-            {
-                _appLogger.LogMessage(ex.Message, LogLevel.Error);
-                return new Response<string>()
-                {
-                    IsSuccess = false,
-                    Message = _localizer["ErrorFailedPartArrange"],
-                    Result = string.Empty,
-                };
-            }
-        }
-
+                
         #endregion
 
     }
