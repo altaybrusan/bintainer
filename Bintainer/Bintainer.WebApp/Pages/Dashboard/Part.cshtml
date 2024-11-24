@@ -79,7 +79,7 @@
         <a class="nav-link" id="arrange-tab" data-bs-toggle="tab" data-bs-target="#arrange-part" href="#">Arrange</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" id="usage-tab" data-bs-toggle="tab" data-bs-target="#usage-part" href="#">Usage</a>
+        <a class="nav-link" id="Use-tab" data-bs-toggle="tab" data-bs-target="#Use-part" href="#">Use</a>
     </li>
 </ul>
 
@@ -441,10 +441,10 @@
             </div>
         </div>
     </div>
-    <div id="usage-part" class="tab-pane fade" role="tabpanel" aria-labelledby="usage-part">
+    <div id="Use-part" class="tab-pane fade" role="tabpanel" aria-labelledby="Use-part">
         <div class="card mt-5">
             <div class="card-header">
-                <i class="fa fa-ravelry" aria-hidden="true"></i>&nbsp; Part usage
+                <i class="fa fa-ravelry" aria-hidden="true"></i>&nbsp; Part Use
             </div>
             <div class="card-body">
                 <form class="row" method="post" asp-page-handler="UsePart">
@@ -1329,11 +1329,11 @@
                         return;
                     }
 
-                    var partUsageResponses = response.result;
+                    var partUseResponses = response.result;
 
                     if (table.length) { // Check if the table exists
-                        if (partUsageResponses && partUsageResponses.length > 0) {
-                            $.each(partUsageResponses, function (index, item) {
+                        if (partUseResponses && partUseResponses.length > 0) {
+                            $.each(partUseResponses, function (index, item) {
                                 var newRow = '<tr>' +
                                     '<td>' + item.partName + '</td>' +
                                     '<td>' + item.section + '</td>' +
@@ -1356,6 +1356,7 @@
                             // Add event listener for numeric input
                             $('.use-input').on('keydown', function (e) {
                                 if (e.key === "Enter") {
+                                    e.preventDefault();
                                     var $input = $(this); // Store reference to the input
                                     var quantityUsed = parseInt($(this).val(), 10);
                                     var binId = parseInt($(this).data('bin-id'), 10);
@@ -1387,7 +1388,8 @@
                                             SubspaceIndices: subspaceIndices
                                         }),
                                         success: function (updateResponse) {
-                                            //alert('Quantity updated successfully');
+                                            
+                                            alert('Quantity updated successfully');
 
                                             // Access the row that contains the input
                                             var $row = $input.closest('tr'); 
