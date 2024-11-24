@@ -12,6 +12,7 @@ using Bintainer.SharedResources.Interface;
 using Bintainer.SharedResources.Resources;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 
 namespace Bintainer.Service
@@ -828,7 +829,50 @@ namespace Bintainer.Service
             // If no matching category is found, return null
             return null;
         }
-                
+
+        public Response<List<PartBinViewModel>?> FindPart(FindPartRequest request, string userId)
+        {
+            List<Part>? parts = new();
+            List<PartBinViewModel> results = new List<PartBinViewModel>();
+            if (!string.IsNullOrEmpty(request.SearchedPartNumber)) 
+            {
+                var part = _partRepository.GetPart(request.SearchedPartNumber, userId);
+                parts.Add(part);
+            }
+            if (!string.IsNullOrEmpty(request.SearchedPartGroup))
+            {
+                parts = _partRepository.GetAllPartsInGroup(request.SearchedPartGroup, userId);
+            }
+            if (!string.IsNullOrEmpty(request.SearchedPartCategory))
+            {
+                parts = _partRepository.GetAllPartsInCategory(request.SearchedPartNumber, userId);
+            }
+            foreach (var part in parts)
+            {
+                foreach (var assoc in part.PartBinAssociations)
+                {
+                    List<int?> subspaceIndices = new();
+                    foreach (var subspace in assoc.Bin.BinSubspaces) 
+                    {
+                        subspaceIndices.Add(subspace.Id);
+                    }
+                    results.Add(new PartBinViewModel()
+                    {
+                        CoordinateX = assoc.Bin.CoordinateX,
+                        CoordinateY = assoc.Bin.CoordinateY,
+                        SectionName = assoc.Bin.Section.SectionName,
+                        SubspaceIndices = subspaceIndices,
+                        Number = part.Number,
+                    });
+                }
+            }
+            return new Response<List<PartBinViewModel>?>
+            {
+                IsSuccess = true,
+                Result = results
+            };
+        }
+
         #endregion
 
     }

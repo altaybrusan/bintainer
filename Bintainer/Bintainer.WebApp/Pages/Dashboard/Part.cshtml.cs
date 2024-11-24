@@ -92,6 +92,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
             PartNumbers = _partService.GetPartNames(userId).Result;
             Inventory = response.Result;
         }
+        
         public IActionResult OnPostCreatePart([FromBody]CreatePartRequest request) 
         {
             if (!ModelState.IsValid) 
@@ -265,6 +266,24 @@ namespace Bintainer.WebApp.Pages.Dashboard
             }
 
             return BadRequest(ModelState);
+        }
+
+        public IActionResult OnPostFindPart([FromBody] FindPartRequest request) 
+        {
+            if (!ModelState.IsValid)
+            {
+                _appLogger.LogModelError(nameof(OnPostFindPart), ModelState);
+
+                return BadRequest(new
+                {
+                    success = false,
+                    message = _localizer["ErrorModelStateError"],
+                });
+            }
+
+            return new OkResult();
+
+
         }
 
     }

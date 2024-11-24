@@ -79,6 +79,9 @@
         <a class="nav-link" id="arrange-tab" data-bs-toggle="tab" data-bs-target="#arrange-part" href="#">Arrange</a>
     </li>
     <li class="nav-item">
+        <a class="nav-link" id="find-tab" data-bs-toggle="tab" data-bs-target="#find-part" href="#">Find</a>
+    </li>
+    <li class="nav-item">
         <a class="nav-link" id="Use-tab" data-bs-toggle="tab" data-bs-target="#Use-part" href="#">Use</a>
     </li>
 </ul>
@@ -228,7 +231,7 @@
                 <div class="col-md-9" style="margin-left: 10px;">
                     <form id="searchPartForUpdateForm" class="well form-horizontal" method="post">
                         <fieldset>
-                            <legend><h2>Search part</h2></legend>
+                            <legend><h2>Update part</h2></legend>
                             <hr />
                             <div class="col-md-9">
                                 <div class="row align-items-center">
@@ -441,6 +444,87 @@
             </div>
         </div>
     </div>
+    <div id="find-part" class="tab-pane fade" role="tabpanel" aria-labelledby="find-part">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8" style="margin-left: 10px;">
+                    <form id="findPartForm" class="well form-horizontal" method="post" asp-page-handler="FindPart">
+                        <fieldset>
+                            <legend><h2>Find Part by</h2></legend>
+                            <hr />
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-9 d-flex align-items-center">
+                                            <label class="control-label me-2">Part Number</label>
+                                            <div class="autocomplete flex-grow-1 me-2">
+                                                <input type="text" class="form-control input-sharp" id="searchPartByPartNumber" placeholder="Part number" data-autocomplete-options="partNumbersData">
+                                                <div id="partNumbersData" style="display:none;">
+                                                    @Html.Raw(Json.Serialize(Model.PartNumbers.Select(p => p.Trim())))
+                                                </div>
+                                            </div>                                          
+                                        </div>                                        
+                                    </div>
+                                </div>                                
+                                <span>Or</span>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-9 d-flex align-items-center">
+                                            <label class="control-label me-2">Part Category</label>
+                                            <div class="autocomplete flex-grow-1 me-2">
+                                                <input type="text" class="form-control input-sharp" id="searchPartByPartCategory" placeholder="Part category" data-autocomplete-options="partCategoriesData">
+                                                <div id="partCategoriesData" style="display:none;">
+                                                    @Html.Raw(Json.Serialize(Model.PartNumbers.Select(p => p.Trim())))
+                                                </div>
+                                            </div>                                           
+                                        </div>
+                                    </div>
+                                </div>
+                                <span>Or</span>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-9 d-flex align-items-center">
+                                            <label class="control-label me-2">Part group</label>
+                                            <div class="autocomplete flex-grow-1 me-2">
+                                                <input type="text" class="form-control input-sharp" id="searchPartByPartGroup" placeholder="Part group" data-autocomplete-options="partGroupsData">
+                                                <div id="partGroupsData" style="display:none;">
+                                                    @Html.Raw(Json.Serialize(Model.PartNumbers.Select(p => p.Trim())))
+                                                </div>
+                                            </div>                                        
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="button-row align-items-end justify-content-end mt-5">
+                            <button type="button" class="button-row btn btn-primary" id="finPartBtn">Search</button>
+                        </div>
+                        <div class="mb-4"></div>
+                    </form>
+                    <form class="well form-horizontal" style="margin-top: 20px;">
+                        <legend><h2>Location</h2></legend>
+                        <hr />
+                        <fieldset>
+                            <div style="margin-bottom: 20px;"></div>
+                            <table class="table" id="usePartTable">
+                                <thead>
+                                    <tr>
+                                        <th>Part</th>
+                                        <th>Section</th>
+                                        <th>Coordinate X</th>
+                                        <th>Coordinate Y</th>
+                                        <th>Subspace</th>
+                                        <th>Label</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="Use-part" class="tab-pane fade" role="tabpanel" aria-labelledby="Use-part">
         <div class="card mt-5">
             <div class="card-header">
@@ -503,7 +587,6 @@
     <td><a data-mode='edit' class="action" href="javascript:void(0)">edit</a></td>
     <td><a class="delete" href="javascript:void(0)">delete</a></td>
 </script> 
-
 
 <script type="module">
     import Autocomplete from "https://cdn.jsdelivr.net/gh/lekoala/bootstrap5-autocomplete@master/autocomplete.js";
@@ -1422,6 +1505,50 @@
                     console.error('Error:', error);
                 }
             });
+        });
+
+        $('#finPartBtn').on('click', function (event) {
+
+            event.preventDefault();
+            var searchedPartNumber = $('#searchPartByPartNumber').val().trim();
+            var searchedPartCategory = $('#searchPartByPartCategory').val().trim();
+            var searchedPartGroup = $('#searchPartByPartGroup').val().trim();
+
+
+            if (!searchedPartNumber && !searchedPartCategory && !searchedPartGroup) {               
+                return;
+            }
+
+
+            var data = {
+                searchedPartNumber: searchedPartNumber,
+                searchedPartCategory: searchedPartCategory,
+                searchedPartGroup: searchedPartGroup
+            };
+
+            $.ajax({
+                url: '/dashboard/Part?handler=FindPart',
+                type: 'POST',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: JSON.stringify(data),
+                success: function (response) {
+                    // To be continued
+                },
+                error: function (xhr, status, error) {
+                    let errorMessage = "An unexpected error occurred.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    alert(`Error: ${errorMessage}`);
+                    console.error(error);
+                }
+
+            });
+
         });
 
         function loadPartForUpdate() {

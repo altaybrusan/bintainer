@@ -58,7 +58,8 @@ namespace Bintainer.WebApp.Pages.Dashboard
         }
         public void OnGet()
         {
-            if(User.Identity is not null) 
+            var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+            if (User.Identity is not null) 
             {
                 string userName = User.Identity.Name ?? string.Empty;
                 var response = _inventoryService.GetInventory(userName);
@@ -67,6 +68,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     Sections = response.Result?.InventorySections.ToList();
                     InventoryName = response.Result?.Name?.Trim() ?? string.Empty;
                 }
+               
                 return;
             }
             _appLogger.LogMessage(_localizer["WarningInvalidUser"], LogLevel.Warning);
@@ -103,6 +105,11 @@ namespace Bintainer.WebApp.Pages.Dashboard
             
             return new JsonResult(new { success = false, message = _localizer["WarningInvalidUser"] });
 
+        }
+
+        public IActionResult OnPostFindPart() 
+        {
+            return new OkResult();
         }
     }
 }

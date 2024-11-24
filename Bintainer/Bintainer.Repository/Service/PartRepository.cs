@@ -30,7 +30,7 @@ namespace Bintainer.Repository.Service
                 .Include(p => p.PartBinAssociations)                    
                     .ThenInclude(b => b.Bin)
                     .ThenInclude(b=>b.Section)
-                    .Include(p => p.PartBinAssociations)
+                .Include(p => p.PartBinAssociations)
                     .ThenInclude(b => b.Bin)
                     .ThenInclude(b => b.BinSubspaces)
                 .Include(p => p.OrderPartAssociations)
@@ -282,6 +282,27 @@ namespace Bintainer.Repository.Service
             return category;
         }
 
+        public List<Part>? GetAllPartsInCategory(string categoryName, string userId)
+        {
+            return _dbContext.Parts
+                    .Where(p => p.Category.Name == categoryName && p.UserId == userId)
+                    .Include(p => p.PartBinAssociations)
+                    .ThenInclude(a => a.Bin)
+                    .Include(p => p.PartBinAssociations)
+                    .ThenInclude(a => a.Subspace)
+                    .ToList();
+        }
 
+        public List<Part>? GetAllPartsInGroup(string groupName, string userId)
+        {
+
+            return _dbContext.Parts
+                  .Where(p => p.Groups.Any(g => g.Name.Contains(groupName) && g.UserId == userId))
+                  .Include(p=>p.PartBinAssociations)
+                  .ThenInclude(a=>a.Bin)
+                  .Include(p => p.PartBinAssociations)
+                  .ThenInclude(a=>a.Subspace)
+                  .ToList();
+        }
     }
 }

@@ -24,5 +24,6 @@ namespace Bintainer.Service.Interface
         public Response<List<PartUsageResponse>?> UsePart(string partNumber, string userId);
         public Response<List<PartBinAssociation>?> TryAdjustPartQuantity(AdjustQuantityRequest request,string userId);
         public Response<List<string>?> GetPartNames(string userId);
+        public Response<List<PartBinViewModel>?> FindPart(FindPartRequest request,string userId);
     }
 }

@@ -22,102 +22,124 @@
     }
 
 </style>
-<form id="form1" runat="server">
-    <div class="container">
-        <h2>Inventory</h2>
-        <hr />
-        <div class="row align-items-center">
-            <div class="col-md-2">
-                <label for="inventoryName" class="form-label">Inventory Name</label>
-                <label class="form-label">Admin</label>
-            </div>
-            <div class="col-md-4">
-                <input type="text" class="form-control input-sharp" id="inventoryName" value="@Model.InventoryName" placeholder="Inventory Name" required />
-                <input type="text" class="form-control input-sharp" value="@User.Identity?.Name" disabled="disabled" />
-            </div>
-        </div>
 
-        <h2>Section List</h2>
-        <hr />
-        <div class="row">
-            <div class="col-9">
-                <table class="table" id="sectionlist">
-                    <thead>
-                        <tr>
-                            <th style="width:300px">Section Name</th>
-                            <th style="width:150px;">Width</th>
-                            <th style="width:150px;">Height</th>
-                            <th style="width:150px;">Bin Subspace</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.Sections == null || Model.Sections.Count == 0)
-                        {
-                            <tr id="0">
-                                <td>
-                                    <input type="text" name="section-name" class="form-control input-sharp" value="" />
-                                </td>
-                                <td>
-                                    <input type="number" name="section-width" class="form-control input-sharp"
-                                           min="@Model.MinSectionWidth" max="@Model.MaxSectionWidth"
-                                           value="@Model.MinSectionWidth" />
-                                </td>
-                                <td>
-                                    <input type="number" name="section-height" class="form-control input-sharp"
-                                           min="@Model.MinSectionHeight" max="@Model.MaxSectionHeight"
-                                           value="@Model.MinSectionHeight" />
-                                </td>
-                                <td>
-                                    <input type="number" name="bin-section" class="form-control input-sharp"
-                                           min="@Model.MinSubspace" max="@Model.MaxSubspace"
-                                           value="@Model.MinSubspace" />
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-primary btn-xs classAdd">Add</button>
-                                </td>
-                            </tr>
-                        }
-                        else
-                        {
-                            @for (int i = 0; i < Model.Sections.Count; i++)
-                            {
-                                <tr id="@Model.Sections[i].Id">
-                                    <td>
-                                        <input type="text" name="section-name" class="form-control input-sharp" value="@Model.Sections[i].SectionName" />
-                                    </td>
-                                    <td>
-                                        <input type="number" name="section-width" class="form-control input-sharp"
-                                               min="@Model.MinSectionWidth" max="@Model.MaxSectionWidth"
-                                               value="@Model.Sections[i].Width" />
-                                    </td>
-                                    <td>
-                                        <input type="number" name="section-height" class="form-control input-sharp"
-                                               min="@Model.MinSectionHeight" max="@Model.MaxSectionHeight"
-                                               value="@Model.Sections[i].Height" />
-                                    </td>
-                                    <td>
-                                        <input type="number" name="bin-section" class="form-control input-sharp"
-                                               min="@Model.MinSubspace" max="@Model.MaxSubspace"
-                                               value="@Model.Sections[i].SubspaceCount" />
-                                    </td>
-                                    <td>
-                                        <div class="button-row">
-                                            <button type="button" class="btn btn-primary btn-xs classAdd">Add</button>
-                                            <button type="button" class="btn btn-danger btn-xs btnDelete">Remove</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-                <div class="mt-5 text-end">
-                    <button type="button" id="submitBtn" class="btn btn-primary btn-md">Submit</button>
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" id="create-tab" data-bs-toggle="tab" data-bs-target="#create-inventory" href="#">Create</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary-part" href="#">Summary</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div id="create-inventory" class="tab-pane fade show active" role="tabpanel" aria-labelledby="create-tab">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8" style="margin-left: 10px;">
+                    <form id="form1" runat="server">
+                        <div class="container">
+                            <h2>Inventory</h2>
+                            <hr />
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <label for="inventoryName" class="form-label">Inventory Name</label>
+                                    <label class="form-label">Admin</label>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control input-sharp" id="inventoryName" value="@Model.InventoryName" placeholder="Inventory Name" required />
+                                    <input type="text" class="form-control input-sharp" value="@User.Identity?.Name" disabled="disabled" />
+                                </div>
+                            </div>
+
+                            <h2>Section List</h2>
+                            <hr />
+                            <div class="row">
+                                <div class="col-9">
+                                    <table class="table" id="sectionlist">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:300px">Section Name</th>
+                                                <th style="width:150px;">Width</th>
+                                                <th style="width:150px;">Height</th>
+                                                <th style="width:150px;">Bin Subspace</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.Sections == null || Model.Sections.Count == 0)
+                                            {
+                                                <tr id="0">
+                                                    <td>
+                                                        <input type="text" name="section-name" class="form-control input-sharp" value="" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="section-width" class="form-control input-sharp"
+                                                               min="@Model.MinSectionWidth" max="@Model.MaxSectionWidth"
+                                                               value="@Model.MinSectionWidth" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="section-height" class="form-control input-sharp"
+                                                               min="@Model.MinSectionHeight" max="@Model.MaxSectionHeight"
+                                                               value="@Model.MinSectionHeight" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="bin-section" class="form-control input-sharp"
+                                                               min="@Model.MinSubspace" max="@Model.MaxSubspace"
+                                                               value="@Model.MinSubspace" />
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-primary btn-xs classAdd">Add</button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                @for (int i = 0; i < Model.Sections.Count; i++)
+                                                {
+                                                    <tr id="@Model.Sections[i].Id">
+                                                        <td>
+                                                            <input type="text" name="section-name" class="form-control input-sharp" value="@Model.Sections[i].SectionName" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="section-width" class="form-control input-sharp"
+                                                                   min="@Model.MinSectionWidth" max="@Model.MaxSectionWidth"
+                                                                   value="@Model.Sections[i].Width" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="section-height" class="form-control input-sharp"
+                                                                   min="@Model.MinSectionHeight" max="@Model.MaxSectionHeight"
+                                                                   value="@Model.Sections[i].Height" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="bin-section" class="form-control input-sharp"
+                                                                   min="@Model.MinSubspace" max="@Model.MaxSubspace"
+                                                                   value="@Model.Sections[i].SubspaceCount" />
+                                                        </td>
+                                                        <td>
+                                                            <div class="button-row">
+                                                                <button type="button" class="btn btn-primary btn-xs classAdd">Add</button>
+                                                                <button type="button" class="btn btn-danger btn-xs btnDelete">Remove</button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                    <div class="mt-5 text-end">
+                                        <button type="button" id="submitBtn" class="btn btn-primary btn-md">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </div>   
+</div>
+
+
 
 
 <script type="text/javascript">
