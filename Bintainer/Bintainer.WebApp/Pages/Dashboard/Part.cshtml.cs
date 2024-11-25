@@ -31,6 +31,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         public List<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
         public List<string> PartNumbers { get; set; } = new List<string>();
+        public List<string> GroupNames { get; set; } = new List<string>();
         public List<PartGroup> Group { get; set; } = new List<PartGroup>();
         public List<PartTemplateInfo> AttributeTemplatesList { get; set; }
 
@@ -90,6 +91,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
             AttributeTemplatesList = _templateService.GetAttributeTemplateInfoList(userId).Result;
             Categories = _templateService.GetPartCategories(userId).Result;  
             PartNumbers = _partService.GetPartNames(userId).Result;
+            GroupNames = _partService.GetGroupNames(userId).Result;
             Inventory = response.Result;
         }
         
@@ -280,10 +282,11 @@ namespace Bintainer.WebApp.Pages.Dashboard
                     message = _localizer["ErrorModelStateError"],
                 });
             }
+            var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
 
-            return new OkResult();
+            var response = _partService.FindPart(request, userId);
 
-
+            return new JsonResult(response);
         }
 
     }

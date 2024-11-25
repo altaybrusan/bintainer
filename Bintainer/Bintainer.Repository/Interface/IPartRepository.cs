@@ -23,6 +23,7 @@ namespace Bintainer.Repository.Interface
         public void RemovePartQuantity(Bin bin, Part part, Dictionary<int, int> subspaceQuantity, bool? isFillAll = false, int? quantity = null);
         public List<PartBinAssociation>? UpdatePartBinassociations(List<PartBinAssociation>? associations);
         public List<string> GetPartNameList(string userId);
+        public List<string> GetGroupNameList(string userId);
         public List<PartGroup> CreateOrUpdateGroup(string?[] groupNames, string userId);
     }
 }

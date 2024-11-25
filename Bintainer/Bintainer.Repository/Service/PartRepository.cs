@@ -244,6 +244,11 @@ namespace Bintainer.Repository.Service
             return _dbContext.Parts.Select(p => p.Number.Trim()).ToList();
         }
 
+        public List<string> GetGroupNameList(string userId)
+        {
+            return _dbContext.PartGroups.Where(g => g.UserId == userId).Select(g => g.Name).ToList();
+        }
+
         public List<PartGroup> CreateOrUpdateGroup(string?[] groupNames, string userId)
         {
             List<PartGroup> result = new List<PartGroup>();
@@ -269,19 +274,6 @@ namespace Bintainer.Repository.Service
             return result;
         }
                 
-        private PartCategory LoadFullCategoryHierarchy(PartCategory category)
-        {
-            while (category.ParentCategory != null)
-            {
-                category.ParentCategory = _dbContext.PartCategories
-                    .Include(c => c.ParentCategory)
-                    .FirstOrDefault(c => c.Id == category.ParentCategory.Id);
-
-                category = category.ParentCategory;
-            }
-            return category;
-        }
-
         public List<Part>? GetAllPartsInCategory(string categoryName, string userId)
         {
             return _dbContext.Parts
@@ -298,11 +290,26 @@ namespace Bintainer.Repository.Service
 
             return _dbContext.Parts
                   .Where(p => p.Groups.Any(g => g.Name.Contains(groupName) && g.UserId == userId))
-                  .Include(p=>p.PartBinAssociations)
-                  .ThenInclude(a=>a.Bin)
                   .Include(p => p.PartBinAssociations)
-                  .ThenInclude(a=>a.Subspace)
+                    .ThenInclude(b => b.Bin)
+                    .ThenInclude(b => b.Section)
+                  .Include(p => p.PartBinAssociations)
+                    .ThenInclude(b => b.Bin)
+                    .ThenInclude(b => b.BinSubspaces)                  
                   .ToList();
+        }
+        
+        private PartCategory LoadFullCategoryHierarchy(PartCategory category)
+        {
+            while (category.ParentCategory != null)
+            {
+                category.ParentCategory = _dbContext.PartCategories
+                    .Include(c => c.ParentCategory)
+                    .FirstOrDefault(c => c.Id == category.ParentCategory.Id);
+
+                category = category.ParentCategory;
+            }
+            return category;
         }
     }
 }

@@ -557,6 +557,27 @@ namespace Bintainer.Service
             }
         }
 
+        public Response<List<string>?> GetGroupNames(string userId)
+        {
+            try
+            {
+                var result = _partRepository.GetGroupNameList(userId);
+                return new Response<List<string>?>()
+                {
+                    IsSuccess = true,
+                    Result = result
+                };
+            }
+            catch (Exception ex)
+            {
+                _appLogger.LogMessage(ex.Message, LogLevel.Error);
+                return new Response<List<string>?>()
+                {
+                    IsSuccess = true,
+                    Message = _localizer["ErrorFailedAttributeTemplatedRemove"]
+                };
+            }
+        }
         public Response<string> RemoveArrangedPartRequest(RemoveArrangePartRequest arrangeRequest, string userId)
         {
             try
@@ -851,19 +872,18 @@ namespace Bintainer.Service
             {
                 foreach (var assoc in part.PartBinAssociations)
                 {
-                    List<int?> subspaceIndices = new();
-                    foreach (var subspace in assoc.Bin.BinSubspaces) 
-                    {
-                        subspaceIndices.Add(subspace.Id);
-                    }
+                    List<int?> subSpaceIndices = new();
+                    subSpaceIndices.Add(assoc.Subspace.SubspaceIndex);
                     results.Add(new PartBinViewModel()
                     {
                         CoordinateX = assoc.Bin.CoordinateX,
                         CoordinateY = assoc.Bin.CoordinateY,
-                        SectionName = assoc.Bin.Section.SectionName,
-                        SubspaceIndices = subspaceIndices,
-                        Number = part.Number,
+                        SectionName = assoc.Bin.Section?.SectionName?.Trim(),
+                        SubspaceIndices = subSpaceIndices,
+                        Number = part.Number?.Trim(),
+                        Label = assoc.Subspace.Label
                     });
+
                 }
             }
             return new Response<List<PartBinViewModel>?>

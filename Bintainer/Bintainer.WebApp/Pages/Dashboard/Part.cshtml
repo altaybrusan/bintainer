@@ -114,8 +114,7 @@
                                     <div class="form-group">
                                         <label class="control-label">Package/Footprint</label>
                                         <input type="text" class="form-control  input-sharp autocomplete" id="packageInput" placeholder="e.g., SOIC" />
-                                    </div>
-                                    
+                                    </div>                                    
                                     <div class="form-group">
                                         <label class="control-label">Group</label>
                                         <input type="text" class="form-control  input-sharp autocomplete" id="groupInput" placeholder="e.g., Usb" />
@@ -450,7 +449,7 @@
                 <div class="col-md-8" style="margin-left: 10px;">
                     <form id="findPartForm" class="well form-horizontal" method="post" asp-page-handler="FindPart">
                         <fieldset>
-                            <legend><h2>Find Part by</h2></legend>
+                            <legend><h2>Find Part By</h2></legend>
                             <hr />
                             <div class="row">
                                 <div class="form-group">
@@ -465,22 +464,8 @@
                                             </div>                                          
                                         </div>                                        
                                     </div>
-                                </div>                                
-                                <span>Or</span>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-9 d-flex align-items-center">
-                                            <label class="control-label me-2">Part Category</label>
-                                            <div class="autocomplete flex-grow-1 me-2">
-                                                <input type="text" class="form-control input-sharp" id="searchPartByPartCategory" placeholder="Part category" data-autocomplete-options="partCategoriesData">
-                                                <div id="partCategoriesData" style="display:none;">
-                                                    @Html.Raw(Json.Serialize(Model.PartNumbers.Select(p => p.Trim())))
-                                                </div>
-                                            </div>                                           
-                                        </div>
-                                    </div>
                                 </div>
-                                <span>Or</span>
+                                <h5><span>Or</span></h5>
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-9 d-flex align-items-center">
@@ -491,6 +476,16 @@
                                                     @Html.Raw(Json.Serialize(Model.PartNumbers.Select(p => p.Trim())))
                                                 </div>
                                             </div>                                        
+                                        </div>
+                                    </div>
+                                </div>
+                                <h5><span>Or</span></h5>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-9 d-flex align-items-center">
+                                            <div class="form-group">
+                                                <div id="find-part-category-treeview" class="create-part-category-treeview"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -655,6 +650,7 @@
 
         let selectedCategoryForCreatePart = null;
         let selectedCategoryForUpdatePart = null;
+        let selectedCategoryForFindPart = null;
 
         var data = @Html.Raw(JsonSerializer.Serialize(Model.Categories, new JsonSerializerOptions
               {
@@ -680,8 +676,19 @@
                                             editable: false,
                                             checkboxes: false,
                                             oncheck: function (state, text, path) {
-                                            selectedCategoryForUpdatePart = path;
+                                            selectedCategoryForFindPart = path;
                                             }});
+        const findPartTree = new DinampTreeEditor('#find-part-category-treeview')
+            .setData(data)
+            .set({
+                radios: true,
+                editable: false,
+                checkboxes: false,
+                oncheck: function (state, text, path) {
+                    selectedCategoryForFindPart = path;
+                }
+            });
+
 
         $('#addAttributeToUpdateTable').prop('disabled', true);
         $('#updateAttribute').prop('disabled', true);
@@ -1511,18 +1518,15 @@
 
             event.preventDefault();
             var searchedPartNumber = $('#searchPartByPartNumber').val().trim();
-            var searchedPartCategory = $('#searchPartByPartCategory').val().trim();
             var searchedPartGroup = $('#searchPartByPartGroup').val().trim();
 
-
-            if (!searchedPartNumber && !searchedPartCategory && !searchedPartGroup) {               
+            if (!searchedPartNumber && !selectedCategoryForFindPart && !searchedPartGroup) {
                 return;
             }
 
-
             var data = {
                 searchedPartNumber: searchedPartNumber,
-                searchedPartCategory: searchedPartCategory,
+                searchedPartCategory: selectedCategoryForFindPart,
                 searchedPartGroup: searchedPartGroup
             };
 
@@ -1536,7 +1540,25 @@
                 },
                 data: JSON.stringify(data),
                 success: function (response) {
-                    // To be continued
+                    if (response && response.isSuccess && response.result) {
+                        const tableBody = $("#usePartTable tbody");
+                        tableBody.empty(); // Clear existing rows if needed
+
+                        response.result.forEach(part => {
+                            const row = `
+                            <tr>
+                            <td>${part.number}</td>
+                            <td>${part.sectionName || ''}</td>
+                            <td>${part.coordinateX}</td>
+                            <td>${part.coordinateY}</td>
+                            <td>${(part.subspaceIndices || []).join(', ')}</td>
+                            <td>${part.label ? part.label : ''}</td>
+                            </tr>`;
+                            tableBody.append(row);
+                        });
+                    } else {
+                        alert(response.Message || "No parts found.");
+                    }
                 },
                 error: function (xhr, status, error) {
                     let errorMessage = "An unexpected error occurred.";

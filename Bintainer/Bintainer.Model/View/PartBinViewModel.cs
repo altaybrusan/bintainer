@@ -14,5 +14,6 @@ namespace Bintainer.Model.View
         public int CoordinateX { get; set; }
         public int CoordinateY { get; set; }
         public List<int?>? SubspaceIndices { get; set; }
+        public string? Label { get; set; }
     }
 }
