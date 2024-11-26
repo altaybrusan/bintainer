@@ -864,9 +864,11 @@ namespace Bintainer.Service
             {
                 parts = _partRepository.GetAllPartsInGroup(request.SearchedPartGroup, userId);
             }
-            if (!string.IsNullOrEmpty(request.SearchedPartCategory))
+            if (request.SearchedPartCategory != null && request.SearchedPartCategory.Count > 0)
             {
-                parts = _partRepository.GetAllPartsInCategory(request.SearchedPartNumber, userId);
+                var categories = _templateRepository.GetCategories(userId);
+                var categoryId = ExtractCategoryIdFromPath(categories, request.SearchedPartCategory!);
+                parts = _partRepository.GetAllPartsInCategory(categoryId, userId);
             }
             foreach (var part in parts)
             {

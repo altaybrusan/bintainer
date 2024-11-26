@@ -13,7 +13,7 @@ namespace Bintainer.Repository.Interface
     {
         public Part? GetPart(Guid partGuidId);
         public Part? GetPart(string partNumber,string userId);
-        public List<Part>? GetAllPartsInCategory(string categoryName,string userId);
+        public List<Part>? GetAllPartsInCategory(int? categoryId,string userId);
         public List<Part>? GetAllPartsInGroup(string groupName,string userId);
         public Part? UpdatePart(Part? part);
         public List<Part> GetParts(PartFilterCriteria criteria);

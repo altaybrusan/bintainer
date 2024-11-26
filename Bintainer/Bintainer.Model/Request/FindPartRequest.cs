@@ -9,7 +9,7 @@ namespace Bintainer.Model.Request
     public class FindPartRequest
     {
             public string? SearchedPartNumber { get; set; }
-            public string? SearchedPartCategory { get; set; }
+            public List<string?>? SearchedPartCategory { get; set; }
             public string? SearchedPartGroup { get; set; }
     }
 }

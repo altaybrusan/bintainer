@@ -274,14 +274,16 @@ namespace Bintainer.Repository.Service
             return result;
         }
                 
-        public List<Part>? GetAllPartsInCategory(string categoryName, string userId)
+        public List<Part>? GetAllPartsInCategory(int? categoryId, string userId)
         {
             return _dbContext.Parts
-                    .Where(p => p.Category.Name == categoryName && p.UserId == userId)
+                    .Where(p => p.Category.Id == categoryId && p.UserId == userId)
                     .Include(p => p.PartBinAssociations)
-                    .ThenInclude(a => a.Bin)
+                        .ThenInclude(b => b.Bin)
+                        .ThenInclude(b => b.Section)
                     .Include(p => p.PartBinAssociations)
-                    .ThenInclude(a => a.Subspace)
+                        .ThenInclude(b => b.Bin)
+                        .ThenInclude(b => b.BinSubspaces)
                     .ToList();
         }
 
