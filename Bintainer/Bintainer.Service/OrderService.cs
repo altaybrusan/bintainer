@@ -6,7 +6,9 @@ using Bintainer.Model.Template;
 using Bintainer.Model.View;
 using Bintainer.Repository.Interface;
 using Bintainer.Service.Interface;
+using Bintainer.SharedResources.Resources;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,13 +21,16 @@ namespace Bintainer.Service
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IPartRepository _partRepository;
+        private readonly IStringLocalizer<ErrorMessages> _localizer;
         private readonly IMapper _mapper;
         public OrderService(IOrderRepository orderRepository,
                             IPartRepository partRepository,
+                            IStringLocalizer<ErrorMessages> stringLocalizer,
                             IMapper mapper)
         {
             _orderRepository = orderRepository;
             _partRepository = partRepository;
+            _localizer = stringLocalizer;
             _mapper = mapper;
         }
 
@@ -40,20 +45,15 @@ namespace Bintainer.Service
                 order.HandOverDate = request.HandoverDate;
                 order.Supplier = request.Supplier;
                 order.UserId = userId;
-               
-                //TODO: update this
-                //foreach (var item in request.Parts)
-                //{
-                //    Part? part = _partRepository.GetPart(item);
-                //    if (part is not null)
-                //    {
-                //        OrderPartAssociation association = new OrderPartAssociation();
-                //        association.PartId = part.Id;
-                //        association.Quantity = item.Quantity;
-                //        order.OrderPartAssociations.Add(association);
-                //    }
-                //}
-                
+
+                foreach (var item in request.Parts)
+                {
+                    OrderPartAssociation association = new OrderPartAssociation();
+                    association.PartId = item.PartId;
+                    association.Quantity = item.Quantity;
+                    order.OrderPartAssociations.Add(association);
+                }
+
                 _orderRepository.AddAndSaveOrder(order);
                 
                 return new Response<Order?>() 
@@ -64,14 +64,22 @@ namespace Bintainer.Service
             }
             else
             {
-                registeredOrder.OrderDate = request.OrderDate;
-                registeredOrder.HandOverDate = request.HandoverDate;
-                registeredOrder.Supplier = request.Supplier;
-                foreach (var item in registeredOrder.OrderPartAssociations)
+                //registeredOrder.OrderDate = request.OrderDate;
+                //registeredOrder.HandOverDate = request.HandoverDate;
+                //registeredOrder.Supplier = request.Supplier;
+                //foreach (var item in registeredOrder.OrderPartAssociations)
+                //{
+                //    item.Quantity = request.Parts.FirstOrDefault(p => p.PartId == item.PartId)?.Quantity;
+                //}
+
+                //_orderRepository.UpdateOrder(registeredOrder);
+                //
+                return new Response<Order?>()
                 {
-                    item.Quantity = request.Parts.FirstOrDefault(p => p.PartId == item.PartId)?.Quantity;
-                }
-                _orderRepository.UpdateOrder(registeredOrder);                
+                    IsSuccess = false,
+                    Result = null,
+                    Message= _localizer["ErrorOrderAlreadyExists"]
+                };
             }
             return new Response<Order?>()
             {

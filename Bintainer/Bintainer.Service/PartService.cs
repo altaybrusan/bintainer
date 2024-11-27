@@ -895,6 +895,16 @@ namespace Bintainer.Service
             };
         }
 
+        public Response<List<Part>?> GetPartsByUserId(string userId)
+        {
+            var result = _partRepository.GetPartsOfUser(userId);
+            return new Response<List<Part>?>
+            {
+                IsSuccess = true,
+                Result = result
+            };
+        }
+
         #endregion
 
     }

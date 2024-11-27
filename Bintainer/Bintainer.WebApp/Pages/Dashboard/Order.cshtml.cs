@@ -18,18 +18,21 @@ namespace Bintainer.WebApp.Pages.Dashboard
 {
     public class OrderModel : PageModel
     {
-        public List<Part> Part { get; set; } = new List<Part>();
+        public List<Part> Parts { get; set; } = new List<Part>();
 
         private readonly IOrderService _orderService;
         private readonly IStringLocalizer<ErrorMessages> _localizer;
+        private readonly IPartService _partService;
         private readonly IAppLogger _appLogger;
         public OrderModel(IOrderService orderService, 
                           IStringLocalizer<ErrorMessages> localizer,
+                          IPartService partService,
                           IAppLogger appLogger)
         {
             _orderService = orderService;
             _localizer = localizer;
             _appLogger = appLogger;
+            _partService = partService;
 
             //TODO: warning check this out
             //Part= _dbcontext.Parts.ToList();
@@ -37,6 +40,9 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         public void OnGet()
         {
+            var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+
+            Parts = _partService.GetPartsByUserId(userId).Result;
         }
 
         public IActionResult OnPostRegisterNewOrder([FromBody]RegisterOrderRequest request)
@@ -47,7 +53,8 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
                 try
                 {
-                    _orderService.RegisterOrder(request, UserId);
+                    var response = _orderService.RegisterOrder(request, UserId);
+                    return BadRequest(response.Message);
                 }
                 catch (Exception ex)
                 {

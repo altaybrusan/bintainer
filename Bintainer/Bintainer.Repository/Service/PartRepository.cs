@@ -313,5 +313,10 @@ namespace Bintainer.Repository.Service
             }
             return category;
         }
+
+        public List<Part>? GetPartsOfUser(string userId)
+        {
+            return _dbContext.Parts.Where(p => p.UserId == userId).ToList();
+        }
     }
 }

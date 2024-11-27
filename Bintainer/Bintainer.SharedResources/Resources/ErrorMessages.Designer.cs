@@ -223,6 +223,15 @@ namespace Bintainer.SharedResources.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Order already exists error..
+        /// </summary>
+        public static string ErrorOrderAlreadyExists {
+            get {
+                return ResourceManager.GetString("ErrorOrderAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The part is already present..
         /// </summary>
         public static string ErrorPartAlreadyExists {

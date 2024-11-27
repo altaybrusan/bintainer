@@ -171,6 +171,9 @@
   <data name="ErrorModelStateError" xml:space="preserve">
     <value>Some fields contain invalid data.</value>
   </data>
+  <data name="ErrorOrderAlreadyExists" xml:space="preserve">
+    <value>Order already exists error.</value>
+  </data>
   <data name="ErrorPartAlreadyExists" xml:space="preserve">
     <value>The part is already present.</value>
   </data>

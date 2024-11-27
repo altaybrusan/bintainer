@@ -107,7 +107,7 @@
                                 <tr class="inventory-subsection-list">
                                     <td>
                                         <select class="form-select form-select-sm partSelect" required="required"
-                                                asp-items="@(new SelectList(Model.Part,nameof(Part.Id),nameof(Part.Number)))">
+                                                asp-items="@(new SelectList(Model.Parts,nameof(Part.Id),nameof(Part.Number)))">
                                             <option value="">Select Part</option>
                                         </select>
                                     </td>
@@ -323,8 +323,8 @@
 
             var orderNumber = $('#orderNumber').val();
             var supplier = $('#orderSupplier').val();
-            var orderDate = $('#orderDate').val();
-            var handoverDate = $('#handoverDate').val();
+            var orderDate = $('#orderDate').val() === "" ? null : $('#orderDate').val();
+            var handoverDate = $('#handoverDate').val() === "" ? null : $('#handoverDate').val();
 
             // Prepare an array to store parts data
             var parts = [];
@@ -372,7 +372,7 @@
                 },
                 error: function (xhr, status, error) {
                     console.log(xhr.responseText); // Log error message for debugging
-                    alert('Failed to submit order: ' + xhr.responseText); // Show error alert
+                    alert(xhr.responseText); // Show error alert
                 }
             });
         });

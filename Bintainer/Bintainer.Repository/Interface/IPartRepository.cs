@@ -25,5 +25,6 @@ namespace Bintainer.Repository.Interface
         public List<string> GetPartNameList(string userId);
         public List<string> GetGroupNameList(string userId);
         public List<PartGroup> CreateOrUpdateGroup(string?[] groupNames, string userId);
+        public List<Part>? GetPartsOfUser(string userId);
     }
 }
