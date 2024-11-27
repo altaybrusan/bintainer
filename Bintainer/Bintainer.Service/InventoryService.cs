@@ -224,5 +224,43 @@ namespace Bintainer.Service
             }            
         }
 
+        public Response<List<InventorySummaryViewModel>> GetInventorySummary(string userId)
+        {
+            List<InventorySummaryViewModel> result = new();
+            
+            var inventory = _inventoryRepository.GetInventoryById(userId);
+
+            if (inventory is null)
+                return new Response<List<InventorySummaryViewModel>>()
+                {
+                    IsSuccess = true,
+                    Result = null
+                };
+            
+            foreach (var section in inventory.InventorySections)
+            {
+                foreach (var bin in section?.Bins)
+                {
+                    foreach (var assoc in bin?.PartBinAssociations)
+                    {
+                        InventorySummaryViewModel item = new()
+                        {
+                            CoordinateX = bin.CoordinateX,
+                            CoordinateY = bin.CoordinateY,
+                            PartNumber = assoc.Part.Number,
+                            Section = section.SectionName
+                        };
+                        result.Add(item);
+                    }
+                }
+            }
+
+            return new Response<List<InventorySummaryViewModel>>()
+            {
+                IsSuccess = true,
+                Result = result
+            };
+
+        }
     }
 }

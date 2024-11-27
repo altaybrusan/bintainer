@@ -91,9 +91,9 @@ namespace Bintainer.WebApp.Pages.Dashboard
             if (User.Identity != null) 
             {
                 string userName = User.Identity.Name ?? string.Empty;
-                var UserId = User.Claims.ToList().FirstOrDefault(c=>c.Type.Contains("nameidentifier"))?.Value;
-                
-                UserViewModel user = new() { Name = userName, UserId = UserId };
+                var userId = User.Claims.ToList().FirstOrDefault(c=>c.Type.Contains("nameidentifier"))?.Value;
+               
+                UserViewModel user = new() { Name = userName, UserId = userId };
                 var sectionList = _mapper.Map<List<InventorySection>>(sectionListVM);
                 var inventory = _inventoryService.CreateOrUpdateInventory(user, inventoryName, sectionList);
 
@@ -107,9 +107,30 @@ namespace Bintainer.WebApp.Pages.Dashboard
 
         }
 
-        public IActionResult OnPostFindPart() 
+        public IActionResult OnPostInventorySummary() 
         {
-            return new OkResult();
+            if (!ModelState.IsValid)
+            {
+                _appLogger.LogModelError(nameof(OnPostInventorySummary), ModelState);
+
+                return BadRequest(new
+                {
+                    success = false,
+                    message = _localizer["ErrorModelStateError"],
+                });
+            }
+            if (User.Identity != null)
+            {
+                string userName = User.Identity.Name ?? string.Empty;
+                var userId = User.Claims.ToList().FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+                var inventory = _inventoryService.GetInventorySummary(userId);
+                return new JsonResult(inventory) { StatusCode = 200 };
+                
+            }
+            _appLogger.LogMessage(_localizer["WarningInvalidUser"], LogLevel.Warning);
+
+            return new JsonResult(new { success = false, message = _localizer["WarningInvalidUser"] });
+
         }
     }
 }

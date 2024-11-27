@@ -64,6 +64,9 @@ namespace Bintainer.Repository.Service
         {
             return _dbContext.Inventories.Where(i => i.UserId == userId)
                                          .Include(i => i.InventorySections)
+                                            .ThenInclude(s => s.Bins)
+                                                .ThenInclude(b=>b.PartBinAssociations)
+                                                    .ThenInclude(a=>a.Part)
                                          .Include(i => i.User)
                                          .FirstOrDefault();
         }

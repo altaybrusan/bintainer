@@ -136,7 +136,33 @@
                 </div>
             </div>
         </div>
-    </div>   
+    </div>
+    <div id="summary-inventory" class="tab-pane fade show active" role="tabpanel" aria-labelledby="summary-tab">
+        <form class="well form-horizontal" style="margin-top: 20px;">
+            <legend><h2>Inventory</h2></legend>
+            <hr />
+            <fieldset>
+                <div style="margin-bottom: 20px;">
+                    <!-- Add Load Button -->
+                    <button type="button" id="loadInventoryBtn" class="btn btn-primary">Load Inventory</button>
+                </div>
+                <div style="max-height: 300px; overflow-y: auto;">
+                    <table class="table" id="inventorySummaryTable">
+                        <thead>
+                            <tr>
+                                <th>Part number</th>
+                                <th>Section</th>
+                                <th>Coordinate (X)</th>
+                                <th>Coordinate (Y)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventorySummaryTableBody"></tbody>
+                    </table>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
 </div>
 
 
@@ -186,7 +212,6 @@
                 row.remove();
             }
         });
-
 
         $(document).on("input blur", "input[name^='section-width'], input[name^='section-height'], input[name^='bin-section']", function () {
             validateBounds($(this), parseInt($(this).attr("min"), 10), parseInt($(this).attr("max"), 10));
@@ -265,6 +290,47 @@
                 }
             });
         });
+
+        $(document).on("click", "#loadInventoryBtn", function () {
+            $.ajax({
+                url: "/dashboard/inventory?handler=InventorySummary", // Adjust "YourPageName" to your Razor Page's file name (without extension)
+                method: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN", $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                contentType: "application/json", // Since there's no body in the POST, contentType can be adjusted as needed.
+                success: function (data) {
+                    if (data.isSuccess) {
+                        const tableBody = $("#inventorySummaryTableBody");
+                        tableBody.empty(); // Clear existing rows
+
+                        // Populate table rows with data
+                        if (data.result && data.result.length > 0) {
+                            data.result.forEach(item => {
+                                const row = `
+                                <tr>
+                                    <td>${item.partNumber}</td>
+                                    <td>${item.section}</td>
+                                    <td>${item.coordinateX}</td>
+                                    <td>${item.coordinateY}</td>
+                                </tr>
+                            `;
+                                tableBody.append(row);
+                            });
+                        } else {
+                            alert('No inventory data found.');
+                        }
+                    } else {
+                        alert(data.message || 'Failed to load inventory summary.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching inventory summary:", error);
+                    alert("Failed to load inventory summary.");
+                }
+            });
+        });
+
 
     });
 </script>

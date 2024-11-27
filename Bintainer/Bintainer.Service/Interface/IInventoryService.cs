@@ -18,6 +18,6 @@ namespace Bintainer.Service.Interface
         public Response<Inventory?> GetInventory(string admin);
         public Response<Inventory?> GetInventoryById(string userId);
         public Response<Inventory?> CreateOrUpdateInventory(UserViewModel user, string inventoryName, List<InventorySection>? sectionList = null);
-
+        public Response<List<InventorySummaryViewModel>> GetInventorySummary(string userId);
     }
 }
