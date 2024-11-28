@@ -85,17 +85,17 @@ namespace Bintainer.Test.Repository
         public void CreateTemplate_AddsTemplate_WhenCalled()
         {
             // Arrange
-            var partNumber = "NewTemplate";
+            var templateNumber = "NewTemplate";
             var userId = "user123";
             var mockSet = new Mock<DbSet<PartAttributeTemplate>>();
 
             _mockDbContext.Setup(c => c.PartAttributeTemplates).Returns(mockSet.Object);
 
             // Act
-            var result = _repository.CreateTemplate(partNumber,userId);
+            var result = _repository.CreateTemplate(templateNumber, userId);
 
             // Assert
-            mockSet.Verify(m => m.Add(It.Is<PartAttributeTemplate>(t => t.Parts.FirstOrDefault()!.Number == partNumber && t.UserId == userId)), Times.Once);
+            mockSet.Verify(m => m.Add(It.Is<PartAttributeTemplate>(t => t.TemplateName == templateNumber && t.UserId == userId)), Times.Once);
             _mockDbContext.Verify(m => m.SaveChanges(true), Times.Once);
         }
 
