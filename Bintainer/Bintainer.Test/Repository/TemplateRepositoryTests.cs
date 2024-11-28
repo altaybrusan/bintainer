@@ -100,7 +100,7 @@ namespace Bintainer.Test.Repository
         }
 
         [Test]
-        public void SaveAttributes_AddsAttributes_WhenCalled()
+        public void AddAndSavePartAttribute_AddsAttributes_WhenCalled()
         {
             // Arrange
             var attributes = new PartAttributeTemplate
@@ -112,14 +112,14 @@ namespace Bintainer.Test.Repository
                 }                
             };
 
-            var mockSet = new Mock<DbSet<PartAttributeTemplate>>();
+            var mockSet = CreateMockDbSet<PartAttributeTemplate>(new List<PartAttributeTemplate>() { attributes });
             _mockDbContext.Setup(c => c.PartAttributeTemplates).Returns(mockSet.Object);
 
             // Act
             _repository.AddAndSavePartAttribute(attributes);
 
             // Assert
-            mockSet.Verify(m => m.AddRange(attributes), Times.Once);
+            mockSet.Verify(m => m.Add(attributes), Times.Once);
             _mockDbContext.Verify(m => m.SaveChanges(), Times.Once);
         }
 
