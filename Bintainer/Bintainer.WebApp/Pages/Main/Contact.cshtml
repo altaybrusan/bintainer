@@ -66,7 +66,7 @@
                             <textarea class="form-control" name="message" rows="5" data-rule="required" data-msg="Please write something for us" placeholder="Message"></textarea>
                             <div class="validation"></div>
                         </div>
-                        <div class="text-center"><button type="submit">Send Message</button></div>
+                        <div class="text-center"><button type="submit" onclick="sendMail()">Send Message</button></div>
                     </form>
                 </div>
             </div>
@@ -75,3 +75,58 @@
 
     </div>
 </section><!-- #contact -->
+
+<script>
+    function sendMail() {
+        // Disable the button and show loading indicator
+        const sendButton = document.querySelector('button[type="submit"]');
+        const loadingIndicator = document.getElementById('loading'); // Ensure you have an element with ID 'loading' for the indicator
+        sendButton.disabled = true;
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'block';
+        }
+
+        // Collect form values
+        const params = {
+            sender_name: document.getElementById("name").value,
+            reply_to: document.getElementById("email").value,
+            sender_phone: document.getElementById("subject").value,
+            sender_message: document.querySelector("textarea[name='message']").value,
+        };
+
+        const templateID = "template_default";
+        const serviceID = "service_mail";
+
+        // Send email using EmailJS
+        emailjs.send(serviceID, templateID, params)
+            .then(function (response) {
+                // On success
+                alert('Your message has been sent successfully!');
+
+                // Clear the form fields
+                document.getElementById("name").value = "";
+                document.getElementById("email").value = "";
+                document.getElementById("subject").value = "";
+                document.querySelector("textarea[name='message']").value = "";
+
+                // Show success message (optional)
+                document.getElementById('sendmessage').style.display = 'block';
+                document.getElementById('errormessage').style.display = 'none';
+            })
+            .catch(function (error) {
+                // On error
+                alert('There was an error sending your message. Please try again later.');
+
+                // Show error message (optional)
+                document.getElementById('sendmessage').style.display = 'none';
+                document.getElementById('errormessage').style.display = 'block';
+            })
+            .finally(function () {
+                // Re-enable the button and hide loading indicator
+                sendButton.disabled = false;
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+            });
+    }
+</script>
