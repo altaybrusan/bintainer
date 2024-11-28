@@ -52,7 +52,7 @@ namespace Bintainer.Test.Repository
             _mockDbContext.Setup(c => c.PartAttributeTemplates).Returns(mockSet.Object);
 
             // Act
-            var result = _repository.GetTemplatesOfUser(userId);
+            var result = _repository.GetAttributeTemplates(userId);
 
             // Assert
             Assert.That(result.Count, Is.EqualTo(2));
@@ -64,17 +64,17 @@ namespace Bintainer.Test.Repository
         public void GetAttributeTemplateById_ReturnsTemplate_WhenTemplateExists()
         {
             // Arrange
-            var templateId = 1;
+            var templateId = Guid.NewGuid();
             var templates = new List<PartAttributeTemplate>
         {
-            new PartAttributeTemplate { Id = templateId, TemplateName = "Template1" }
+            new PartAttributeTemplate { GuidId = templateId, TemplateName = "Template1" }
         };
 
             var mockSet = CreateMockDbSet(templates);
             _mockDbContext.Setup(c => c.PartAttributeTemplates).Returns(mockSet.Object);
 
             // Act
-            var result = _repository.GetAttributeTemplateById(templateId);
+            var result = _repository.GetTemplate(templateId);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -82,20 +82,20 @@ namespace Bintainer.Test.Repository
         }
 
         [Test]
-        public void CreateAttributeTemplateByName_AddsTemplate_WhenCalled()
+        public void CreateTemplate_AddsTemplate_WhenCalled()
         {
             // Arrange
-            var templateName = "NewTemplate";
+            var partNumber = "NewTemplate";
             var userId = "user123";
             var mockSet = new Mock<DbSet<PartAttributeTemplate>>();
 
             _mockDbContext.Setup(c => c.PartAttributeTemplates).Returns(mockSet.Object);
 
             // Act
-            var result = _repository.CreateAttributeTemplateByName(templateName, userId);
+            var result = _repository.CreateTemplate(partNumber,userId);
 
             // Assert
-            mockSet.Verify(m => m.Add(It.Is<PartAttributeTemplate>(t => t.TemplateName == templateName && t.UserId == userId)), Times.Once);
+            mockSet.Verify(m => m.Add(It.Is<PartAttributeTemplate>(t => t.Parts.FirstOrDefault()!.Number == partNumber && t.UserId == userId)), Times.Once);
             _mockDbContext.Verify(m => m.SaveChanges(true), Times.Once);
         }
 
@@ -103,17 +103,20 @@ namespace Bintainer.Test.Repository
         public void SaveAttributes_AddsAttributes_WhenCalled()
         {
             // Arrange
-            var attributes = new List<PartAttribute>
-        {
-            new PartAttribute { Name = "Attribute1", Value = "Value1" },
-            new PartAttribute { Name = "Attribute2", Value = "Value2" }
-        };
+            var attributes = new PartAttributeTemplate
+            {
+                PartAttributeDefinitions = new List<PartAttributeDefinition>() 
+                {
+                    new PartAttributeDefinition { Name = "Attribute1", Value = "Value1" },
+                    new PartAttributeDefinition { Name = "Attribute2", Value = "Value2" }
+                }                
+            };
 
-            var mockSet = new Mock<DbSet<PartAttribute>>();
-            _mockDbContext.Setup(c => c.PartAttributes).Returns(mockSet.Object);
+            var mockSet = new Mock<DbSet<PartAttributeTemplate>>();
+            _mockDbContext.Setup(c => c.PartAttributeTemplates).Returns(mockSet.Object);
 
             // Act
-            _repository.SaveAttributes(attributes);
+            _repository.AddAndSavePartAttribute(attributes);
 
             // Assert
             mockSet.Verify(m => m.AddRange(attributes), Times.Once);
@@ -134,7 +137,7 @@ namespace Bintainer.Test.Repository
             _mockDbContext.Setup(c => c.PartCategories).Returns(mockSet.Object);
 
             // Act
-            var result = _repository.GetPartCategories(userId);
+            var result = _repository.GetCategories(userId);
 
             // Assert
             Assert.That(result.Count, Is.EqualTo(1));

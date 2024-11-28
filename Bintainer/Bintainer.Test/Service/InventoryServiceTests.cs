@@ -96,7 +96,7 @@ namespace Bintainer.Test.Service
             };
 
             // Act
-            var result = _inventoryService.GetBinFrom(section, coordinateX, coordinateY);
+            var result = _inventoryService.GetBin(section, coordinateX, coordinateY);
 
             // Assert
             Assert.IsTrue(result.IsSuccess);

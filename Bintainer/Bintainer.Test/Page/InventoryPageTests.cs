@@ -18,6 +18,7 @@ using Bintainer.Model.Template;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
+using AutoMapper;
 
 namespace Bintainer.Test.Page
 {
@@ -30,6 +31,9 @@ namespace Bintainer.Test.Page
         private Mock<SignInManager<IdentityUser>> _signInManagerMock;
         private Mock<IStringLocalizer<ErrorMessages>> _localizerMock;
         private Mock<IAppLogger> _appLoggerMock;
+        private Mock<IMapper> _mapperMock;
+         
+
 
         [SetUp]
         public void Setup()
@@ -61,12 +65,14 @@ namespace Bintainer.Test.Page
 
             _localizerMock = new Mock<IStringLocalizer<ErrorMessages>>();
             _appLoggerMock = new Mock<IAppLogger>();
+            _mapperMock = new Mock<IMapper>();
 
             _inventoryModel = new InventoryModel(
                 _inventoryServiceMock.Object,
                 _signInManagerMock.Object,
                 _localizerMock.Object,
-                _appLoggerMock.Object
+                _appLoggerMock.Object,
+                _mapperMock.Object
             );
         }
 
@@ -135,7 +141,7 @@ namespace Bintainer.Test.Page
             _inventoryModel.ModelState.AddModelError("TestError", "Test error message");
 
             // Act
-            var result = _inventoryModel.OnPostSubmitForm(new List<InventorySection>(), "TestInventory");
+            var result = _inventoryModel.OnPostSubmitForm(new List<InventorySectionViewModel>(), "TestInventory");
 
             // Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -153,7 +159,7 @@ namespace Bintainer.Test.Page
             _inventoryModel.PageContext.HttpContext = httpContextMock.Object;
 
             // Act
-            var result = _inventoryModel.OnPostSubmitForm(new List<InventorySection>(), "TestInventory");
+            var result = _inventoryModel.OnPostSubmitForm(new List<InventorySectionViewModel>(), "TestInventory");
 
             // Assert
             Assert.That(result, Is.InstanceOf<JsonResult>());
@@ -176,7 +182,7 @@ namespace Bintainer.Test.Page
                 .Returns(new Response<Inventory> { IsSuccess = true, Result = new Inventory() });
 
             // Act
-            var result = _inventoryModel.OnPostSubmitForm(new List<InventorySection>(), "TestInventory");
+            var result = _inventoryModel.OnPostSubmitForm(new List<InventorySectionViewModel>(), "TestInventory");
 
             // Assert
             Assert.That(result, Is.InstanceOf<JsonResult>());

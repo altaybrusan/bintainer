@@ -113,8 +113,8 @@ namespace Bintainer.Test.Repository
             // Arrange
             var parts = new List<Part>
             {
-                new Part { Id = 1, Name = "Part1" },
-                new Part { Id = 2, Name = "Part2" }
+                new Part { Id = 1, Number = "Part1" },
+                new Part { Id = 2, Number = "Part2" }
             };
 
             var orderPartAssociations = new List<OrderPartAssociation>

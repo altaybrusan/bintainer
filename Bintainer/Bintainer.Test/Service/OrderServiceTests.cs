@@ -3,7 +3,10 @@ using Bintainer.Model.DTO;
 using Bintainer.Model.Entity;
 using Bintainer.Model.Request;
 using Bintainer.Repository.Interface;
+using Bintainer.Repository.Service;
 using Bintainer.Service;
+using Bintainer.SharedResources.Resources;
+using Microsoft.Extensions.Localization;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -16,6 +19,7 @@ namespace Bintainer.Test.Service
     {
         private Mock<IOrderRepository> _mockOrderRepository;
         private Mock<IPartRepository> _mockPartRepository;
+        private Mock<IStringLocalizer<ErrorMessages>> _mockLocalizer;
         private Mock<IMapper> _mockMapper;
         private OrderService _orderService;
 
@@ -24,8 +28,13 @@ namespace Bintainer.Test.Service
         {
             _mockOrderRepository = new Mock<IOrderRepository>();
             _mockPartRepository = new Mock<IPartRepository>();
+            _mockLocalizer = new Mock<IStringLocalizer<ErrorMessages>>();
             _mockMapper = new Mock<IMapper>();
-            _orderService = new OrderService(_mockOrderRepository.Object, _mockPartRepository.Object, _mockMapper.Object);
+           
+            _orderService = new OrderService(_mockOrderRepository.Object, 
+                                             _mockPartRepository.Object,
+                                             _mockLocalizer.Object,
+                                             _mockMapper.Object);
         }
 
         [Test]
@@ -44,8 +53,9 @@ namespace Bintainer.Test.Service
                 }
             };
             var userId = "user1";
+            Guid guid = Guid.NewGuid();
             _mockOrderRepository.Setup(r => r.GetOrderByOrderNumber(request.OrderNumber, userId)).Returns((Order)null);
-            _mockPartRepository.Setup(r => r.GetPartById(1)).Returns(new Part { Id = 1, Name = "Part1" });
+            _mockPartRepository.Setup(r => r.GetPart(guid)).Returns(new Part { Id = 1, Number = "Part1" });
             _mockOrderRepository.Setup(r => r.AddAndSaveOrder(It.IsAny<Order>()));
 
             // Act

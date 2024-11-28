@@ -42,17 +42,17 @@ namespace Bintainer.Test.Service
             );
         }
 
-        // Test GetTemplateByUserId
+          // Test GetTemplateByUserId
         [Test]
         public void GetTemplateByUserId_ShouldReturnTemplates_WhenUserExists()
         {
             // Arrange
             var userId = "user123";
             var templates = new Dictionary<int, string?> { { 1, "Template1" } };
-            _templateRepositoryMock.Setup(repo => repo.GetTemplatesOfUser(userId)).Returns(templates);
+            _templateRepositoryMock.Setup(repo => repo.GetAttributeTemplates(userId)).Returns(templates);
 
             // Act
-            var result = _templateService.GetTemplateByUserId(userId);
+            var result = _templateService.GetAttributeTemplates(userId);
 
             // Assert
             Assert.Multiple(() =>
@@ -67,10 +67,10 @@ namespace Bintainer.Test.Service
         {
             // Arrange
             var userId = "user123";
-            _templateRepositoryMock.Setup(repo => repo.GetTemplatesOfUser(userId)).Throws(new Exception("Database error"));
+            _templateRepositoryMock.Setup(repo => repo.GetAttributeTemplates(userId)).Throws(new Exception("Database error"));
 
             // Act
-            var result = _templateService.GetTemplateByUserId(userId);
+            var result = _templateService.GetAttributeTemplates(userId);
 
             // Assert
             Assert.Multiple(() =>
@@ -90,7 +90,7 @@ namespace Bintainer.Test.Service
             {
                 new() { Id = 1, Name = "Category1", ParentCategoryId = null }
             };
-            _templateRepositoryMock.Setup(repo => repo.GetPartCategories(userId)).Returns(categories);
+            _templateRepositoryMock.Setup(repo => repo.GetCategories(userId)).Returns(categories);
 
             // Act
             var result = _templateService.GetPartCategories(userId);
@@ -109,7 +109,7 @@ namespace Bintainer.Test.Service
         public void GetPartAttributes_ShouldReturnAttributes_WhenTableExists()
         {
             // Arrange
-            var tableId = 1;
+            Guid guid = Guid.NewGuid();
             var attributes = new List<PartAttributeInfo>
             {
                 new() { Name = "Attribute1", Value = "Value1" }
@@ -118,11 +118,11 @@ namespace Bintainer.Test.Service
             {
                 new() { Name = "Attribute1", Value = "Value1" }
             };
-            _templateRepositoryMock.Setup(repo => repo.GetPartAttributeInfo(tableId)).Returns(attributes);
+            _templateRepositoryMock.Setup(repo => repo.GetTemplatesDefaultAttributesInfo(guid)).Returns(attributes);
             _mapperMock.Setup(mapper => mapper.Map<List<PartAttributeViewModel>>(attributes)).Returns(mappedAttributes);
 
             // Act
-            var result = _templateService.GetPartAttributes(tableId);
+            var result = _templateService.GetTemplatesDefaultAttributes(guid);
 
             // Assert
             Assert.Multiple(() =>
@@ -136,12 +136,12 @@ namespace Bintainer.Test.Service
         public void GetPartAttributes_ShouldLogError_WhenExceptionThrown()
         {
             // Arrange
-            var tableId = 1;
-            _templateRepositoryMock.Setup(repo => repo.GetPartAttributeInfo(tableId)).Throws(new Exception("Error retrieving attributes"));
+            Guid guid = Guid.NewGuid();
+            _templateRepositoryMock.Setup(repo => repo.GetTemplatesDefaultAttributesInfo(guid)).Throws(new Exception("Error retrieving attributes"));
             _localizerMock.Setup(loc => loc["ErrorRetriveAttributes"]).Returns(new LocalizedString("ErrorRetriveAttributes", "Error retrieving attributes"));
 
             // Act
-            var result = _templateService.GetPartAttributes(tableId);
+            var result = _templateService.GetTemplatesDefaultAttributes(guid);
 
             // Assert
             Assert.Multiple(() =>
@@ -182,7 +182,7 @@ namespace Bintainer.Test.Service
                 new() { Id = 1, Name = "OldCategory" }
             };
 
-            _templateRepositoryMock.Setup(repo => repo.GetPartCategories(userId)).Returns(originalCategories);
+            _templateRepositoryMock.Setup(repo => repo.GetCategories(userId)).Returns(originalCategories);
             _mapperMock.Setup(m => m.Map<List<CategoryViewModel>>(originalCategories)).Returns(categories);
 
             // Act

@@ -16,6 +16,8 @@ using Microsoft.Extensions.Logging;
 using Bintainer.Model.Template;
 using Bintainer.Model.Response;
 using AutoMapper;
+using AWS.Logger.AspNetCore;
+using Bintainer.Repository.Service;
 
 namespace Bintainer.Test.Service
 {
@@ -48,14 +50,15 @@ namespace Bintainer.Test.Service
             _appLoggerMock = new Mock<IAppLogger>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _mapperMock = new Mock<IMapper>();
+            
             _partService = new PartService(
                 _partRepositoryMock.Object,
                 _templateRepositoryMock.Object,
-                _inventoryRepositoryMock.Object,
                 _inventoryServiceMock.Object,
                 _binServiceMock.Object,
                 _localizerMock.Object,
-                _appLoggerMock.Object
+                _appLoggerMock.Object, 
+                _mapperMock.Object               
             );
 
             _inventoryService = new InventoryService(
@@ -72,17 +75,17 @@ namespace Bintainer.Test.Service
         public void GetPartByName_ShouldReturnPart_WhenPartExists()
         {
             // Arrange
-            var partName = "Part1";
+            var partNumber = "Part1";
             var userId = "user123";
-            var part = new Part { Name = partName };
-            _partRepositoryMock.Setup(repo => repo.GetPartByName(partName, userId)).Returns(part);
+            var part = new Part { Number = partNumber };
+            _partRepositoryMock.Setup(repo => repo.GetPart(partNumber, userId)).Returns(part);
 
             // Act
-            var response = _partService.GetPartByName(partName, userId);
+            var response = _partService.GetPartByName(partNumber, userId);
 
             // Assert
             Assert.That(response.IsSuccess, Is.True);
-            Assert.That(response.Result, Is.EqualTo(part));
+            Assert.That(response.Result.Number, Is.EqualTo(part.Number));
             _appLoggerMock.Verify(log => log.LogMessage(It.IsAny<string>(), LogLevel.Error, It.IsAny<string>()), Times.Never);
         }
 
@@ -90,12 +93,12 @@ namespace Bintainer.Test.Service
         public void GetPartByName_ShouldReturnError_WhenPartNotFound()
         {
             // Arrange
-            var partName = "NonexistentPart";
+            var partNumber = "NonexistentPart";
             var userId = "user123";
-            _partRepositoryMock.Setup(repo => repo.GetPartByName(partName, userId)).Returns((Part)null);
+            _partRepositoryMock.Setup(repo => repo.GetPart(partNumber, userId)).Returns((Part)null);
 
             // Act
-            var response = _partService.GetPartByName(partName, userId);
+            var response = _partService.GetPartByName(partNumber, userId);
 
             // Assert
             Assert.Multiple(() =>
@@ -106,75 +109,19 @@ namespace Bintainer.Test.Service
         }
 
         [Test]
-        public void MapPartAttributesToViewModel_ShouldReturnAttributes_WhenPartExists()
-        {
-            // Arrange
-            var partName = "Part1";
-            var userId = "user123";
-            var part = new Part
-            {
-                Name = partName,
-                AttributeTemplates = new List<PartAttributeTemplate>
-            {
-                new()
-                {
-                    PartAttributes = new List<PartAttribute>
-                    {
-                        new() { Name = "Attribute1", Value = "Value1" },
-                        new() { Name = "Attribute2", Value = "Value2" }
-                    }
-                }
-            }
-            };
-            _partRepositoryMock.Setup(repo => repo.GetPartByName(partName, userId)).Returns(part);
-
-            // Act
-            var response = _partService.MapPartAttributesToViewModel(partName, userId);
-
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(response.IsSuccess, Is.True);
-                Assert.That(response.Result, Is.Not.Null);
-                Assert.That(response.Result, Has.Count.EqualTo(2));
-                Assert.That(response.Result[0].Name, Is.EqualTo("Attribute1"));
-                Assert.That(response.Result[0].Value, Is.EqualTo("Value1"));
-            });
-        }
-
-        [Test]
-        public void MapPartAttributesToViewModel_ShouldReturnError_WhenPartNotFound()
-        {
-            // Arrange
-            var partName = "NonexistentPart";
-            var userId = "user123";
-            _partRepositoryMock.Setup(repo => repo.GetPartByName(partName, userId)).Throws(new Exception("Error loading part attributes"));
-
-            // Act
-            var response = _partService.MapPartAttributesToViewModel(partName, userId);
-
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(response.IsSuccess, Is.False);
-                Assert.That(response.Message, Is.EqualTo("Error loading part attributes"));
-            });
-        }
-
-        [Test]
         public void CreatePartForUser_ShouldReturnError_WhenPartAlreadyExists()
         {
             // Arrange
-            var request = new CreatePartRequest { PartName = "ExistingPart" };
+            var request = new CreatePartRequest { PartNumber = "ExistingPart" };
             var userId = "user123";
-            var existingParts = new List<Part> { new() { Name = "ExistingPart" } };
-            _partRepositoryMock.Setup(repo => repo.GetPartsByCriteria(It.IsAny<PartFilterCriteria>())).Returns(existingParts);
+            var existingParts = new List<Part> { new() { Number = "ExistingPart" } };
+            _partRepositoryMock.Setup(repo => repo.GetParts(It.IsAny<PartFilterCriteria>())).Returns(existingParts);
 
             var localizedErrorMessage = "Part already exists";  // expected message
             _localizerMock.Setup(l => l["ErrorPartAlreadyExists"]).Returns(new LocalizedString("ErrorPartAlreadyExists", localizedErrorMessage));
 
             // Act
-            var response = _partService.CreatePartForUser(request, userId);
+            var response = _partService.CreatePart(request, userId);
 
             // Assert
             Assert.IsFalse(response.IsSuccess);
@@ -185,19 +132,19 @@ namespace Bintainer.Test.Service
         public void CreatePartForUser_ShouldCreatePart_WhenPartDoesNotExist()
         {
             // Arrange
-            var request = new CreatePartRequest { PartName = "NewPart", Supplier = "Supplier1", Description = "Desc1", Group = "group 1", Attributes = new Dictionary<string, string>() };
+            var request = new CreatePartRequest { PartNumber = "NewPart", Supplier = "Supplier1", Description = "Desc1", Group = "group 1", Attributes = new Dictionary<string, string>() };
             var userId = "user123";
-            _partRepositoryMock.Setup(repo => repo.GetPartsByCriteria(It.IsAny<PartFilterCriteria>())).Returns(new List<Part>());
+            _partRepositoryMock.Setup(repo => repo.GetParts(It.IsAny<PartFilterCriteria>())).Returns(new List<Part>());
 
             // Act
-            var response = _partService.CreatePartForUser(request, userId);
+            var response = _partService.CreatePart(request, userId);
 
             // Assert
             Assert.Multiple(() =>
             {
                 Assert.That(response.IsSuccess, Is.True);
                 Assert.That(response.Result, Is.Not.Null);
-                Assert.That(response.Result.Name, Is.EqualTo(request.PartName));
+                Assert.That(response.Result.Number, Is.EqualTo(request.PartNumber));
             });
         }
 
@@ -241,13 +188,13 @@ namespace Bintainer.Test.Service
         public void CreatePartForUser_ShouldLogError_WhenCreatingPartFails()
         {
             // Arrange
-            var request = new CreatePartRequest { PartName = "NewPart", Description = "Desc" };
+            var request = new CreatePartRequest { PartNumber = "NewPart", Description = "Desc" };
             var userId = "user123";
-            _partRepositoryMock.Setup(repo => repo.GetPartsByCriteria(It.IsAny<PartFilterCriteria>())).Returns(new List<Part>());
+            _partRepositoryMock.Setup(repo => repo.GetParts(It.IsAny<PartFilterCriteria>())).Returns(new List<Part>());
             //_partRepositoryMock.Setup(repo => repo.AddPart(It.IsAny<Part>())).Throws(new Exception("Database error"));
 
             // Act
-            var response = _partService.CreatePartForUser(request, userId);
+            var response = _partService.CreatePart(request, userId);
 
             // Assert
             Assert.IsFalse(response.IsSuccess);
@@ -258,7 +205,7 @@ namespace Bintainer.Test.Service
         public void AddPartIntoGroup_ShouldReturnGroup_WhenPartAlreadyExistsInGroup()
         {
             // Arrange
-            var part = new Part { Name = "Part1" };
+            var part = new Part { Number = "Part1" };
             var groupName = "Group1";
             var userId = "user123";
             var existingGroup = new PartGroup { Name = groupName, UserId = userId, Parts = new List<Part> { part } };
@@ -280,7 +227,7 @@ namespace Bintainer.Test.Service
         public void AddPartIntoGroup_ShouldAddPart_WhenPartDoesNotExistInGroup()
         {
             // Arrange
-            var part = new Part { Name = "Part1" };
+            var part = new Part { Number = "Part1" };
             var groupName = "Group1";
             var userId = "user123";
             var existingGroup = new PartGroup { Name = groupName, UserId = userId, Parts = new List<Part>() };
@@ -302,7 +249,7 @@ namespace Bintainer.Test.Service
         public void AddPartIntoGroup_ShouldCreateNewGroup_WhenGroupDoesNotExist()
         {
             // Arrange
-            var part = new Part { Name = "Part1" };
+            var part = new Part { Number = "Part1" };
             var groupName = "Group1";
             var userId = "user123";
             _partRepositoryMock.Setup(repo => repo.GetPartGroup(groupName, userId)).Returns((PartGroup)null);
@@ -323,7 +270,7 @@ namespace Bintainer.Test.Service
         public void AddPartIntoGroup_ShouldReturnError_WhenExceptionThrown()
         {
             // Arrange
-            var part = new Part { Name = "Part1" };
+            var part = new Part { Number = "Part1" };
             var groupName = "Group1";
             var userId = "user123";
             _partRepositoryMock.Setup(repo => repo.GetPartGroup(groupName, userId)).Throws(new Exception("Database error"));
@@ -357,11 +304,11 @@ namespace Bintainer.Test.Service
         public void TryAdjustPartQuantity_ShouldReturnWarning_WhenPartNotFound()
         {
             // Arrange
-            var request = new AdjustQuantityRequest { Quantity = 5, QuantityUsed = 3, PartName = "Part1", BinId = 1, SubspaceIndices = "1,2" };
+            var request = new AdjustQuantityRequest { Quantity = 5, QuantityUsed = 3, PartNumber = "Part1", BinId = 1, SubspaceIndices = "1,2" };
             var userId = "user123";
             LocalizedString localizedString = new LocalizedString("WarningPartNotFound", "Part not found.");
 
-            _partRepositoryMock.Setup(repo => repo.GetPartByName(request.PartName, userId)).Returns((Part)null);
+            _partRepositoryMock.Setup(repo => repo.GetPart(request.PartNumber, userId)).Returns((Part)null);
             _localizerMock.Setup(localizer => localizer["WarningPartNotFound"]).Returns(localizedString);
 
             // Act
@@ -380,7 +327,7 @@ namespace Bintainer.Test.Service
         public void TryAdjustPartQuantity_ShouldAdjustQuantities_WhenPartFoundAndQuantityIsValid()
         {
             // Arrange
-            var request = new AdjustQuantityRequest { Quantity = 5, QuantityUsed = 3, PartName = "Part1", BinId = 1, SubspaceIndices = "0" };
+            var request = new AdjustQuantityRequest { Quantity = 5, QuantityUsed = 3, PartNumber = "Part1", BinId = 1, SubspaceIndices = "0" };
             var userId = "user123";
 
             var part = new Part
@@ -391,7 +338,7 @@ namespace Bintainer.Test.Service
             }
             };
 
-            _partRepositoryMock.Setup(repo => repo.GetPartByName(request.PartName, userId)).Returns(part);
+            _partRepositoryMock.Setup(repo => repo.GetPart(request.PartNumber, userId)).Returns(part);
             _partRepositoryMock.Setup(repo => repo.UpdatePartBinassociations(It.IsAny<List<PartBinAssociation>>())).Returns((List<PartBinAssociation>?)part.PartBinAssociations);
 
             // Act
@@ -410,10 +357,10 @@ namespace Bintainer.Test.Service
         public void TryAdjustPartQuantity_ShouldLogErrorAndReturnFalse_WhenExceptionThrown()
         {
             // Arrange
-            var request = new AdjustQuantityRequest { Quantity = 5, QuantityUsed = 3, PartName = "Part1", BinId = 1, SubspaceIndices = "0" };
+            var request = new AdjustQuantityRequest { Quantity = 5, QuantityUsed = 3, PartNumber = "Part1", BinId = 1, SubspaceIndices = "0" };
             var userId = "user123";
 
-            _partRepositoryMock.Setup(repo => repo.GetPartByName(request.PartName, userId)).Throws(new Exception("Database error"));
+            _partRepositoryMock.Setup(repo => repo.GetPart(request.PartNumber, userId)).Throws(new Exception("Database error"));
             _appLoggerMock.Setup(logger => logger.LogMessage(It.IsAny<string>(), LogLevel.Error, It.IsAny<string>()));
 
             // Act
@@ -432,7 +379,7 @@ namespace Bintainer.Test.Service
         public void ArrangePartRequest_ShouldLogError_WhenInventorySectionIsMissing()
         {
             // Arrange
-            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartName = "Part1", CoordinateX = 0, CoordinateY = 0 };
+            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartNumber = "Part1", CoordinateX = 0, CoordinateY = 0 };
             var userId = "user123";
 
             _inventoryRepositoryMock.Setup(repo => repo.GetSection(userId, arrangeRequest.SectionId)).Returns((InventorySection)null);
@@ -449,12 +396,12 @@ namespace Bintainer.Test.Service
         public void ArrangePartRequest_ShouldLogError_WhenPartNotFound()
         {
             // Arrange
-            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartName = "Part1", CoordinateX = 0, CoordinateY = 0 };
+            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartNumber = "Part1", CoordinateX = 0, CoordinateY = 0 };
             var userId = "user123";
             var inventorySection = new InventorySection();
 
             _inventoryRepositoryMock.Setup(repo => repo.GetSection(userId, arrangeRequest.SectionId)).Returns(inventorySection);
-            _partRepositoryMock.Setup(repo => repo.GetPartByName(arrangeRequest.PartName, userId)).Returns((Part)null);
+            _partRepositoryMock.Setup(repo => repo.GetPart(arrangeRequest.PartNumber, userId)).Returns((Part)null);
 
             // Act
             _partService.ArrangePartRequest(arrangeRequest, userId);
@@ -467,15 +414,15 @@ namespace Bintainer.Test.Service
         public void ArrangePartRequest_ShouldProcessArrangeRequest_WhenBinFound()
         {
             // Arrange
-            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartName = "Part1", CoordinateX = 0, CoordinateY = 0 };
+            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartNumber = "Part1", CoordinateX = 0, CoordinateY = 0 };
             var userId = "user123";
             var inventorySection = new InventorySection();
             var part = new Part();
             var bin = new Bin();
 
             _inventoryRepositoryMock.Setup(repo => repo.GetSection(userId, arrangeRequest.SectionId)).Returns(inventorySection);
-            _partRepositoryMock.Setup(repo => repo.GetPartByName(arrangeRequest.PartName, userId)).Returns(part);
-            _inventoryServiceMock.Setup(service => service.GetBinFrom(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY))
+            _partRepositoryMock.Setup(repo => repo.GetPart(arrangeRequest.PartNumber, userId)).Returns(part);
+            _inventoryServiceMock.Setup(service => service.GetBin(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY))
                 .Returns(new Model.Template.Response<Bin> { IsSuccess = true, Result = bin });
 
             // Act
@@ -490,15 +437,15 @@ namespace Bintainer.Test.Service
         public void ArrangePartRequest_ShouldCreateNewBin_WhenBinNotFound()
         {
             // Arrange
-            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartName = "Part1", CoordinateX = 0, CoordinateY = 0 };
+            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartNumber = "Part1", CoordinateX = 0, CoordinateY = 0 };
             var userId = "user123";
             var inventorySection = new InventorySection();
             var part = new Part();
             var newBin = new Bin();
 
             _inventoryRepositoryMock.Setup(repo => repo.GetSection(userId, arrangeRequest.SectionId)).Returns(inventorySection);
-            _partRepositoryMock.Setup(repo => repo.GetPartByName(arrangeRequest.PartName, userId)).Returns(part);
-            _inventoryServiceMock.Setup(service => service.GetBinFrom(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY))
+            _partRepositoryMock.Setup(repo => repo.GetPart(arrangeRequest.PartNumber, userId)).Returns(part);
+            _inventoryServiceMock.Setup(service => service.GetBin(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY))
                 .Returns(new Response<Bin> { IsSuccess = false, Message = "Bin not found" });
 
             _inventoryServiceMock.Setup(service => service.CreateBin(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY))
@@ -515,14 +462,14 @@ namespace Bintainer.Test.Service
         public void ArrangePartRequest_ShouldLogError_WhenExceptionThrown()
         {
             // Arrange
-            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartName = "Part1", CoordinateX = 0, CoordinateY = 0 };
+            var arrangeRequest = new ArrangePartRequest { SectionId = 1, PartNumber = "Part1", CoordinateX = 0, CoordinateY = 0 };
             var userId = "user123";
             var inventorySection = new InventorySection();
             var part = new Part();
 
             _inventoryRepositoryMock.Setup(repo => repo.GetSection(userId, arrangeRequest.SectionId)).Returns(inventorySection);
-            _partRepositoryMock.Setup(repo => repo.GetPartByName(arrangeRequest.PartName, userId)).Returns(part);
-            _inventoryServiceMock.Setup(service => service.GetBinFrom(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY))
+            _partRepositoryMock.Setup(repo => repo.GetPart(arrangeRequest.PartNumber, userId)).Returns(part);
+            _inventoryServiceMock.Setup(service => service.GetBin(inventorySection, arrangeRequest.CoordinateX, arrangeRequest.CoordinateY))
                 .Throws(new Exception("Database error"));
 
             // Act
@@ -536,15 +483,15 @@ namespace Bintainer.Test.Service
         public void UsePart_ShouldReturnSuccessResponse_WhenPartIsFound()
         {
             // Arrange
-            var partName = "SamplePart";
+            var partNumber = "SamplePart";
             var userId = "user123";
             var part = new Part();
             var expectedResponse = new List<PartUsageResponse> { new PartUsageResponse() };
 
-            _partRepositoryMock.Setup(repo => repo.GetPartByName(partName, userId)).Returns(part);
+            _partRepositoryMock.Setup(repo => repo.GetPart(partNumber, userId)).Returns(part);
 
             // Act
-            var response = _partService.UsePart(partName, userId);
+            var response = _partService.UsePart(partNumber, userId);
 
             // Assert
             Assert.Multiple(() =>
@@ -560,13 +507,13 @@ namespace Bintainer.Test.Service
         public void UsePart_ShouldReturnFailureResponse_WhenPartIsNotFound()
         {
             // Arrange
-            var partName = "NonExistentPart";
+            var partNumber = "NonExistentPart";
             var userId = "user123";
 
-            _partRepositoryMock.Setup(repo => repo.GetPartByName(partName, userId)).Returns((Part?)null);
+            _partRepositoryMock.Setup(repo => repo.GetPart(partNumber, userId)).Returns((Part?)null);
 
             // Act
-            var response = _partService.UsePart(partName, userId);
+            var response = _partService.UsePart(partNumber, userId);
 
             // Assert
             Assert.IsFalse(response.IsSuccess);

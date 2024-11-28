@@ -43,18 +43,18 @@ namespace Bintainer.Test.Repository
             // Arrange
             string partName = "TestPart";
             string userId = "user123";
-            var expectedPart = new Part { Name = partName, UserId = userId };
+            var expectedPart = new Part { Number = partName, UserId = userId };
             var parts = new List<Part> { expectedPart }.AsQueryable();
 
             var mockDbSet = CreateMockDbSet(parts);
             _dbContextMock.Setup(db => db.Parts).Returns(mockDbSet.Object);
 
             // Act
-            var result = _partRepository.GetPartByName(partName, userId);
+            var result = _partRepository.GetPart(partName, userId);
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(expectedPart.Name, result.Name);
+            Assert.AreEqual(expectedPart.Number, result.Number);
             Assert.AreEqual(expectedPart.UserId, result.UserId);
         }
 
@@ -62,15 +62,15 @@ namespace Bintainer.Test.Repository
         public void GetPartById_ReturnsCorrectPart_WhenIdExists()
         {
             // Arrange
-            int partId = 1;
-            var expectedPart = new Part { Id = partId };
+            Guid guid = Guid.NewGuid();
+            var expectedPart = new Part { GuidId = guid };
             var parts = new List<Part> { expectedPart }.AsQueryable();
 
             var mockDbSet = CreateMockDbSet(parts);
             _dbContextMock.Setup(db => db.Parts).Returns(mockDbSet.Object);
 
             // Act
-            var result = _partRepository.GetPartById(partId);
+            var result = _partRepository.GetPart(guid);
 
             // Assert
             Assert.IsNotNull(result);
@@ -81,21 +81,22 @@ namespace Bintainer.Test.Repository
         public void GetPartsByCriteria_ReturnsParts_MatchingCriteria()
         {
             // Arrange
-            var criteria = new PartFilterCriteria { Name = "TestPart", Supplier = "SupplierX", UserId = "user123" };
-            var part1 = new Part { Name = "TestPart", Supplier = "SupplierX", UserId = "user123" };
-            var part2 = new Part { Name = "OtherPart", Supplier = "SupplierX", UserId = "user123" };
+            var criteria = new PartFilterCriteria { Number = "TestPart", Supplier = "SupplierX", UserId = "user123" };
+            var part1 = new Part { Number = "TestPart", Supplier = "SupplierX", UserId = "user123" };
+            var part2 = new Part { Number = "OtherPart", Supplier = "SupplierX", UserId = "user123" };
             var parts = new List<Part> { part1, part2 }.AsQueryable();
 
             var mockDbSet = CreateMockDbSet(parts);
             _dbContextMock.Setup(db => db.Parts).Returns(mockDbSet.Object);
 
             // Act
-            var result = _partRepository.GetPartsByCriteria(criteria);
+            var result = _partRepository.GetParts(criteria);
 
             // Assert
             Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(part1.Name, result[0].Name);
+            Assert.AreEqual(part1.Number, result[0].Number);
         }
+
 
         [Test]
         public void GetOrCreatePartPackage_ReturnsExistingPackage_WhenPackageExists()
@@ -110,7 +111,7 @@ namespace Bintainer.Test.Repository
             _dbContextMock.Setup(db => db.PartPackages).Returns(mockDbSet.Object);
 
             // Act
-            var result = _partRepository.GetOrCreatePartPackage(packageName, userId);
+            var result = _partRepository.GetOrCreatePackage(packageName, userId);
 
             // Assert
             Assert.AreEqual(existingPackage, result);
@@ -120,7 +121,7 @@ namespace Bintainer.Test.Repository
         public void UpdatePart_SavesChanges_WhenPartIsNotNull()
         {
             // Arrange
-            var part = new Part { Id = 1, Name = "UpdatedPart" };
+            var part = new Part { Id = 1, Number = "UpdatedPart" };
 
             // Set up the DbSet to handle Update without requiring the object to be present
             var mockDbSet = new Mock<DbSet<Part>>();
