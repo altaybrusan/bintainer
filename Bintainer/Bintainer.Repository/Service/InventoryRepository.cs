@@ -167,26 +167,29 @@ namespace Bintainer.Repository.Service
         }
 
 
-        private List<Bin> RemoveAllBinsInsideSection(InventorySection section)
+        private List<Bin>? RemoveAllBinsInsideSection(InventorySection section)
         {
 
             var binIds = section.Bins.Select(b => b.Id).ToHashSet();
+            if(binIds is not null && binIds.Count>0)
+            {
+                var assocs = _dbContext.PartBinAssociations.Where(a => binIds.Contains(a.BinId)).ToList();
+                _dbContext.PartBinAssociations.RemoveRange(assocs);
 
-            var assocs = _dbContext.PartBinAssociations.Where(a => binIds.Contains(a.BinId)).ToList();
-            _dbContext.PartBinAssociations.RemoveRange(assocs);
 
+                var subspaces = _dbContext.BinSubspaces.Where(b => binIds.Contains(b.BinId!.Value)).ToList();
+                _dbContext.BinSubspaces.RemoveRange(subspaces);
 
-            var subspaces = _dbContext.BinSubspaces.Where(b => binIds.Contains(b.BinId!.Value)).ToList();
-            _dbContext.BinSubspaces.RemoveRange(subspaces);
+                List<Bin> result = section.Bins.ToList();
+                _dbContext.Bins.RemoveRange(result);
+                _dbContext.SaveChanges(true);
 
+                return result;
+            }
 
             //_dbContext.SaveChanges(true);
+            return null;
 
-            List<Bin> result = section.Bins.ToList();
-            _dbContext.Bins.RemoveRange(result);
-            _dbContext.SaveChanges(true);
-
-            return result;
         }
 
     }
