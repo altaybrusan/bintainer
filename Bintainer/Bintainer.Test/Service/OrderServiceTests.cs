@@ -69,7 +69,7 @@ namespace Bintainer.Test.Service
         }
 
         [Test]
-        public void RegisterOrder_WhenOrderExists_ShouldUpdateOrder()
+        public void RegisterOrder_WhenOrderExists_ShouldNotUpdateOrder()
         {
             // Arrange
             var existingOrder = new Order
@@ -103,10 +103,8 @@ namespace Bintainer.Test.Service
             var result = _orderService.RegisterOrder(request, userId);
 
             // Assert
-            Assert.IsTrue(result.IsSuccess);
-            Assert.That(existingOrder.Supplier, Is.EqualTo("Updated Supplier"));
-            Assert.That(existingOrder.OrderPartAssociations.First().Quantity, Is.EqualTo(1));
-            _mockOrderRepository.Verify(r => r.UpdateOrder(existingOrder), Times.Once);
+            Assert.IsFalse(result.IsSuccess);
+
         }
 
         [Test]
