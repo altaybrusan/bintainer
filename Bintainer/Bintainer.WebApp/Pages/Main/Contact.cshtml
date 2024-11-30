@@ -7,6 +7,7 @@
 <!--==========================
   Contact Section
 ============================-->
+
 <section id="contact">
     <div class="container wow fadeInUp">
         <div class="section-header">
@@ -29,7 +30,7 @@
 
                     <div>
                         <i class="fa fa-envelope"></i>
-                        <p>info@bintainer.co</p>
+                        <p>admin@matilsoft.com</p>
                     </div>
 
                     <div>
@@ -76,6 +77,8 @@
     </div>
 </section><!-- #contact -->
 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@@emailjs/browser@4/dist/email.min.js">
+</script>
 <script>
     function sendMail() {
         // Disable the button and show loading indicator
@@ -86,16 +89,18 @@
             loadingIndicator.style.display = 'block';
         }
 
+        emailjs.init("jZhfaE0nfb7QKHYxz");
+
         // Collect form values
         const params = {
             sender_name: document.getElementById("name").value,
             reply_to: document.getElementById("email").value,
-            sender_phone: document.getElementById("subject").value,
+            sender_subject: document.getElementById("subject").value,
             sender_message: document.querySelector("textarea[name='message']").value,
         };
 
-        const templateID = "template_default";
-        const serviceID = "service_mail";
+        const templateID = "template_h3e0f27";
+        const serviceID = "service_cmez6dq";
 
         // Send email using EmailJS
         emailjs.send(serviceID, templateID, params)
