@@ -241,7 +241,7 @@ namespace Bintainer.Repository.Service
 
         public List<string> GetPartNameList(string userId)
         {
-            return _dbContext.Parts.Select(p => p.Number.Trim()).ToList();
+            return _dbContext.Parts.Where(p => p.UserId == userId).Select(p => p.Number.Trim()).ToList();
         }
 
         public List<string> GetGroupNameList(string userId)
