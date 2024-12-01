@@ -129,7 +129,7 @@
                             <div class="row">
                                 <div class="form-group">
                                     <label class="control-label">Category</label>
-                                    <div class="create-part-category-treeview"></div>
+                                    <div id="create-part-category-treeview" class="category-treeview"></div>
                                     @*                                         <select id="categorySelect" class="form-select form-select-sm"
                                     required="required"
                                     asp-items="@(new SelectList(Model.Category,nameof(CategoryViewModel.Id),nameof(CategoryViewModel.Title)))">
@@ -451,7 +451,9 @@
                         <fieldset>
                             <legend><h2>Find Part By</h2></legend>
                             <hr />
-                            <div class="row">
+                            <div style="color:green"><i>"Only the parts that have already been arranged are displayed here!"</i></div>
+                            <div class="mb-4"></div>
+                            <div class="row">                                
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-9 d-flex align-items-center">
@@ -462,7 +464,7 @@
                                                     @Html.Raw(Json.Serialize(Model.PartNumbers.Select(p => p.Trim())))
                                                 </div>
                                             </div>                                          
-                                        </div>                                        
+                                        </div>                                           
                                     </div>
                                 </div>
                                 <h5><span>Or</span></h5>
@@ -484,12 +486,12 @@
                                     <div class="row">
                                         <div class="col-9 d-flex align-items-center">
                                             <div class="form-group">
-                                                <div id="find-part-category-treeview" class="create-part-category-treeview"></div>
+                                                <div id="find-part-category-treeview" class="category-treeview"></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>      
                         </fieldset>
                         <div class="button-row align-items-end justify-content-end mt-5">
                             <button type="button" class="button-row btn btn-primary" id="finPartBtn">Search</button>
@@ -658,7 +660,7 @@
                   DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault
               }));
 
-        const creatPartTree = new DinampTreeEditor('.create-part-category-treeview')
+        const creatPartTree = new DinampTreeEditor('#create-part-category-treeview')
                                   .setData(data)
                                   .set({
                                         radios: true,
