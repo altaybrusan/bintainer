@@ -503,7 +503,7 @@
                         <hr />
                         <fieldset>
                             <div style="margin-bottom: 20px;"></div>
-                            <table class="table" id="usePartTable">
+                            <table class="table" id="findPartTable">
                                 <thead>
                                     <tr>
                                         <th>Part</th>
@@ -678,7 +678,7 @@
                                             editable: false,
                                             checkboxes: false,
                                             oncheck: function (state, text, path) {
-                                            selectedCategoryForFindPart = path;
+                                             selectedCategoryForUpdatePart = path;
                                             }});
         const findPartTree = new DinampTreeEditor('#find-part-category-treeview')
             .setData(data)
@@ -1543,7 +1543,7 @@
                 data: JSON.stringify(data),
                 success: function (response) {
                     if (response && response.isSuccess && response.result) {
-                        const tableBody = $("#usePartTable tbody");
+                        const tableBody = $("#findPartTable tbody");
                         tableBody.empty(); // Clear existing rows if needed
 
                         response.result.forEach(part => {
@@ -1603,8 +1603,9 @@
                         $('#updatePartSupplier').val(response.supplier || '');
                         $('#updatePartPackageInput').val(response.package?.name || '');
                         $('#searchPartNumberForUpdate').data('guidid', response.guidId);
-                        const flattenedCategory = flattenCategory(response.category);
-                        $('#updatePartCurrentCategory').text(flattenedCategory);
+                        //const flattenedCategory = flattenCategory(response.category);
+                        //$('#updatePartCurrentCategory').text(flattenedCategory);
+                        $('#updatePartCurrentCategory').text(response.category.flattenedHierarchy || 'x');
                         const groupNames = response.groups && response.groups.length > 0
                             ? response.groups.map(group => group.name).join(', ')
                             : '';

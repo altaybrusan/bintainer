@@ -763,6 +763,10 @@ namespace Bintainer.Service
                 _appLogger.LogMessage(_localizer["ErrorBinCannotBeNull"], LogLevel.Error);
                 return null;
             }
+            if (subSpace.PartBinAssociations.Count > 0 && subSpace.PartBinAssociations.ToList().TrueForAll(asoc => asoc.Part.Id == part.Id)) 
+            {
+                return subSpace;
+            }
             var assoc = new PartBinAssociation
             {
                 PartId = part.Id,

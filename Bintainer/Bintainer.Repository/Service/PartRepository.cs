@@ -46,7 +46,8 @@ namespace Bintainer.Repository.Service
             // Load the full parent category hierarchy
             if (part?.Category != null)
             {
-                part.Category = LoadFullCategoryHierarchy(part.Category);
+                //part.Category = LoadFullCategoryHierarchy(part.Category);
+                LoadFullCategoryHierarchy(part.Category);
             }
 
             return part;
@@ -68,7 +69,8 @@ namespace Bintainer.Repository.Service
                                        .FirstOrDefault();
             if (part?.Category != null)
             {
-                part.Category = LoadFullCategoryHierarchy(part.Category);
+                //part.Category = LoadFullCategoryHierarchy(part.Category);
+                LoadFullCategoryHierarchy(part.Category);
             }
             return part;
         }
@@ -300,18 +302,30 @@ namespace Bintainer.Repository.Service
                     .ThenInclude(b => b.BinSubspaces)                  
                   .ToList();
         }
-        
-        private PartCategory LoadFullCategoryHierarchy(PartCategory category)
-        {
-            while (category.ParentCategory != null)
-            {
-                category.ParentCategory = _dbContext.PartCategories
-                    .Include(c => c.ParentCategory)
-                    .FirstOrDefault(c => c.Id == category.ParentCategory.Id);
 
-                category = category.ParentCategory;
+        //private PartCategory LoadFullCategoryHierarchy(PartCategory category)
+        //{
+        //    while (category.ParentCategory != null)
+        //    {
+        //        category.ParentCategory = _dbContext.PartCategories
+        //            .Include(c => c.ParentCategory)
+        //            .FirstOrDefault(c => c.Id == category.ParentCategory.Id);
+
+        //        category = category.ParentCategory;
+        //    }
+        //    return category;
+        //}
+
+        private void LoadFullCategoryHierarchy(PartCategory category)
+        {
+            if (category.ParentCategory != null)
+            {
+                _dbContext.Entry(category.ParentCategory)
+                    .Reference(c => c.ParentCategory)
+                    .Load();
+
+                LoadFullCategoryHierarchy(category.ParentCategory); // Recursive call
             }
-            return category;
         }
 
         public List<Part>? GetPartsOfUser(string userId)
