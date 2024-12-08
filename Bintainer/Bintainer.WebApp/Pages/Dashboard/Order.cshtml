@@ -407,7 +407,7 @@
                 success: function (response) {
                     // Handle the success response, e.g., populate order dropdown
                     if (response.success) {    
-                        populateOrdersTable(response.orders);
+                        populateOrdersTable(response.result);
                     } else {
                         alert("No results found.");
                     }
@@ -451,8 +451,8 @@
 
                 selectedOrder.parts.forEach(part => {
                     let partRow = `<tr>
-                    <td>${part.name}</td>
-                    <td>${part.qunatity}</td>
+                    <td>${part.partName}</td>
+                    <td>${part.quantity}</td>
                 </tr>`;
                     partsTableBody.append(partRow);
                 });

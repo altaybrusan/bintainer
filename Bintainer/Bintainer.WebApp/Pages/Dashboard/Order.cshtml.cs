@@ -54,7 +54,7 @@ namespace Bintainer.WebApp.Pages.Dashboard
                 try
                 {
                     var response = _orderService.RegisterOrder(request, UserId);
-                    return BadRequest(response.Message);
+                    return new JsonResult(response.Message);
                 }
                 catch (Exception ex)
                 {
