@@ -1605,7 +1605,7 @@
                         $('#searchPartNumberForUpdate').data('guidid', response.guidId);
                         //const flattenedCategory = flattenCategory(response.category);
                         //$('#updatePartCurrentCategory').text(flattenedCategory);
-                        $('#updatePartCurrentCategory').text(response.category.flattenedHierarchy || 'x');
+                        $('#updatePartCurrentCategory').text(response.category && response.category.flattenedHierarchy ? response.category.flattenedHierarchy : '');
                         const groupNames = response.groups && response.groups.length > 0
                             ? response.groups.map(group => group.name).join(', ')
                             : '';
