@@ -26,15 +26,18 @@ namespace Bintainer.Service
         private IAppLogger _appLoger;
         private IStringLocalizer<ErrorMessages> _localizer;
         private IMapper _mapper;
+        readonly IUserRepository _userRepository;
         public TemplateService(ITemplateRepository repository,
                                IAppLogger appLogger,
                                IStringLocalizer<ErrorMessages> localizer,
-                               IMapper mapper)
+                               IMapper mapper,
+                               IUserRepository userRepository)
         {
             _templateRepository = repository;
             _appLoger = appLogger;
             _localizer = localizer;
             _mapper = mapper;
+            _userRepository = userRepository;
         }
         public Response<List<PartTemplateInfo>> GetAttributeTemplateInfoList(string userId)
         {
@@ -283,15 +286,19 @@ namespace Bintainer.Service
 
         private void AddItem(CategoryViewModel nodeView, string userId, int? parentId = null)
         {
-            PartCategory newCategory = new() { Name = nodeView.Title, UserId = userId };
+            var user = _userRepository.GetUser(userId);
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            PartCategory newCategory = new() { Name = nodeView.Title, UserId = userId, User = user };
+            
             if (parentId != null)
             {
                 newCategory.ParentCategory = _templateRepository.GetCategory(parentId);
             }
-
             _templateRepository.AddAndSavePartCategory(newCategory);
-
-
+           
             foreach (var item in nodeView.Children)
             {
                 AddItem(item, userId, newCategory.Id);

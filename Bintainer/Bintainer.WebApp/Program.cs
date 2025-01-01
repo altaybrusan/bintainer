@@ -17,6 +17,7 @@ using Bintainer.SharedResources.Interface;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging.Console;
 using Bintainer.Repository;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,12 +51,16 @@ builder.Services.AddControllersWithViews()
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services.AddDbContext<BintainerDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-{ 
-    options.SignIn.RequireConfirmedAccount = true; 
+{
+    options.SignIn.RequireConfirmedAccount = true;
     options.Lockout.AllowedForNewUsers = true;
 }).AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -81,7 +86,6 @@ builder.Services.Configure<DigikeySettings>(builder.Configuration.GetSection("Di
 
 builder.Services.AddScoped<DigikeyService>();
 
-builder.Services.AddDbContext<BintainerDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddRazorPages();
 
 builder.Services.AddScoped<IBinRepository,BinRepository>();
