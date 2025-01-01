@@ -183,7 +183,7 @@ namespace Bintainer.Service
         public Response<Inventory?> CreateOrUpdateInventory(UserViewModel userViewModel, string inventoryName, List<InventorySection>? sectionList = null)
         {
             try
-            {
+             {
                 
                 if (userViewModel is null || 
                     string.IsNullOrEmpty(userViewModel.UserId) || 
